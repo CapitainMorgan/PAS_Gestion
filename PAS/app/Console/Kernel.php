@@ -29,4 +29,26 @@ class Kernel extends ConsoleKernel
 
         require base_path('routes/console.php');
     }
+
+    protected function scheduleTimezone()
+    {
+        return 'UTC';
+    }
+
+    /**
+     * Define middleware for the application.
+     * 
+     * @return void
+     */
+    protected $routeMiddleware = [
+        // Autres middlewares ici...
+    
+        'checkArticlePermissions' => \App\Http\Middleware\CheckArticlePermissions::class,
+        'checkFournisseurPermissions' => \App\Http\Middleware\CheckFournisseurPermissions::class,
+        'checkVentePermissions' => \App\Http\Middleware\CheckVentePermissions::class,
+        'checkUserPermissions' => \App\Http\Middleware\CheckUserPermissions::class,
+        'checkDepotPermissions' => \App\Http\Middleware\CheckDepotPermissions::class,
+        'checkFraisSocietePermissions' => \App\Http\Middleware\CheckFraisSocietePermissions::class,
+        // Ajouter d'autres middlewares pour les autres tables
+    ];
 }
