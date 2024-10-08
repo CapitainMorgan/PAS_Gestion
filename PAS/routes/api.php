@@ -3,6 +3,14 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\FournisseurController;
+use App\Http\Controllers\VenteController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\DepotController;
+use App\Http\Controllers\FraisSocieteController;
+use App\Http\Controllers\FraisController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
