@@ -4,14 +4,33 @@ namespace App\Http\Controllers;
 
 use App\Models\Fournisseur;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class FournisseurController extends Controller
 {
     // GET: Récupérer tous les fournisseurs
     public function index()
     {
-        $fournisseurs = Fournisseur::all();
-        return response()->json($fournisseurs);
+        $fournisseurs = Fournisseur::query();
+
+        if ($request->has('nom')) {
+            $fournisseurs->where('nom', 'like', '%' . $request->input('nom') . '%');
+        }
+
+        if ($request->has('ville')) {
+            $fournisseurs->where('ville', 'like', '%' . $request->input('ville') . '%');
+        }
+
+        if ($request->has('pays')) {
+            $fournisseurs->where('pays', 'like', '%' . $request->input('pays') . '%');
+        }
+
+        $fournisseurs = $fournisseurs->paginate(10); // Pagination
+
+        return Inertia::render('Fournisseur/Index', [
+            'fournisseurs' => $fournisseurs,
+            'filters' => $request->only('nom', 'ville', 'pays')
+        ]);
     }
 
     // POST: Créer un nouveau fournisseur
