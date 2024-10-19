@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Article;
+use App\Models\Depot;
 
 class Fournisseur extends Model
 {
@@ -11,7 +13,7 @@ class Fournisseur extends Model
 
     protected $fillable = [
         'nom', 
-        'prénom', 
+        'prenom', 
         'rue', 
         'ville', 
         'npa', 
@@ -23,4 +25,16 @@ class Fournisseur extends Model
         'email', 
         'telephone'
     ];
+
+    public function articles()
+    {
+        return $this->hasManyThrough(
+            Article::class,
+            Depot::class,
+            'fournisseur_id',
+            'depot_id',
+            'id',
+            'id'
+        );
+    }
 }

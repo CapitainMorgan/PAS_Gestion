@@ -11,25 +11,10 @@ class FournisseurController extends Controller
     // GET: Récupérer tous les fournisseurs
     public function index()
     {
-        $fournisseurs = Fournisseur::query();
-
-        if ($request->has('nom')) {
-            $fournisseurs->where('nom', 'like', '%' . $request->input('nom') . '%');
-        }
-
-        if ($request->has('ville')) {
-            $fournisseurs->where('ville', 'like', '%' . $request->input('ville') . '%');
-        }
-
-        if ($request->has('pays')) {
-            $fournisseurs->where('pays', 'like', '%' . $request->input('pays') . '%');
-        }
-
-        $fournisseurs = $fournisseurs->paginate(10); // Pagination
+        $fournisseurs = Fournisseur::all();
 
         return Inertia::render('Fournisseur/Index', [
             'fournisseurs' => $fournisseurs,
-            'filters' => $request->only('nom', 'ville', 'pays')
         ]);
     }
 
@@ -45,6 +30,7 @@ class FournisseurController extends Controller
             'pays' => 'nullable|string|max:50',
             'mobile' => 'nullable|string|max:15',
             'email' => 'nullable|string|max:50',
+            'remarque' => 'nullable|string|max:255',
         ]);
 
         $fournisseur = Fournisseur::create($request->all());
@@ -55,13 +41,15 @@ class FournisseurController extends Controller
     // GET: Récupérer un fournisseur spécifique
     public function show($id)
     {
-        $fournisseur = Fournisseur::find($id);
+        $fournisseur = Fournisseur::with('articles')->find($id);
 
         if (!$fournisseur) {
             return response()->json(['error' => 'Fournisseur not found'], 404);
         }
 
-        return response()->json($fournisseur);
+        return Inertia::render('Fournisseur/Show', [
+            'fournisseur' => $fournisseur,
+        ]);
     }
 
     // PUT/PATCH: Mettre à jour un fournisseur

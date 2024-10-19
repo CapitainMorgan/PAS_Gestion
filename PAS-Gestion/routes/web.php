@@ -21,15 +21,15 @@ Route::get('/dashboard', function () {
 
 Route::get('/fournisseur.index', [FournisseurController::class, 'index'])->middleware(['auth', 'verified'])->name('fournisseur.index');
 
-Route::get('/fournisseur.create', [FournisseurController::class, 'create'])->middleware(['auth', 'verified'])->name('fournisseur.create');
-
-Route::get('/fournisseur.edit', [FournisseurController::class, 'edit'])->middleware(['auth', 'verified'])->name('fournisseur.edit');
+Route::get('/fournisseur.show/{id}', [FournisseurController::class, 'show'])->middleware(['auth', 'verified'])->name('fournisseur.show');
 
 Route::get('/article.index', [ArticleController::class, 'index'])->middleware(['auth', 'verified'])->name('article.index');
 
+Route::get('/article.show/{id}', [ArticleController::class, 'show'])->middleware(['auth', 'verified'])->name('article.show');
+
 Route::get('/article.create', [ArticleController::class, 'create'])->middleware(['auth', 'verified'])->name('article.create');
 
-Route::get('/article.edit', [ArticleController::class, 'edit'])->middleware(['auth', 'verified'])->name('article.edit');
+Route::post('/article', [ArticleController::class, 'store'])->name('article.store');
 
 Route::get('/parametre.index', function () {
     return Inertia::render('Parametre/Index');
@@ -38,6 +38,10 @@ Route::get('/parametre.index', function () {
 Route::get('/caisse.index', function () {
     return Inertia::render('Caisse/Index');
 })->middleware(['auth', 'verified'])->name('caisse.index');
+
+Route::get('/depot.create', function () {
+    return Inertia::render('Depot/Create');
+})->middleware(['auth', 'verified'])->name('depot.create');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {

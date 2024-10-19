@@ -9,12 +9,12 @@ import { Head } from '@inertiajs/vue3';
 
 <template>
   <AuthenticatedLayout>
-    <Head title="Fournisseurs" />
+    <Head title="Articles" />
     <template #header>
             <h2
                 class="text-xl font-semibold leading-tight text-gray-800"
             >
-                Fournisseurs
+                Articles
             </h2>
         </template>
         <div class="py-12">
@@ -29,42 +29,44 @@ import { Head } from '@inertiajs/vue3';
                     type="text"
                     class="form-control"
                     v-model="searchTerm"
-                    @input="searchFournisseurs"
+                    @input="searchArticles"
                     placeholder="Rechercher par nom..."
                   />
+
+                  <SecondaryButton><a :href="route('article.create')">Créer un nouveau</a></SecondaryButton>
               
-                  <!-- Tableau des fournisseurs -->
-                  <table v-if="filteredFournisseurs.length > 0">
+                  <!-- Tableau des articles -->
+                  <table v-if="filteredArticles.length > 0">
                     <thead>
                         <tr>
                         <th>ID</th>
-                        <th>Nom</th>
-                        <th>Prénom</th>                        
-                        <th>Email</th>
-                        <th>Mobile</th>
-                        <th>Téléphone</th>
-                        <th>Numéro Professionnel</th> 
-                        <th>Remarque</th>
+                        <th>Description</th>
+                        <th>Taille</th>
+                        <th>Quantité</th>
+                        <th>Localisation</th>                        
+                        <th>Prix Vente</th>
+                        <th>Prix Client</th>
+                        <th>Prix Solde</th>
+                        <th>ID Dépot</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="fournisseur in paginatedFournisseurs" :key="fournisseur.id">
-                          
-                            <td><a class="link" :href="route('fournisseur.show', fournisseur.id)">{{ fournisseur.id }}</a></td>
-                            <td><a class="link" :href="route('fournisseur.show', fournisseur.id)">{{ fournisseur.nom }}</a></td>
-                            <td><a class="link" :href="route('fournisseur.show', fournisseur.id)">{{ fournisseur.prenom }}</a></td>                        
-                            <td><a class="link" :href="route('fournisseur.show', fournisseur.id)">{{ fournisseur.email }}</a></td>
-                            <td><a class="link" :href="route('fournisseur.show', fournisseur.id)">{{ fournisseur.mobile }}</a></td>
-                            <td><a class="link" :href="route('fournisseur.show', fournisseur.id)">{{ fournisseur.telephone }}</a></td>
-                            <td><a class="link" :href="route('fournisseur.show', fournisseur.id)">{{ fournisseur.numProf }}</a></td>
-                            <td><a class="link" :href="route('fournisseur.show', fournisseur.id)">{{ fournisseur.remarque }}</a></td>              
-                                    
+                        <tr v-for="article in paginatedArticles" :key="article.id">                          
+                            <td><a class="link" :href="route('article.show', article.id)">{{ article.id }}</a></td>
+                            <td><a class="link" :href="route('article.show', article.id)">{{ article.description }}</a></td>
+                            <td><a class="link" :href="route('article.show', article.id)">{{ article.taille ?? 'N/A' }}</a></td>
+                            <td><a class="link" :href="route('article.show', article.id)">{{ article.quantite ?? 'N/A' }}</a></td>
+                            <td><a class="link" :href="route('article.show', article.id)">{{ article.localisation ?? 'N/A' }}</a></td>
+                            <td><a class="link" :href="route('article.show', article.id)">{{ article.prixVente ?? 'N/A' }}</a></td>
+                            <td><a class="link" :href="route('article.show', article.id)">{{ article.prixClient ?? 'N/A' }}</a></td>
+                            <td><a class="link" :href="route('article.show', article.id)">{{ article.prixSolde ?? 'N/A' }}</a></td>
+                            <td><a class="link" :href="route('article.show', article.id)">{{ article.depot_id ?? 'N/A' }}</a></td> 
                         </tr>
                     </tbody>
                   </table>
 
-                  <!-- Afficher un message s'il n'y a pas de fournisseurs -->
-                  <p v-else>Aucun fournisseur trouvé.</p>
+                  <!-- Afficher un message s'il n'y a pas de articles -->
+                  <p v-else>Aucun article trouvé.</p>
               
                   <!-- Pagination -->
                   <nav aria-label="Page navigation">
@@ -92,7 +94,7 @@ import { Head } from '@inertiajs/vue3';
 
   export default {
     props: {
-      fournisseurs: {
+      articles: {
         type: Array,
         default: () => [], // Assurez-vous que c'est un tableau par défaut
       },
@@ -105,23 +107,21 @@ import { Head } from '@inertiajs/vue3';
       };
     },
     computed: {
-      filteredFournisseurs() {
-        // Filtrer les fournisseurs en fonction du terme de recherche
-        return this.fournisseurs.filter(fournisseur =>
-        (fournisseur.nom?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
-        (fournisseur.prenom?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
-        (fournisseur.email?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
-        (fournisseur.mobile?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
-        (fournisseur.numProf?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
-        (fournisseur.id?.toString().toLowerCase() ?? '').includes(this.searchTerm.toLowerCase())
+      filteredArticles() {
+        // Filtrer les articles en fonction du terme de recherche
+        return this.articles.filter(article =>
+        (article.description?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
+        (article.localisation?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
+        (article.taille?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
+        (article.id?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase())
         );
       },
       totalPages() {
-        return Math.ceil(this.filteredFournisseurs.length / this.pageSize);
+        return Math.ceil(this.filteredArticles.length / this.pageSize);
       },
-      paginatedFournisseurs() {
+      paginatedArticles() {
         const start = (this.currentPage - 1) * this.pageSize;
-        return this.filteredFournisseurs.slice(start, start + this.pageSize);
+        return this.filteredArticles.slice(start, start + this.pageSize);
       },
     },
     methods: {
