@@ -32,6 +32,8 @@ import { Head } from '@inertiajs/vue3';
                     @input="searchFournisseurs"
                     placeholder="Rechercher par nom..."
                   />
+
+                  <PrimaryButton><a :href="route('fournisseur.create')">Nouveau Fournisseur</a></PrimaryButton>
               
                   <!-- Tableau des fournisseurs -->
                   <table v-if="filteredFournisseurs.length > 0">

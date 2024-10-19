@@ -86,6 +86,28 @@ import vSelect from 'vue-select';
                     </div>
 
                     <div class="mb-3">
+                        <InputLabel for="quantite" class="form-label">Quantité</InputLabel>
+                        <TextInput
+                        type="number"
+                        class="form-control"
+                        id="quantite"
+                        v-model="form.quantite"
+                        placeholder="Quantité"
+                        />
+                    </div>
+
+                    <div class="mb-3">
+                        <InputLabel for="localisation" class="form-label">Localisation</InputLabel>
+                        <TextInput
+                        type="text"
+                        class="form-control"
+                        id="localisation"
+                        v-model="form.localisation"
+                        placeholder="Localisation"
+                        />
+                    </div>
+
+                    <div class="mb-3">
                         <label for="fournisseur" class="form-label">Fournisseur</label>
                         <v-select
                         :options="fournisseurs"
@@ -123,6 +145,8 @@ export default {
         prixVente: '',
         prixClient: null,
         prixSolde: null,
+        quantite: null,
+        localisation: '',
         fournisseur_id: '',
       },
       selectedFournisseur: null,

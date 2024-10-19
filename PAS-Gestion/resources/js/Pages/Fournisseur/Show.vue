@@ -69,6 +69,7 @@ import { Head } from '@inertiajs/vue3';
                     <div v-if="!fournisseur.articles.length" class="alert alert-info">
                     Aucun article trouvé pour ce fournisseur.
                     </div>
+                    <PrimaryButton><a class="btn btn-primary mt-3" :href="route('fournisseur.edit', fournisseur.id)">Modifier le Fournisseur</a></PrimaryButton>
                     <PrimaryButton><a class="btn btn-primary mt-3" :href="route('depot.create')">Faire un nouveau dépot</a></PrimaryButton>
                     <PrimaryButton><a class="btn btn-primary mt-3" :href="route('fournisseur.index')">Retour à la liste des Fournisseurs</a></PrimaryButton>
                 </div>        

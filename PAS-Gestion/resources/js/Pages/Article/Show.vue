@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import InputLabel from '@/Components/InputLabel.vue';
 import { Head } from '@inertiajs/vue3';
 </script>
 
@@ -40,9 +41,41 @@ import { Head } from '@inertiajs/vue3';
                             <p><strong>Email du Fournisseur:</strong> {{ article.fournisseur[0].email }}</p>
                         </div>
                     </div>
-                        
 
-                        <PrimaryButton><a class="btn btn-secondary mt-3" :href="route('article.index')">Retour à la liste des Articles</a></PrimaryButton>
+                    <SecondaryButton><a class="link" :href="route('article.edit', article.id)">Modifier l'article</a></SecondaryButton>
+
+                    <div v-if="article.frais.length > 0">
+                      <h2>Frais associés</h2>
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Description</th>
+                            <th>Prix</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="frais in article.frais" :key="frais.id">
+                            <td>{{ frais.description }}</td>
+                            <td>{{ frais.prix }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <h3>Ajouter un frais</h3>
+                    <form @submit.prevent="addFrais">
+                      <div class="mb-3">
+                        <InputLabel for="description" class="form-label">Description</InputLabel>
+                        <TextInput type="text" v-model="newFrais.description" class="form-control" placeholder="Description" required />
+                      </div>
+                      <div class="mb-3">
+                        <InputLabel for="prix" class="form-label">Prix</InputLabel>
+                        <TextInput type="number" v-model="newFrais.prix" class="form-control" placeholder="Prix" required />
+                      </div>
+                      <PrimaryButton type="submit" class="btn btn-primary">Ajouter le frais</PrimaryButton>
+                    </form>
+                    
+                    <PrimaryButton @click="generateBarcode">Générer Code-barres</PrimaryButton>
+                    <PrimaryButton><a class="btn btn-secondary mt-3" :href="route('article.index')">Retour à la liste des Articles</a></PrimaryButton>
                     </div>
 
                 </div>
@@ -58,6 +91,34 @@ export default {
       type: Object,
       required: true,
     },
+  },
+  data() {
+    return {
+      newFrais: {
+        description: '',
+        prix: null,
+      },
+    };
+  },
+  methods: {
+    async addFrais() {
+      try {
+        await this.$inertia.post(route('frais.store', this.article.id), this.newFrais);
+        this.$toast.success('Frais ajouté avec succès');
+        this.newFrais.description = '';
+        this.newFrais.prix = null;
+      } catch (error) {
+        console.error(error);
+        this.$toast.error("Une erreur est survenue lors de l'ajout du frais.");
+      }
+    },    
+    generateBarcode() {
+      // Utiliser l'ID de l'article pour générer le code-barres
+      const articleId = this.article.id;
+
+      // Rediriger vers la route pour générer le code-barres
+      window.open(`/generate-barcode/${articleId}`, '_blank');
+    }
   },
 };
 </script>

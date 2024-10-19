@@ -11,7 +11,7 @@ class CreateArticlesTable extends Migration
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
             $table->string('description', 255);
-            $table->float('taille')->nullable();
+            $table->string('taille', 10)->nullable();
             $table->decimal('quantite', 10, 2)->nullable();
             $table->decimal('prixVente', 10, 2)->nullable();
             $table->string('localisation', 255)->nullable();

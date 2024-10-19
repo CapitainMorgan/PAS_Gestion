@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Models\Depot;
+use App\Models\Frais;
 use App\Models\Fournisseur;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Milon\Barcode\BarcodeGenerator;
+use Milon\Barcode\DNS1D;
+use Barryvdh\Snappy\Facades\SnappyPdf;
 
 class ArticleController extends Controller
 {
@@ -19,11 +23,35 @@ class ArticleController extends Controller
         ]);
     }
 
+    public function generateBarcode($id)
+    {
+        $article = Article::with("fournisseur")->find($id);
+
+        // Générer le code-barres
+        $code = $article->fournisseur[0]->id . '-' . $article->id . '-' . $article->created_at->format('Ymd');
+        $generator = new DNS1D();
+        $barcode = $generator->getBarcodeHTML($code, 'C39');
+        
+        // Créer un PDF avec le code-barres
+        $pdf = SnappyPdf::loadView('pdf.barcode', ['barcode' => base64_encode($barcode), 'code' => $code]);
+        // Retourner le PDF au navigateur
+        return $pdf->inline('barcode.pdf');
+    }
+
     public function create()
     {
         $fournisseurs = Fournisseur::all(); // Récupère tous les fournisseurs
         return inertia('Article/Create', [
             'fournisseurs' => $fournisseurs,
+        ]);
+    }
+
+    public function edit($id)
+    {
+        $article = Article::findOrFail($id);
+
+        return Inertia::render('Article/Edit', [
+            'article' => $article,
         ]);
     }
 
@@ -38,14 +66,6 @@ class ArticleController extends Controller
             'dateEcheance' => now()->addDays(30),
         ]);
 
-        $request->validate([
-            'description' => 'required|string|max:255',
-            'taille' => 'nullable|numeric',
-            'prixVente' => 'nullable|numeric',
-            'prixClient' => 'nullable|numeric',
-            'prixSolde' => 'nullable|numeric',
-        ]);        
-
         //add depot_id to request
         $request->merge(['depot_id' => $depot->id]);
 
@@ -54,13 +74,14 @@ class ArticleController extends Controller
 
         $article = Article::create($request->all());        
 
-        return redirect()->route('article.index')->with('success', 'Article créé avec succès');;
+        return redirect()->route('article.show', $article->id)->with('success', 'Article créé avec succès');;
     }
 
     // GET: Récupérer un article spécifique
     public function show($id)
     {
-        $article = Article::with("fournisseur")->find($id);
+        $article = Article::with("fournisseur")->with('frais')->find($id);
+
 
         if (!$article) {
             return response()->json(['error' => 'Article not found'], 404);
@@ -71,9 +92,26 @@ class ArticleController extends Controller
         ]);
     }
 
+    public function storeFrais(Request $request, $articleId)
+    {
+        $validated = $request->validate([
+            'description' => 'required|string|max:255',
+            'prix' => 'required|numeric',
+        ]);
+
+        $frais = new Frais();
+        $frais->description = $validated['description'];
+        $frais->prix = $validated['prix'];
+        $frais->article_id = $articleId;
+        $frais->save();
+
+        return redirect()->back()->with('message', 'Frais ajouté avec succès.');
+    }
+
     // PUT/PATCH: Mettre à jour un article
     public function update(Request $request, $id)
     {
+
         $article = Article::find($id);
 
         if (!$article) {
@@ -82,7 +120,7 @@ class ArticleController extends Controller
 
         $article->update($request->all());
 
-        return response()->json($article);
+        return redirect()->route('article.show', $id)->with('message', 'Article modifié avec succès.');
     }
 
     // DELETE: Supprimer un article

@@ -18,24 +18,27 @@ class FournisseurController extends Controller
         ]);
     }
 
+    public function create()
+    {
+        return inertia('Fournisseur/Create', []);
+    }
+
     // POST: Créer un nouveau fournisseur
     public function store(Request $request)
     {
-        $request->validate([
-            'nom' => 'required|string|max:50',
-            'prénom' => 'required|string|max:50',
-            'rue' => 'nullable|string|max:50',
-            'ville' => 'nullable|string|max:50',
-            'npa' => 'nullable|string|max:10',
-            'pays' => 'nullable|string|max:50',
-            'mobile' => 'nullable|string|max:15',
-            'email' => 'nullable|string|max:50',
-            'remarque' => 'nullable|string|max:255',
-        ]);
 
         $fournisseur = Fournisseur::create($request->all());
 
-        return response()->json($fournisseur, 201);
+        return redirect()->route('fournisseur.show', $fournisseur->id)->with('success', 'Fournisseur créé avec succès');;
+    }
+
+    public function edit($id)
+    {
+        $fournisseur = Fournisseur::findOrFail($id);
+
+        return Inertia::render('Fournisseur/Edit', [
+            'fournisseur' => $fournisseur,
+        ]);
     }
 
     // GET: Récupérer un fournisseur spécifique
@@ -55,6 +58,7 @@ class FournisseurController extends Controller
     // PUT/PATCH: Mettre à jour un fournisseur
     public function update(Request $request, $id)
     {
+
         $fournisseur = Fournisseur::find($id);
 
         if (!$fournisseur) {
@@ -63,7 +67,7 @@ class FournisseurController extends Controller
 
         $fournisseur->update($request->all());
 
-        return response()->json($fournisseur);
+        return redirect()->route('fournisseur.show', $id)->with('message', 'Fournisseur modifié avec succès.');
     }
 
     // DELETE: Supprimer un fournisseur

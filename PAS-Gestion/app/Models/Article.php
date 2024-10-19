@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Depot;
 use App\Models\Fournisseur;
 use App\Models\Vente;
+use App\Models\Frais;
 
 class Article extends Model
 {
@@ -45,6 +46,11 @@ class Article extends Model
             'depot_id', 
             'fournisseur_id'
         );
+    }
+
+    public function frais()
+    {
+        return $this->hasMany(Frais::class);
     }
 }
 

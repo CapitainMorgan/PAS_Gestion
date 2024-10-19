@@ -6,10 +6,14 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "barryvdh/laravel-snappy": "^1.0",
+        "h4cc/wkhtmltopdf-amd64": "0.12.x",
+        "h4cc/wkhtmltopdf-i386": "0.12.x",
         "inertiajs/inertia-laravel": "^1.0",
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
+        "milon/barcode": "^11.0",
         "tightenco/ziggy": "^2.0"
     },
     "require-dev": {
