@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FournisseurController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\FraisSocieteController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -44,6 +45,8 @@ Route::get('/article/{id}/edit', [ArticleController::class, 'edit'])->name('arti
 Route::put('/article/{id}', [ArticleController::class, 'update'])->name('article.update');
 
 Route::get('/generate-barcode/{id}', [ArticleController::class, 'generateBarcode']);
+
+Route::get('/frais.index', [FraisSocieteController::Class, 'index'])->middleware(['auth', 'verified'])->name('frais.index');
 
 Route::get('/parametre.index', function () {
     return Inertia::render('Parametre/Index');

@@ -61,6 +61,13 @@ const showingNavigationDropdown = ref(false);
                                     Article
                                 </NavLink>
 
+                                <NavLink
+                                    :href="route('frais.index')"
+                                    :active="route().current('frais.index')"
+                                >
+                                    Frais Sociéte
+                                </NavLink>
+
                             </div>
                         </div>
 

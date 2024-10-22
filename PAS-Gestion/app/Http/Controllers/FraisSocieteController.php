@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\FraisSociete; // Assurez-vous d'avoir créé ce modèle
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class FraisSocieteController extends Controller
 {
@@ -11,7 +12,10 @@ class FraisSocieteController extends Controller
     public function index()
     {
         $fraisSocietes = FraisSociete::all();
-        return response()->json($fraisSocietes);
+        
+        return Inertia::render('FraisSociete/Index', [
+            'fraisSocietes' => $fraisSocietes,
+        ]);
     }
 
     // POST: Créer un nouveau frais de société

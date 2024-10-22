@@ -56,14 +56,14 @@ class ArticleController extends Controller
     }
 
     // POST: Créer un nouvel article
-    public function store(Request $request)
+    public function store(Request $request, $EchanceDays = 30)
     {
         // Crée un dépôt liant l'article et le fournisseur
         $depot = Depot::create([
             'fournisseur_id' => $request->fournisseur_id,
             'dateDepot' => now(),
             // now + 30 jours
-            'dateEcheance' => now()->addDays(30),
+            'dateEcheance' => now()->addDays($EchanceDays),
         ]);
 
         //add depot_id to request
