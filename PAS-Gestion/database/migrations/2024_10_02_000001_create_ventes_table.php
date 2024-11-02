@@ -12,6 +12,7 @@ class CreateVentesTable extends Migration
             $table->foreignId('utilisateur_id')->constrained('users')->onDelete('cascade');
             $table->id();
             $table->decimal('quantite', 10, 2)->nullable();
+            $table->string('status', 50);
             $table->timestamps();
         });
     }

@@ -14,7 +14,7 @@ class FraisSocieteController extends Controller
         $fraisSocietes = FraisSociete::all();
         
         return Inertia::render('FraisSociete/Index', [
-            'fraisSocietes' => $fraisSocietes,
+            'frais' => $fraisSocietes,
         ]);
     }
 
@@ -28,7 +28,7 @@ class FraisSocieteController extends Controller
 
         $fraisSociete = FraisSociete::create($request->all());
 
-        return response()->json($fraisSociete, 201);
+        return redirect()->route('frais.index')->with('success', 'Frais créé avec succès');;
     }
 
     // GET: Récupérer un frais de société spécifique
@@ -40,7 +40,23 @@ class FraisSocieteController extends Controller
             return response()->json(['error' => 'Frais de société not found'], 404);
         }
 
-        return response()->json($fraisSociete);
+        return Inertia::render('FraisSociete/Show', [
+            'frais' => $fraisSociete,
+        ]);
+    }
+
+    public function create()
+    {
+        return inertia('FraisSociete/Create', []);
+    }
+
+    public function edit($id)
+    {
+        $fraisSociete = FraisSociete::findOrFail($id);
+
+        return Inertia::render('FraisSociete/Edit', [
+            'frais' => $fraisSociete,
+        ]);
     }
 
     // PUT/PATCH: Mettre à jour un frais de société

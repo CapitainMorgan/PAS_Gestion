@@ -28,12 +28,12 @@ class Article extends Model
 
     public function depot()
     {
-        return $this->belongsTo(Depot::class);
+        return $this->belongsTo(Depot::class, 'depot_id');
     }
 
     public function vente()
     {
-        return $this->belongsTo(Vente::class);
+        return $this->belongsTo(Vente::class, 'vente_id');
     }
 
     public function fournisseur()

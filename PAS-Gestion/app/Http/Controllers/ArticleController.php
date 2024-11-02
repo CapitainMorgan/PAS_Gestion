@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\Depot;
 use App\Models\Frais;
 use App\Models\Fournisseur;
+use App\Models\Vente;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Milon\Barcode\BarcodeGenerator;
@@ -46,6 +47,21 @@ class ArticleController extends Controller
         ]);
     }
 
+    private function createVenteIfStatusIsVendu($articleId, $status, $status_vente = 'Cash', $quantite = 1)
+    {
+        if ($status == 'Vendu') {
+            $vente = new Vente();
+            $vente->quantite = $quantite;
+            $vente->status = $status_vente;
+            $vente->utilisateur_id = auth()->user()->id;
+            $vente->save();
+
+            return $vente;
+        }
+
+        return null;
+    }
+
     public function edit($id)
     {
         $article = Article::findOrFail($id);
@@ -72,9 +88,41 @@ class ArticleController extends Controller
         //add status to request
         $request->merge(['status' => 'En stock']);
 
-        $article = Article::create($request->all());        
+        $article = Article::create($request->all());  
 
         return redirect()->route('article.show', $article->id)->with('success', 'Article créé avec succès');;
+    }
+
+    public function storeGroupedArticles(Request $request, $EchanceDays = 30)
+    {        
+
+        //get array of articles from request
+        $articles = $request->articles;
+
+        print_r( $articles);
+
+        //get fournisseur_id from request
+        $fournisseur_id = $request->articles[0]['fournisseur_id'];
+
+        // Crée un dépôt liant l'article et le fournisseur
+        $depot = Depot::create([
+            'fournisseur_id' => $fournisseur_id,
+            'dateDepot' => now(),
+            // now + 30 jours
+            'dateEcheance' => now()->addDays($EchanceDays),
+        ]);
+
+        foreach ($articles as $article) {
+            $article['status'] = 'En stock';
+            $article['depot_id'] = $depot->id;
+            $article['vente_id'] = null;
+            $article['fournisseur_id'] = $fournisseur_id;
+            $article['dateEcheance'] = now()->addDays(30);
+
+            Article::create($article);
+        }
+
+        return redirect()->route('fournisseur.show', $fournisseur_id)->with('success', 'Articles créés avec succès');
     }
 
     // GET: Récupérer un article spécifique
@@ -112,10 +160,18 @@ class ArticleController extends Controller
     public function update(Request $request, $id)
     {
 
-        $article = Article::find($id);
+        $article = Article::with('vente')->find($id);
 
         if (!$article) {
             return response()->json(['error' => 'Article not found'], 404);
+        }
+        # if status is changed
+        if ($request->status != $article->status) {
+            $vente = $this->createVenteIfStatusIsVendu($request->id, $request->status, $request->status_vente, $request->quantite);
+
+            if ($vente) {
+                $request->merge(['vente_id' => $vente->id]);
+            }
         }
 
         $article->update($request->all());

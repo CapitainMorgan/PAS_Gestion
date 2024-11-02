@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Fournisseur;
+use App\Models\Article;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Barryvdh\Snappy\Facades\SnappyPdf;
 
 class FournisseurController extends Controller
 {
@@ -31,6 +33,27 @@ class FournisseurController extends Controller
 
         return redirect()->route('fournisseur.show', $fournisseur->id)->with('success', 'Fournisseur créé avec succès');;
     }
+
+    public function generateFicheDepotFournisseur($id, $depot_id)
+    {
+        $fournisseur = Fournisseur::findOrFail($id);
+        
+        $articles = $fournisseur->articles->where('depot_id', $depot_id);
+
+        $pdf = SnappyPdf::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles'));
+        return $pdf->inline('fiche_fournisseur.pdf');
+    }
+    
+    public function generateFicheVenteFournisseur($id,$date_debut)
+    {        
+        # get all articles of the fournisseur with vente table
+        $fournisseur = Fournisseur::with('articles.vente')->find($id);        
+        $articles = $fournisseur->articles->where('vente.created_at', '>=', $date_debut);        
+
+        $pdf = SnappyPdf::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles'));
+        return $pdf->inline('fiche_fournisseur.pdf');
+    }
+
 
     public function edit($id)
     {

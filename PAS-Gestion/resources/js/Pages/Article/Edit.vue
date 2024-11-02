@@ -87,6 +87,15 @@ import { Head } from '@inertiajs/vue3';
                         </select>                 
                     </div>    
 
+                    <!-- Vente Status -->
+                    <div class="mb-3">
+                        <InputLabel for="vente_status" class="form-label">Vente Status</InputLabel>
+                        <select v-model="form.vente_status" class="form-select">
+                            <option value="Cash">Cash</option>
+                            <option value="CB">Carte bancaire</option>
+                        </select>
+                    </div>
+
                     <SecondaryButton type="submit" class="btn btn-primary">Modifier l'article</SecondaryButton>
                     </form>
 
@@ -118,6 +127,7 @@ export default {
         quantite: this.article.quantite,
         localisation: this.article.localisation,
         status: this.article.status,
+        vente_status: this.article.vente_status,
       }),
     };
   },

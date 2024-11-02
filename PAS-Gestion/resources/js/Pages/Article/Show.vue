@@ -103,7 +103,7 @@ export default {
   methods: {
     async addFrais() {
       try {
-        await this.$inertia.post(route('frais.store', this.article.id), this.newFrais);
+        await this.$inertia.post(route('fraisArticle.store', this.article.id), this.newFrais);
         this.$toast.success('Frais ajouté avec succès');
         this.newFrais.description = '';
         this.newFrais.prix = null;

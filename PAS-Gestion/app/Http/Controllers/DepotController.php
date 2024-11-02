@@ -15,6 +15,13 @@ class DepotController extends Controller
         return response()->json($depots);
     }
 
+    public function create($id)
+    {
+        return inertia('Depot/Create', [
+            'fournisseur_id' => $id,
+        ]);
+    }
+
     // POST: Créer un nouveau dépôt
     public function store(Request $request)
     {
