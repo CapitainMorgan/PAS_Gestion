@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import ApplicationLogo from '@/components/ApplicationLogo.vue';
 import Dropdown from '@/components/Dropdown.vue';
 import DropdownLink from '@/components/DropdownLink.vue';
-import NavLink from '@/Ccomponents/NavLink.vue';
+import NavLink from '@/components/NavLink.vue';
 import ResponsiveNavLink from '@/components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
 
