@@ -26,8 +26,8 @@ import vSelect from 'vue-select';
                 >
                 <div class="p-6 text-gray-900">
 
-                    <form @submit.prevent="createArticle">
-                    <div class="mb-3">
+                    <form @submit.prevent="createArticle" class="form-grid">
+                    <div class="form-group full-width">
                         <InputLabel for="description" class="form-label">Description</InputLabel>
                         <TextInput
                         type="text"
@@ -38,7 +38,7 @@ import vSelect from 'vue-select';
                         />
                     </div>
                     
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="taille" class="form-label">Taille</InputLabel>
                         <TextInput
                         type="number"
@@ -49,7 +49,7 @@ import vSelect from 'vue-select';
                         />
                     </div>
                     
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="prixVente" class="form-label">Prix Vente</InputLabel>
                         <TextInput
                         type="number"
@@ -61,7 +61,7 @@ import vSelect from 'vue-select';
                         />
                     </div>
                     
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="prixClient" class="form-label">Prix Client</InputLabel>
                         <TextInput
                         type="number"
@@ -73,7 +73,7 @@ import vSelect from 'vue-select';
                         />
                     </div>
 
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="prixSolde" class="form-label">Prix Solde</InputLabel>
                         <TextInput
                         type="number"
@@ -85,7 +85,7 @@ import vSelect from 'vue-select';
                         />
                     </div>
 
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="quantite" class="form-label">Quantité</InputLabel>
                         <TextInput
                         type="number"
@@ -96,7 +96,7 @@ import vSelect from 'vue-select';
                         />
                     </div>
 
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="localisation" class="form-label">Localisation</InputLabel>
                         <TextInput
                         type="text"
@@ -107,24 +107,25 @@ import vSelect from 'vue-select';
                         />
                     </div>
 
-                    <div class="mb-3">
+                    <div class="form-group full-width">
                         <label for="fournisseur" class="form-label">Fournisseur</label>
                         <v-select
-                        :options="fournisseurs"
+                        :options="fullNameFournisseurs"
                         v-model="selectedFournisseur"
                         :reduce="fournisseur => fournisseur.id"
-                        label="nom"
+                        label="fullName"
                         placeholder="Sélectionner un fournisseur"
                         search-placeholder="Rechercher un fournisseur..."
+                        required
                         />
                     </div>
-
-                    <SecondaryButton type="submit" class="btn btn-primary">Créer l'Article</SecondaryButton>
+                    <div class="form-group full-width">
+                      <PrimaryButton type="submit" class="btn btn-primary">Créer l'Article</PrimaryButton>
+                    </div>
+                    <div class="form-group full-width">
+                      <SecondaryButton class="btn btn-primary" @click="indexArticle()">Retour à la liste des Articles</SecondaryButton>
+                    </div>
                     </form>
-
-                    <PrimaryButton><a :href="route('article.index')">Retour à la liste des Articles</a></PrimaryButton>
-
-
                 </div>
             </div>
           </div>
@@ -167,6 +168,10 @@ export default {
   },
   methods: {
     async createArticle() {
+      if (!this.form.fournisseur_id) {
+        alert('Veuillez sélectionner un fournisseur');
+        return;
+      }
       try {
         await this.$inertia.post(route('article.store'), this.form);
         this.$toast.success('Article créé avec succès');
@@ -175,6 +180,9 @@ export default {
         this.$toast.error('Une erreur est survenue lors de la création de l\'article');
       }
     },
+    indexArticle() {
+      this.$inertia.visit(route('article.index'));
+    }
   },
 };
 </script>

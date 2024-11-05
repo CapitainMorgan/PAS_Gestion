@@ -16,7 +16,7 @@ import vSelect from 'vue-select';
             <h2
                 class="text-xl font-semibold leading-tight text-gray-800"
             >
-                Frais Sociétés
+                Frais Sociétés {{ frais.id }}
             </h2>
         </template>
         <div class="py-12">
@@ -36,26 +36,29 @@ import vSelect from 'vue-select';
                         v-model="form.description"
                         required
                         />
-                    </div>                    
+                    </div>
+                    
                     <div class="form-group">
                         <InputLabel for="prenom" class="form-label">Prix</InputLabel>
                         <TextInput
-                        type="number"
+                        type="number"                        
+                        step="0.01"
                         class="form-control"
                         id="Prix"
-                        v-model="form.prix"                        
-                        step="0.01"
+                        v-model="form.prix"
                         required
                         />
                     </div>
+                    
                     <div class="form-group full-width">
-                      <SecondaryButton type="submit" class="btn btn-primary">Créer le frais</SecondaryButton>
+                      <SecondaryButton type="submit" class="btn btn-primary">Modifier le frais</SecondaryButton>
                     </div>
                     <div class="form-group full-width">
                       <PrimaryButton class="btn btn-primary" @click="indexFrais()">Retour à la liste des frais</PrimaryButton>
                     </div>
                     </form>
 
+                    
 
 
                 </div>
@@ -66,31 +69,27 @@ import vSelect from 'vue-select';
 </template>
 
 <script>
+import { useForm } from '@inertiajs/inertia-vue3';
+
 export default {
   props: {
-    frais: Array,
+    frais: Object,
   },
   data() {
     return {
-      form: {
-        description: '',
-        prix: null,
-      },
+      form: useForm({
+        description: this.frais.description || null,
+        prix: this.frais.prix || null,
+      }),
     };
-  },
-  computed: {
-  },
-  watch: {
   },
   methods: {
     async createFrais() {
-      try {
-        await this.$inertia.post(route('frais.store'), this.form);
-        this.$toast.success('Frais créé avec succès');
-      } catch (error) {
-        console.error(error);
-        this.$toast.error('Une erreur est survenue lors de la création du frais');
-      }
+      this.form.put(route('frais.update', this.frais.id), {
+        onSuccess: () => {
+          form.reset();
+        },
+      });
     },
     indexFrais() {
       this.$inertia.visit(route('frais.index'));

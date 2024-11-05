@@ -35,56 +35,66 @@
             </tr>
             <tr>
                 <td>Adresse 1</td>
-                <td>{{ $fournisseur->adresse }}</td>
+                <td>{{ $fournisseur->rue }}</td>
                 <td>N° Tél Prof.</td>
-                <td>{{ $fournisseur->tel_prof }}</td>
+                <td>{{ $fournisseur->numProf }}</td>
             </tr>
             <tr>
                 <td>NP / Ville</td>
-                <td>{{ $fournisseur->ville }}</td>
+                <td>{{$fournisseur->npa}} / {{ $fournisseur->ville }}</td>
                 <td>No. Fournisseur</td>
                 <td>{{ $fournisseur->id }}</td>
             </tr>
         </table>
     </div>
+    
 
+    @if ($articles !== NULL)
     <div class="articles">
         <table class="articles-table">
             <thead>
                 <tr>
                     <th>Libellé</th>
-                    <th>Visa</th>
+                    <th>Moyen de paiement</th>
                     <th>Part Fournisseur</th>
-                    <th>Prix Vente Min.</th>
-                    <th>Prix Vente Max.</th>
+                    <th>Prix Vente Solde</th>
+                    <th>Prix Vente</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($articles as $article)
                     <tr>
                         <td>{{ $article->description }}</td>
-                        <td></td> <!-- Visa si nécessaire -->
-                        <td>{{ $article->part_fournisseur }}</td>
-                        <td>{{ $article->prix_vente_min }}</td>
-                        <td>{{ $article->prix_vente_max }}</td>
+                        <td>@if ($article->vente !== NULL) {{ $article->vente->status }} @endif </td> <!-- Visa si nécessaire -->
+                        <td>{{ $article->prixClient }}</td>
+                        <td>{{ $article->prixSolde }}</td>
+                        <td>{{ $article->prixVente }}</td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
+    @endif
 
-    <div class="conditions">
+    <div class="conditions" style="margin-top:10px">
         <strong>Conditions Vente :</strong>
         <ol>
-            <li>Les vêtements et accessoires sont mis en dépôt pour une durée déterminée...</li>
-            <li>Vous avez droit aux 50% du prix de vente.</li>
-            <li>Après cette période convenue, la boutique peut disposer librement des articles invendus.</li>
+            @foreach ($conditionsArray as $condition)
+                <li>{{ $condition }}</li>
+            @endforeach
         </ol>
-        <p><strong>Délai du Dépôt :</strong> {{ $fournisseur->delai_depot }}</p>
+        @if ($articles !== NULL)
+        <p><strong>Délai du Dépôt :</strong> {{ $depot->dateEcheance }}</p>
+        @endif
     </div>
 
     <div class="signature">
         Signature: ________________________
+    </div>
+
+    <div class="footer" style="margin-top:20px">
+        <p>Prêt à Séduire - Rue du Liseron 9, 1006 Lausanne-Ouchy - Tél: 021 601 32 29</p>
+        Le {{ date('d.m.Y') }}
     </div>
 </body>
 </html>

@@ -5,6 +5,7 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import { Head } from '@inertiajs/vue3';
+import vSelect from 'vue-select';
 </script>
 
 
@@ -35,51 +36,51 @@ import { Head } from '@inertiajs/vue3';
                         </ul>
                     </div>
 
-                    <form @submit.prevent="updateArticle">
+                    <form @submit.prevent="updateArticle" class="form-grid">
                     <!-- Description -->
-                    <div class="mb-3">
+                    <div class="form-group full-width">
                         <InputLabel for="description" class="form-label">Description</InputLabel>
                         <TextInput v-model="form.description" type="text" class="form-control" placeholder="Description" required />
                     </div>
 
                     <!-- Taille -->
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="taille" class="form-label">Taille</InputLabel>
                         <TextInput v-model="form.taille" type="text" class="form-control" placeholder="Taille" />
                     </div>
 
                     <!-- Prix de Vente -->
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="prixVente" class="form-label">Prix de Vente</InputLabel>
                         <TextInput v-model="form.prixVente" type="number" class="form-control" placeholder="Prix de Vente" />
                     </div>
 
                     <!-- Prix Client -->
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="prixClient" class="form-label">Prix Client</InputLabel>
                         <TextInput v-model="form.prixClient" type="number" class="form-control" placeholder="Prix Client" />
                     </div>
 
                     <!-- Prix Solde -->
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="prixSolde" class="form-label">Prix Solde</InputLabel>
                         <TextInput v-model="form.prixSolde" type="number" class="form-control" placeholder="Prix Solde" />
                     </div>
 
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="quantite" class="form-label">Quantité</InputLabel>
                         <TextInput v-model="form.quantite" type="number" class="form-control" placeholder="Quantité" />
                     </div>
 
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="localisation" class="form-label">Localisation</InputLabel>
                         <TextInput v-model="form.localisation" type="text" class="form-control" placeholder="Localisation" />
                     </div>
 
                     <!-- Status -->
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="status" class="form-label">Status</InputLabel>
-                        <select v-model="form.status" class="form-select">
+                        <select v-model="form.status" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="En Stock">En Stock</option>
                             <option value="Vendu">Vendu</option>
                             <option value="Rendu">Rendu</option>
@@ -88,15 +89,16 @@ import { Head } from '@inertiajs/vue3';
                     </div>    
 
                     <!-- Vente Status -->
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="vente_status" class="form-label">Vente Status</InputLabel>
-                        <select v-model="form.vente_status" class="form-select">
+                        <select v-model="form.vente_status" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="Cash">Cash</option>
                             <option value="CB">Carte bancaire</option>
                         </select>
                     </div>
-
-                    <SecondaryButton type="submit" class="btn btn-primary">Modifier l'article</SecondaryButton>
+                    <div class="form-group full-width">
+                      <SecondaryButton type="submit" class="btn btn-primary">Modifier l'article</SecondaryButton>
+                    </div>
                     </form>
 
 

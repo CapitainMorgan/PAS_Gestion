@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFraisSocieteTable extends Migration
+class CreateFraisSocietesTable extends Migration
 {
     public function up()
     {
@@ -18,6 +18,6 @@ class CreateFraisSocieteTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('frais_societe');
+        Schema::dropIfExists('frais_societes');
     }
 }

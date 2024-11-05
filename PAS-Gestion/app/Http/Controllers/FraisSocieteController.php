@@ -75,7 +75,7 @@ class FraisSocieteController extends Controller
 
         $fraisSociete->update($request->all());
 
-        return response()->json($fraisSociete);
+        return redirect()->route('frais.index')->with('success', 'Frais modifié avec succès');
     }
 
     // DELETE: Supprimer un frais de société

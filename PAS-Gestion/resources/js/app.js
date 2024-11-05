@@ -1,5 +1,7 @@
 import '../css/app.css';
 import '../css/table.css'
+import '../css/pagination.css'
+import '../css/default.css'
 import './bootstrap';
 
 

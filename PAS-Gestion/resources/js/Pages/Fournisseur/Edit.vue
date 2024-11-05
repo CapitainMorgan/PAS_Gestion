@@ -35,54 +35,55 @@ import { Head } from '@inertiajs/vue3';
                         </ul>
                     </div>
 
-                <form @submit.prevent="updateFournisseur">
+                <form @submit.prevent="updateFournisseur" class="form-grid">
                     <!-- Nom -->
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="nom" class="form-label">Nom</InputLabel>
                         <TextInput v-model="form.nom" type="text" class="form-control" placeholder="Nom" required />
                     </div>
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="prenom" class="form-label">Prénom</InputLabel>
                         <TextInput v-model="form.prenom" type="text" class="form-control" placeholder="Prénom" required />
                     </div>
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="email" class="form-label">Email</InputLabel>
                         <TextInput v-model="form.email" type="email" class="form-control" placeholder="Email"  />
                     </div>
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="mobile" class="form-label">Mobile</InputLabel>
                         <TextInput v-model="form.mobile" type="text" class="form-control" placeholder="Mobile"  />
                     </div>
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="telephone" class="form-label">Téléphone</InputLabel>
                         <TextInput v-model="form.telephone" type="text" class="form-control" placeholder="Téléphone"  />
                     </div>
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="numProf" class="form-label">Numéro Professionnel</InputLabel>
                         <TextInput v-model="form.numProf" type="text" class="form-control" placeholder="Numéro Professionnel"  />
                     </div>
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="rue" class="form-label">Rue</InputLabel>
                         <TextInput v-model="form.rue" type="text" class="form-control" placeholder="Rue"  />
                     </div>
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="ville" class="form-label">Ville</InputLabel>
                         <TextInput v-model="form.ville" type="text" class="form-control" placeholder="Ville"  />
                     </div>
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="npa" class="form-label">NPA</InputLabel>
                         <TextInput v-model="form.npa" type="text" class="form-control" placeholder="NPA"  />
                     </div>
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="pays" class="form-label">Pays</InputLabel>
                         <TextInput v-model="form.pays" type="text" class="form-control" placeholder="Pays"  />
                     </div>
-                    <div class="mb-3">
+                    <div class="form-group full-width">
                         <InputLabel for="remarque" class="form-label">Remarque</InputLabel>
                         <TextInput v-model="form.remarque" type="text" class="form-control" placeholder="Remarque"  />
                     </div>                  
-
-                    <SecondaryButton type="submit" class="btn btn-primary">Modifier le fournisseur</SecondaryButton>
+                    <div class="form-group full-width">
+                      <SecondaryButton type="submit" class="btn btn-primary">Modifier le fournisseur</SecondaryButton>
+                    </div>
                 </form>
 
 

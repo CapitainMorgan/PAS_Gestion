@@ -27,13 +27,13 @@ import { Head } from '@inertiajs/vue3';
                   <!-- Formulaire de filtres -->
                   <TextInput
                     type="text"
-                    class="form-control"
+                    class="form-control search-input"
                     v-model="searchTerm"
                     @input="searchArticles"
                     placeholder="Rechercher par nom..."
                   />
 
-                  <SecondaryButton><a :href="route('article.create')">Créer un nouveau</a></SecondaryButton>
+                  <PrimaryButton @click="createArticle()">Créer un nouveau</PrimaryButton>
               
                   <!-- Tableau des articles -->
                   <table v-if="filteredArticles.length > 0">
@@ -52,15 +52,15 @@ import { Head } from '@inertiajs/vue3';
                     </thead>
                     <tbody>
                         <tr v-for="article in paginatedArticles" :key="article.id">                          
-                            <td><a class="link" :href="route('article.show', article.id)">{{ article.id }}</a></td>
-                            <td><a class="link" :href="route('article.show', article.id)">{{ article.description }}</a></td>
-                            <td><a class="link" :href="route('article.show', article.id)">{{ article.taille ?? 'N/A' }}</a></td>
-                            <td><a class="link" :href="route('article.show', article.id)">{{ article.quantite ?? 'N/A' }}</a></td>
-                            <td><a class="link" :href="route('article.show', article.id)">{{ article.localisation ?? 'N/A' }}</a></td>
-                            <td><a class="link" :href="route('article.show', article.id)">{{ article.prixVente ?? 'N/A' }}</a></td>
-                            <td><a class="link" :href="route('article.show', article.id)">{{ article.prixClient ?? 'N/A' }}</a></td>
-                            <td><a class="link" :href="route('article.show', article.id)">{{ article.prixSolde ?? 'N/A' }}</a></td>
-                            <td><a class="link" :href="route('article.show', article.id)">{{ article.depot_id ?? 'N/A' }}</a></td> 
+                            <td @click="showArticle(article.id)">{{ article.id }}</td>
+                            <td @click="showArticle(article.id)">{{ article.description }}</td>
+                            <td @click="showArticle(article.id)">{{ article.taille ?? 'N/A' }}</td>
+                            <td @click="showArticle(article.id)">{{ article.quantite ?? 'N/A' }}</td>
+                            <td @click="showArticle(article.id)">{{ article.localisation ?? 'N/A' }}</td>
+                            <td @click="showArticle(article.id)">{{ article.prixVente ?? 'N/A' }}</td>
+                            <td @click="showArticle(article.id)">{{ article.prixClient ?? 'N/A' }}</td>
+                            <td @click="showArticle(article.id)">{{ article.prixSolde ?? 'N/A' }}</td>
+                            <td @click="showArticle(article.id)">{{ article.depot_id ?? 'N/A' }}</td> 
                         </tr>
                     </tbody>
                   </table>
@@ -74,7 +74,7 @@ import { Head } from '@inertiajs/vue3';
                       <li class="page-item" :class="{ disabled: currentPage === 1 }">
                         <SecondaryButton class="page-link" @click="changePage(currentPage - 1)">Précédent</SecondaryButton>
                       </li>
-                      <li v-for="page in totalPages" :key="page" class="page-item" :class="{ active: currentPage === page }">
+                      <li v-for="page in visiblePages" :key="page" class="page-item" :class="{ active: currentPage === page }">
                         <SecondaryButton class="page-link" @click="changePage(page)">{{ page }}</SecondaryButton>
                       </li>
                       <li class="page-item" :class="{ disabled: currentPage === totalPages }">
@@ -123,11 +123,38 @@ import { Head } from '@inertiajs/vue3';
         const start = (this.currentPage - 1) * this.pageSize;
         return this.filteredArticles.slice(start, start + this.pageSize);
       },
+      visiblePages() {
+        const pages = [];
+        const start = Math.max(1, this.currentPage - 1);
+        const end = Math.min(this.totalPages, this.currentPage + 1);
+
+        for (let i = start; i <= end; i++) {
+          pages.push(i);
+        }
+
+        // Si la première page est affichée, on peut ajouter la page 2
+        if (start > 1) {
+          pages.unshift(start - 1); // Ajouter la page précédente si elle n'est pas affichée
+        }
+
+        // Si la dernière page est affichée, on peut ajouter la page juste avant la dernière
+        if (end < this.totalPages) {
+          pages.push(end + 1); // Ajouter la page suivante si elle n'est pas affichée
+        }
+
+        return pages;
+      },
     },
     methods: {
       changePage(page) {
         if (page < 1 || page > this.totalPages) return; // Limiter la page
         this.currentPage = page;
+      },
+      createArticle() {
+        this.$inertia.visit(route('article.create'));
+      },
+      showArticle(id) {
+        this.$inertia.visit(route('article.show', id));
       },
     }
   };

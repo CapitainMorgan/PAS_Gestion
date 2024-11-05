@@ -27,13 +27,13 @@ import { Head } from '@inertiajs/vue3';
                   <!-- Formulaire de filtres -->
                   <TextInput
                     type="text"
-                    class="form-control"
+                    class="form-control search-input"
                     v-model="searchTerm"
                     @input="searchFournisseurs"
                     placeholder="Rechercher par nom..."
                   />
 
-                  <PrimaryButton><a :href="route('fournisseur.create')">Nouveau Fournisseur</a></PrimaryButton>
+                  <PrimaryButton @click="createFournisseur()">Créer un nouveau</PrimaryButton>
               
                   <!-- Tableau des fournisseurs -->
                   <table v-if="filteredFournisseurs.length > 0">
@@ -52,14 +52,14 @@ import { Head } from '@inertiajs/vue3';
                     <tbody>
                         <tr v-for="fournisseur in paginatedFournisseurs" :key="fournisseur.id">
                           
-                            <td><a class="link" :href="route('fournisseur.show', fournisseur.id)">{{ fournisseur.id }}</a></td>
-                            <td><a class="link" :href="route('fournisseur.show', fournisseur.id)">{{ fournisseur.nom }}</a></td>
-                            <td><a class="link" :href="route('fournisseur.show', fournisseur.id)">{{ fournisseur.prenom }}</a></td>                        
-                            <td><a class="link" :href="route('fournisseur.show', fournisseur.id)">{{ fournisseur.email }}</a></td>
-                            <td><a class="link" :href="route('fournisseur.show', fournisseur.id)">{{ fournisseur.mobile }}</a></td>
-                            <td><a class="link" :href="route('fournisseur.show', fournisseur.id)">{{ fournisseur.telephone }}</a></td>
-                            <td><a class="link" :href="route('fournisseur.show', fournisseur.id)">{{ fournisseur.numProf }}</a></td>
-                            <td><a class="link" :href="route('fournisseur.show', fournisseur.id)">{{ fournisseur.remarque }}</a></td>              
+                            <td @click="showFournisseur(fournisseur.id)">{{ fournisseur.id }}</td>
+                            <td @click="showFournisseur(fournisseur.id)">{{ fournisseur.nom ?? 'N/A'}}</td>
+                            <td @click="showFournisseur(fournisseur.id)">{{ fournisseur.prenom ?? 'N/A'}}</td>                        
+                            <td @click="showFournisseur(fournisseur.id)">{{ fournisseur.email ?? 'N/A' }}</td>
+                            <td @click="showFournisseur(fournisseur.id)">{{ fournisseur.mobile ?? 'N/A'}}</td>
+                            <td @click="showFournisseur(fournisseur.id)">{{ fournisseur.telephone ?? 'N/A'}}</td>
+                            <td @click="showFournisseur(fournisseur.id)">{{ fournisseur.numProf ?? 'N/A'}}</td>
+                            <td @click="showFournisseur(fournisseur.id)">{{ fournisseur.remarque ?? 'N/A' }}</td>              
                                     
                         </tr>
                     </tbody>
@@ -74,7 +74,7 @@ import { Head } from '@inertiajs/vue3';
                       <li class="page-item" :class="{ disabled: currentPage === 1 }">
                         <SecondaryButton class="page-link" @click="changePage(currentPage - 1)">Précédent</SecondaryButton>
                       </li>
-                      <li v-for="page in totalPages" :key="page" class="page-item" :class="{ active: currentPage === page }">
+                      <li v-for="page in visiblePages" :key="page" class="page-item" :class="{ active: currentPage === page }">
                         <SecondaryButton class="page-link" @click="changePage(page)">{{ page }}</SecondaryButton>
                       </li>
                       <li class="page-item" :class="{ disabled: currentPage === totalPages }">
@@ -125,20 +125,41 @@ import { Head } from '@inertiajs/vue3';
         const start = (this.currentPage - 1) * this.pageSize;
         return this.filteredFournisseurs.slice(start, start + this.pageSize);
       },
+      visiblePages() {
+        const pages = [];
+        const start = Math.max(1, this.currentPage - 1);
+        const end = Math.min(this.totalPages, this.currentPage + 1);
+
+        for (let i = start; i <= end; i++) {
+          pages.push(i);
+        }
+
+        // Si la première page est affichée, on peut ajouter la page 2
+        if (start > 1) {
+          pages.unshift(start - 1); // Ajouter la page précédente si elle n'est pas affichée
+        }
+
+        // Si la dernière page est affichée, on peut ajouter la page juste avant la dernière
+        if (end < this.totalPages) {
+          pages.push(end + 1); // Ajouter la page suivante si elle n'est pas affichée
+        }
+
+        return pages;
+      },
     },
     methods: {
       changePage(page) {
         if (page < 1 || page > this.totalPages) return; // Limiter la page
         this.currentPage = page;
       },
+      createFournisseur() {
+        this.$inertia.visit(route('fournisseur.create'));
+      },
+      showFournisseur(id) {
+        this.$inertia.visit(route('fournisseur.show', id));
+      },
     }
   };
   </script>
   
-  <style>
-    td.link {
-      width: 100%;
-      height: 100%;
-    }
-  </style>
   

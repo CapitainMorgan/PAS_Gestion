@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Fournisseur;
+use App\Models\Depot;
 use App\Models\Article;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -34,23 +35,41 @@ class FournisseurController extends Controller
         return redirect()->route('fournisseur.show', $fournisseur->id)->with('success', 'Fournisseur créé avec succès');;
     }
 
-    public function generateFicheDepotFournisseur($id, $depot_id)
+    public function generateFicheDepotFournisseur($id, $depot_id, $conditionGenerale)
     {
         $fournisseur = Fournisseur::findOrFail($id);
         
         $articles = $fournisseur->articles->where('depot_id', $depot_id);
+        $depot = Depot::findOrFail($depot_id);
 
-        $pdf = SnappyPdf::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles'));
+        $conditionsArray = explode("\n", $conditionGenerale);
+
+        $pdf = SnappyPdf::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles','depot', 'conditionsArray'));
         return $pdf->inline('fiche_fournisseur.pdf');
     }
     
-    public function generateFicheVenteFournisseur($id,$date_debut)
+    public function generateFicheVenteFournisseur($id,$date_debut, $conditionGenerale)
     {        
         # get all articles of the fournisseur with vente table
         $fournisseur = Fournisseur::with('articles.vente')->find($id);        
-        $articles = $fournisseur->articles->where('vente.created_at', '>=', $date_debut);        
+        $articles = $fournisseur->articles->where('vente.created_at', '>=', $date_debut);    
+        $depot = NULL;   
+        
+        $conditionsArray = explode("\n", $conditionGenerale);
 
-        $pdf = SnappyPdf::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles'));
+        $pdf = SnappyPdf::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles','depot',  'conditionsArray'));
+        return $pdf->inline('fiche_fournisseur.pdf');
+    }
+
+    public function generateFicheFournisseur($id, $conditionGenerale)
+    {
+        $fournisseur = Fournisseur::findOrFail($id);
+        $articles = NULL;
+        $depot = NULL;  
+
+        $conditionsArray = explode("\n", $conditionGenerale);
+
+        $pdf = SnappyPdf::loadView('fiches.fiche_fournisseur', compact('fournisseur','articles','depot',  'conditionsArray'));
         return $pdf->inline('fiche_fournisseur.pdf');
     }
 
@@ -69,12 +88,15 @@ class FournisseurController extends Controller
     {
         $fournisseur = Fournisseur::with('articles')->find($id);
 
+        $conditionGenerale = config('app_settings.conditions_generales');
+
         if (!$fournisseur) {
             return response()->json(['error' => 'Fournisseur not found'], 404);
         }
 
         return Inertia::render('Fournisseur/Show', [
             'fournisseur' => $fournisseur,
+            'conditionGenerale' => $conditionGenerale,
         ]);
     }
 

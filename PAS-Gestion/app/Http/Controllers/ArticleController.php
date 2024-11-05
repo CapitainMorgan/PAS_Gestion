@@ -30,13 +30,14 @@ class ArticleController extends Controller
 
         // Générer le code-barres
         $code = $article->fournisseur[0]->id . '-' . $article->id . '-' . $article->created_at->format('Ymd');
-        $generator = new DNS1D();
-        $barcode = $generator->getBarcodeHTML($code, 'C39');
+        $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
+        $barcode = $generator->getBarcode($code, $generator::TYPE_CODE_128);
         
-        // Créer un PDF avec le code-barres
-        $pdf = SnappyPdf::loadView('pdf.barcode', ['barcode' => base64_encode($barcode), 'code' => $code]);
-        // Retourner le PDF au navigateur
-        return $pdf->inline('barcode.pdf');
+        // Convertir en base64 pour l'afficher dans une vue HTML
+        $barcodeBase64 = base64_encode($barcode);
+        $barcodeImage = 'data:image/png;base64,' . $barcodeBase64;
+
+        return view('pdf.barcode', compact('barcodeImage', 'code'));
     }
 
     public function create()
@@ -49,6 +50,10 @@ class ArticleController extends Controller
 
     private function createVenteIfStatusIsVendu($articleId, $status, $status_vente = 'Cash', $quantite = 1)
     {
+        if ($status_vente == NULL) {
+            $status_vente = 'Cash';
+        }
+
         if ($status == 'Vendu') {
             $vente = new Vente();
             $vente->quantite = $quantite;
@@ -154,6 +159,21 @@ class ArticleController extends Controller
         $frais->save();
 
         return redirect()->back()->with('message', 'Frais ajouté avec succès.');
+    }
+
+    public function updateFrais(Request $request, $fraisId)
+    {
+        $validated = $request->validate([
+            'description' => 'required|string|max:255',
+            'prix' => 'required|numeric',
+        ]);
+
+        $frais = Frais::find($fraisId);
+        $frais->description = $validated['description'];
+        $frais->prix = $validated['prix'];
+        $frais->save();
+
+        return redirect()->back()->with('message', 'Frais modifié avec succès.');
     }
 
     // PUT/PATCH: Mettre à jour un article

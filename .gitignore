@@ -25,3 +25,4 @@ Homestead.json
 db_extract/Gestion-DépotsBd.accde
 db_extract/Gestion-DépotsBd-Old.accde
 db_extract/*.csv
+PAS-Gestion/.env-prod

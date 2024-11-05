@@ -72,6 +72,9 @@
     overflow-x: auto;
     display: flex;
     flex-direction: column;
+    padding: 15px;
+    border-radius: 5%;
+    min-width: 230px;
   }
 
   .modal-header,
@@ -94,7 +97,7 @@
 
   .modal-body {
     position: relative;
-    padding: 20px 10px;
+    padding: 20px 15px;
   }
 
   .btn-close {

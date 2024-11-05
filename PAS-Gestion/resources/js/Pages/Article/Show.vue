@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import Modal from '@/Components/Modal.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import { Head } from '@inertiajs/vue3';
@@ -37,15 +38,15 @@ import { Head } from '@inertiajs/vue3';
                             <p><strong>Localisation:</strong> {{ article.localisation ?? 'N/A' }}</p>
                             <p><strong>Status</strong> {{ article.status }}</p>
                             <p><strong>ID Dépot:</strong> {{ article.depot_id ?? 'N/A' }}</p>
-                            <p><strong>Appartient à:</strong> {{ article.fournisseur[0].nom }} {{ article.fournisseur[0].prenom }}</p>
-                            <p><strong>Email du Fournisseur:</strong> {{ article.fournisseur[0].email }}</p>
+                            <p @click="showFournisseur(article.fournisseur[0].id)"><strong>Appartient à:</strong> {{ article.fournisseur[0].nom }} {{ article.fournisseur[0].prenom }}</p>
+                            <p @click="showFournisseur(article.fournisseur[0].id)"><strong>Email du Fournisseur:</strong> {{ article.fournisseur[0].email }}</p>
                         </div>
                     </div>
 
                     <SecondaryButton><a class="link" :href="route('article.edit', article.id)">Modifier l'article</a></SecondaryButton>
 
                     <div v-if="article.frais.length > 0">
-                      <h2>Frais associés</h2>
+                      <h2 style="margin-top: 10px;">Frais associés</h2>
                       <table class="table">
                         <thead>
                           <tr>
@@ -55,27 +56,54 @@ import { Head } from '@inertiajs/vue3';
                         </thead>
                         <tbody>
                           <tr v-for="frais in article.frais" :key="frais.id">
-                            <td>{{ frais.description }}</td>
-                            <td>{{ frais.prix }}</td>
+                            <td @click="showModal(frais)">{{ frais.description }}</td>
+                            <td @click="showModal(frais)">{{ frais.prix }}</td>
                           </tr>
                         </tbody>
                       </table>
                     </div>
-                    <h3>Ajouter un frais</h3>
-                    <form @submit.prevent="addFrais">
-                      <div class="mb-3">
+
+                    <!-- Utilisation du composant Modal -->
+                    <Modal v-show="showModalFrais" @close="closeModal">
+                      <template v-slot:header>
+                        Modifier frais
+                      </template> 
+
+                      <template v-slot:body>
+                        <form @submit.prevent="updateFrais">
+                          <!-- Choix du depot_id -->
+                          <InputLabel for="description" class="label">Description</InputLabel>                          
+                          <TextInput style="width:100%" type="text" v-model="description" required />
+                          <InputLabel for="prix" class="label">Depuis le ...</InputLabel>
+                          <TextInput style="width:100%" type="number" step=".01" v-model="prix" required />                                                   
+                        </form>
+                      </template>
+
+                      <template v-slot:footer>
+                        <PrimaryButton type="submit" class="btn btn-primary" @click="updateFrais">Modifier</PrimaryButton>
+                      </template>
+                    </Modal>
+
+                    <h3 style="margin-top: 10px;" >Ajouter un frais</h3>
+                    <form @submit.prevent="addFrais" class="form-grid">
+                      <div class="form-group">
                         <InputLabel for="description" class="form-label">Description</InputLabel>
                         <TextInput type="text" v-model="newFrais.description" class="form-control" placeholder="Description" required />
                       </div>
-                      <div class="mb-3">
+                      <div class="form-group">
                         <InputLabel for="prix" class="form-label">Prix</InputLabel>
                         <TextInput type="number" v-model="newFrais.prix" class="form-control" placeholder="Prix" required />
                       </div>
-                      <PrimaryButton type="submit" class="btn btn-primary">Ajouter le frais</PrimaryButton>
+                      <div class="form-group full-width">
+                        <PrimaryButton type="submit" class="btn btn-primary">Ajouter le frais</PrimaryButton>
+                      </div>
                     </form>
-                    
-                    <PrimaryButton @click="generateBarcode">Générer Code-barres</PrimaryButton>
-                    <PrimaryButton><a class="btn btn-secondary mt-3" :href="route('article.index')">Retour à la liste des Articles</a></PrimaryButton>
+                    <div class="form-group full-width">
+                      <PrimaryButton class="btn btn-primary" @click="generateBarcode">Générer Code-barres</PrimaryButton>
+                    </div>
+                    <div class="form-group full-width">
+                      <PrimaryButton class="btn btn-primary" @click="indexArticle()">Retour à la liste des Articles</PrimaryButton>
+                    </div>
                     </div>
 
                 </div>
@@ -98,6 +126,10 @@ export default {
         description: '',
         prix: null,
       },
+      description: '',
+      prix: null,
+      id_frais: null,
+      showModalFrais: false,
     };
   },
   methods: {
@@ -118,7 +150,40 @@ export default {
 
       // Rediriger vers la route pour générer le code-barres
       window.open(`/generate-barcode/${articleId}`, '_blank');
-    }
+    },
+    showFournisseur(fournisseurId) {
+      this.$inertia.visit(route('fournisseur.show', fournisseurId));
+    },
+    indexArticle() {
+      this.$inertia.visit(route('article.index'));
+    },
+    showModal(frais) {
+      this.description = frais.description;
+      this.prix = frais.prix;
+      this.id_frais = frais.id;
+      this.showModalFrais = true;
+    },
+    closeModal() {
+      this.showModalFrais = false;
+    },
+    async updateFrais() {
+      try {
+        await this.$inertia.put(route('fraisArticle.update', this.id_frais), {
+          description: this.description,
+          prix: this.prix,
+        });
+        this.closeModal();
+      } catch (error) {
+        console.error(error);
+        this.$toast.error("Une erreur est survenue lors de la mise à jour du frais.");
+      }
+    },
   },
 };
 </script>
+
+<style scoped>
+.btn {
+  margin-top: 5px;
+}
+</style>

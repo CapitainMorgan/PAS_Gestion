@@ -1,7 +1,9 @@
 table {
     border-collapse: collapse;
     width: max(65rem, 100%);
-    table-layout: fixed;
+    table-layout: auto;
+    margin-top: 15px;
+    margin-bottom: 15px;
   }
   
   th,
@@ -27,12 +29,17 @@ table {
     border-block: 2px solid;
     background: whitesmoke;
   }
+
+  td {
+    cursor: pointer;
+  }
   
   th,
   td {
     border: 1px solid lightgrey;
-    padding: 0.25rem 0.75rem;
     vertical-align: baseline;
+    padding: 0.25rem 0.75rem; 
+    word-wrap: break-word;
   }
   
   th:first-child {

@@ -26,8 +26,8 @@ import vSelect from 'vue-select';
                 >
                 <div class="p-6 text-gray-900">
 
-                    <form @submit.prevent="createFournisseur">
-                    <div class="mb-3">
+                    <form @submit.prevent="createFournisseur" class="form-grid">
+                    <div class="form-group">
                         <InputLabel for="nom" class="form-label">Nom</InputLabel>
                         <TextInput
                         type="text"
@@ -38,7 +38,7 @@ import vSelect from 'vue-select';
                         />
                     </div>
                     
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="prenom" class="form-label">Prénom</InputLabel>
                         <TextInput
                         type="text"
@@ -49,7 +49,7 @@ import vSelect from 'vue-select';
                         />
                     </div>
 
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="email" class="form-label">Email</InputLabel>
                         <TextInput
                         type="email"
@@ -60,7 +60,7 @@ import vSelect from 'vue-select';
                         />
                     </div>
 
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="mobile" class="form-label">Mobile</InputLabel>
                         <TextInput
                         type="text"
@@ -71,7 +71,7 @@ import vSelect from 'vue-select';
                         />
                     </div>
 
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="telephone" class="form-label">Téléphone</InputLabel>
                         <TextInput
                         type="text"
@@ -82,7 +82,7 @@ import vSelect from 'vue-select';
                         />
                     </div>
 
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="numProf" class="form-label">Numéro Professionnel</InputLabel>
                         <TextInput
                         type="text"
@@ -93,7 +93,7 @@ import vSelect from 'vue-select';
                         />
                     </div>
 
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="rue" class="form-label">Rue</InputLabel>
                         <TextInput
                         type="text"
@@ -105,7 +105,7 @@ import vSelect from 'vue-select';
                     </div>
 
 
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="ville" class="form-label">Ville</InputLabel>
                         <TextInput
                         type="text"
@@ -116,7 +116,7 @@ import vSelect from 'vue-select';
                         />
                     </div>
 
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="npa" class="form-label">NPA</InputLabel>
                         <TextInput
                         type="text"
@@ -127,7 +127,7 @@ import vSelect from 'vue-select';
                         />
                     </div>
 
-                    <div class="mb-3">
+                    <div class="form-group">
                         <InputLabel for="pays" class="form-label">Pays</InputLabel>
                         <TextInput
                         type="text"
@@ -138,7 +138,7 @@ import vSelect from 'vue-select';
                         />
                     </div>
 
-                    <div class="mb-3">
+                    <div class="form-group full-width">
                         <InputLabel for="remarque" class="form-label">Remarque</InputLabel>
                         <TextInput
                         type="text"
@@ -148,11 +148,15 @@ import vSelect from 'vue-select';
                         placeholder="Entrez la remarque (facultatif)"
                         />
                     </div>
+                    <div class="form-group full-width">
+                      <PrimaryButton type="submit" class="btn btn-primary">Créer le fournisseur</PrimaryButton>
+                    </div>
 
-                    <SecondaryButton type="submit" class="btn btn-primary">Créer le fournisseur</SecondaryButton>
+                    <div class="form-group full-width">
+                      <SecondaryButton class="btn btn-primary" @click="indexFournisseur()">Retour à la liste des fournisseurs</SecondaryButton>
+                    </div>
                     </form>
 
-                    <PrimaryButton><a :href="route('fournisseur.index')">Retour à la liste des fournisseurs</a></PrimaryButton>
 
 
                 </div>
@@ -193,6 +197,9 @@ export default {
         console.error(error);
         this.$toast.error('Une erreur est survenue lors de la création du fournisseur');
       }
+    },
+    indexFournisseur() {
+      this.$inertia.visit(route('fournisseur.index'));
     },
   },
 };
