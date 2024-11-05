@@ -8,6 +8,7 @@ use App\Models\Article;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Barryvdh\Snappy\Facades\SnappyPdf;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class FournisseurController extends Controller
 {
@@ -44,8 +45,8 @@ class FournisseurController extends Controller
 
         $conditionsArray = explode("\n", $conditionGenerale);
 
-        $pdf = SnappyPdf::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles','depot', 'conditionsArray'));
-        return $pdf->inline('fiche_fournisseur.pdf');
+        $pdf = PDF::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles','depot', 'conditionsArray'));
+        return $pdf->download('fiche_fournisseur.pdf');
     }
     
     public function generateFicheVenteFournisseur($id,$date_debut, $conditionGenerale)
@@ -57,8 +58,8 @@ class FournisseurController extends Controller
         
         $conditionsArray = explode("\n", $conditionGenerale);
 
-        $pdf = SnappyPdf::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles','depot',  'conditionsArray'));
-        return $pdf->inline('fiche_fournisseur.pdf');
+        $pdf = PDF::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles','depot',  'conditionsArray'));
+        return $pdf->download('fiche_fournisseur.pdf');
     }
 
     public function generateFicheFournisseur($id, $conditionGenerale)
@@ -69,8 +70,8 @@ class FournisseurController extends Controller
 
         $conditionsArray = explode("\n", $conditionGenerale);
 
-        $pdf = SnappyPdf::loadView('fiches.fiche_fournisseur', compact('fournisseur','articles','depot',  'conditionsArray'));
-        return $pdf->inline('fiche_fournisseur.pdf');
+        $pdf = PDF::loadView('fiches.fiche_fournisseur', compact('fournisseur','articles','depot',  'conditionsArray'));
+        return $pdf->download('fiche_fournisseur.pdf');
     }
 
 
