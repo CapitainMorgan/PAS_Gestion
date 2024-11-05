@@ -16,7 +16,7 @@ import vSelect from 'vue-select';
               <h2
                   class="text-xl font-semibold leading-tight text-gray-800"
               >
-                  {{this.fournisseur.nom}}  {{this.fournisseur.prenom}}
+                  {{fournisseur.nom}}  {{fournisseur.prenom}}
               </h2>
     </template>
         <div class="py-12">
