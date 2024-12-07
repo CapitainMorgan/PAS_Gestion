@@ -82,6 +82,12 @@ class ArticleController extends Controller
         //add dateDepot to request
         $request->merge(['dateDepot' => now()]);
 
+        //if $EchanceDays is not int convert it to int
+        if (!is_int($EchanceDays)) {
+            $EchanceDays = (int) $EchanceDays;
+        }
+        
+
         $request->merge(['dateEcheance' => now()->addDays($EchanceDays)]);
 
         //add utilisateur_id to request
@@ -103,6 +109,11 @@ class ArticleController extends Controller
         $articles = $request->articles;
 
         print_r( $articles);
+
+        /if $EchanceDays is not int convert it to int
+        if (!is_int($EchanceDays)) {
+            $EchanceDays = (int) $EchanceDays;
+        }
 
         //get fournisseur_id from request
         $fournisseur_id = $request->articles[0]['fournisseur_id'];

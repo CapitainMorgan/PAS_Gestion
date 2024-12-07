@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ParametreController extends Controller
@@ -14,8 +15,15 @@ class ParametreController extends Controller
             'newsletterEmail' => config('app_settings.newsletter_email'),
         ];
 
+        $users = User::all();
+
+        if (!auth()->check() || auth()->user()->role !== 'admin') {
+            $users = NULL;
+        }
+
         return inertia('Parametre/Index', [
             'settings' => $settings,
+            'users' => $users,
         ]);
     }
 

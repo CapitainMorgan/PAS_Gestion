@@ -102,7 +102,7 @@ import { Head } from '@inertiajs/vue3';
     },
     mounted() {
       // Vérifier si l'utilisateur est un administrateur
-      this.isAdmin = this.$page.props.auth.user.role === 'admin';
+      this.isAdmin = this.$page.props.auth.user.role  === 'admin';
     },
     computed: {
       filteredFrais() {

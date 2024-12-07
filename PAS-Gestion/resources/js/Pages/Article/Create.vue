@@ -107,6 +107,18 @@ import vSelect from 'vue-select';
                         />
                     </div>
 
+                    <div class="form-group">
+                        <InputLabel for="EchanceDays" class="form-label">Nombre de jours avant la fin du dépôt</InputLabel>
+                        <TextInput
+                        type="number"
+                        class="form-control"
+                        id="EchanceDays"
+                        v-model="EchanceDays"
+                        placeholder="Nombre de jours avant la fin du dépôt"
+                        />
+
+                    </div>
+
                     <div class="form-group full-width">
                         <label for="fournisseur" class="form-label">Fournisseur</label>
                         <v-select
@@ -150,6 +162,7 @@ export default {
         localisation: '',
         fournisseur_id: '',
       },
+      EchanceDays: 30,
       selectedFournisseur: null,
     };
   },
@@ -173,7 +186,7 @@ export default {
         return;
       }
       try {
-        await this.$inertia.post(route('article.store'), this.form);
+        await this.$inertia.post(route('article.store', this.EchanceDays), this.form);
         this.$toast.success('Article créé avec succès');
       } catch (error) {
         console.error(error);

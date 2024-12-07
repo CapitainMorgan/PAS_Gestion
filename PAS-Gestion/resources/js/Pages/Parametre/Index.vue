@@ -2,6 +2,8 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
+import Modal from '@/components/Modal.vue';
+import DangerButton from '@/components/DangerButton.vue';
 import TextInput from '@/components/TextInput.vue';
 import InputLabel from '@/components/InputLabel.vue';
 import { Head } from '@inertiajs/vue3';
@@ -56,6 +58,80 @@ import vSelect from 'vue-select';
                             Créer un nouvel utilisateur
                         </PrimaryButton>
                         </div>
+
+                        <div v-if="userIsAdmin" class="table-users">
+                        <h2>Liste des utilisateurs</h2>
+                          <table class="table">
+                              <thead>
+                              <tr>
+                                  <th>Nom</th>
+                                  <th>Email</th>
+                                  <th>Email de recuperation</th>
+                                  <th>Role</th>
+                                  <th>Actions</th>
+                              </tr>
+                              </thead>
+                              <tbody>
+                              <tr v-for="user in users" :key="user.id">
+                                  <td @click="showModalUpdateUser = true; this.user = user">{{ user.name }}</td>
+                                  <td @click="showModalUpdateUser = true; this.user = user">{{ user.email }}</td>
+                                  <td @click="showModalUpdateUser = true; this.user = user">{{ user.recovery_email }}</td>
+                                  <td @click="showModalUpdateUser = true; this.user = user">{{ user.role }}</td>
+                                  <td>
+                                    <PrimaryButton @click="showModalUpdatePassword = true; this.user = user" class="btn btn-secondary" style="margin-right: 10px;">Modifier le mot de passe</PrimaryButton>
+                                    <DangerButton @click="DeleteUser(user.id)" class="btn btn-danger">Supprimer</DangerButton>
+                                  </td>
+                              </tr>
+                              </tbody>
+                          </table>
+                        </div>
+
+                        <Modal v-show="showModalUpdatePassword" @close="closeModal">
+                          <template v-slot:header>
+                            Modifier le mot de passe <br>  
+                            de {{ user.name }}
+                          </template> 
+
+                          <template v-slot:body>
+                            <form @submit.prevent="updatePassword()">
+                              <!-- Choix du depot_id -->
+                              <InputLabel for="userpassword" class="label">Mot de passe</InputLabel>                          
+                              <TextInput style="width:100%" type="password" v-model="userpassword" required />
+                              <InputLabel for="repeteduserpassword" class="label">Repeter le mot de passe</InputLabel>
+                              <TextInput style="width:100%" type="password" step=".01" v-model="repeteduserpassword" required />                                                   
+                            </form>
+                          </template>
+
+                          <template v-slot:footer>
+                            <PrimaryButton type="submit" class="btn btn-primary" @click="updatePassword">Modifier</PrimaryButton>
+                          </template>
+                        </Modal>
+
+                        <Modal v-show="showModalUpdateUser" @close="closeModal">
+                          <template v-slot:header>
+                            Modifier l'utilisateur <br>  
+                            {{ user.name }}
+                          </template> 
+
+                          <template v-slot:body>
+                            <form @submit.prevent="updateUser()">
+                              <!-- Choix du depot_id -->
+                              <InputLabel for="name" class="label">Nom de l'utilisateur</InputLabel>
+                              <TextInput style="width:100%" type="text" v-model="user.name" required />
+                              <InputLabel for="email" class="label">Email de l'utilisateur</InputLabel>
+                              <TextInput style="width:100%" type="email" v-model="user.email" required />
+                              <InputLabel for="recovery_email" class="label">Email de recuperation</InputLabel>
+                              <TextInput style="width:100%" type="email" v-model="user.recovery_email" required />
+                              <InputLabel for="role" class="label">Role de l'utilisateur</InputLabel>
+                              <v-select v-model="user.role" :options="['admin', 'user']" required />                                               
+                            </form>
+                          </template>
+
+                          <template v-slot:footer>
+                            <PrimaryButton type="submit" class="btn btn-primary" @click="updateUser">Modifier</PrimaryButton>
+                          </template>
+                        </Modal>
+
                     </div>
 
 
@@ -67,12 +143,16 @@ import vSelect from 'vue-select';
 </template>
 
 <script>
-import { useForm, usePage } from '@inertiajs/inertia-vue3';
+import { useForm } from '@inertiajs/inertia-vue3';
 
 export default {
   props: {
     settings: {
       type: Object,
+      required: true,
+    },
+    users: {
+      type: Array,
       required: true,
     },
   },
@@ -84,11 +164,22 @@ export default {
             newsletterEmail: this.settings.newsletterEmail,
         }),
         userIsAdmin : false,
+        user: {
+          id: '',
+          name: '',
+          email: '',
+          recovery_email: '',
+          role: '',
+        },
+        showModalUpdatePassword: false,
+        showModalUpdateUser: false,
+        userpassword: '',
+        repeteduserpassword: '',
     }
   },
   mounted() {
-    // Vérifier si l'utilisateur est un administrateur
-    this.userIsAdmin = true;
+    // Vérifier si l'utilisateur est un administrateur en laravel vuejs
+    this.userIsAdmin = this.$page.props.auth.user.role  === 'admin';
   },
   methods: {
     updateSettings() {
@@ -97,6 +188,38 @@ export default {
             this.form.reset();  // Reset du formulaire après succès de la mise à jour
         },
       });
+    },
+    DeleteUser(id) {
+      // Supprimer un utilisateur
+      if (confirm('Voulez-vous vraiment supprimer cet utilisateur ?')) {
+        this.$inertia.delete(route('user.destroy', id));
+      }
+    },
+    closeModal() {
+      this.showModalUpdatePassword = false;
+      this.showModalUpdateUser = false;
+    },
+    updateUser() {
+      // Mettre à jour un utilisateur
+      this.$inertia.put(route('user.update', this.user.id), this.user);
+
+      this.closeModal();
+    },
+    updatePassword() {
+      if (this.userpassword != this.repeteduserpassword) {
+        alert('Les mots de passe ne correspondent pas');
+        this.userpassword = '';
+        this.repeteduserpassword = '';
+        return;
+      }
+
+      // Mettre à jour le mot de passe d'un utilisateur
+      this.$inertia.put(route('user.update-password', this.user.id), this.userpassword);
+
+      this.userpassword = '';
+      this.repeteduserpassword = '';
+
+      this.closeModal();
     },
 
     goToUserManagement() {

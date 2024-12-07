@@ -66,11 +66,19 @@ import vSelect from 'vue-select';
                             <div class="form-group">
                                 <InputLabel for="localisation" class="form-label">Localisation</InputLabel>
                                 <TextInput v-model="newArticle.localisation" type="text" class="form-control" placeholder="Localisation" />
-                            </div>                            
+                            </div>      
+                            
+
                             <div class="form-group full-width">
                             <SecondaryButton type="submit" class="btn btn-primary">Ajouter un autre article</SecondaryButton>
                             </div>
                         </form>
+
+                        
+                        <div class="form-group" style="margin-top: 20px;margin-bottom: 20px;"> 
+                          <InputLabel for="EcheanceDays" class="form-label">Nombre de jours avant la fin du dépôt</InputLabel>
+                          <TextInput v-model="EcheanceDays" type="number" class="form-control" placeholder="Date d'échéance" />
+                        </div>
 
                         <h2 v-if="articles.length > 0" >Articles Ajoutés</h2>
                         <table v-if="articles.length > 0">
@@ -134,6 +142,7 @@ import vSelect from 'vue-select';
         localisation: '',
         fournisseur_id: this.fournisseur_id
       },
+      EcheanceDays: 30,
       articles: [],
     };
   },
@@ -163,7 +172,7 @@ import vSelect from 'vue-select';
         // Utiliser une requête pour envoyer les données au backend
         // Par exemple, avec Inertia ou une requête Axios pour l'API
         try {
-          await this.$inertia.post(route('depot.store'), { articles: this.articles });
+          await this.$inertia.post(route('depot.store', this.EcheanceDays), { articles: this.articles });
           this.$toast.success('Articles créé avec succès');
         } catch (error) {
           console.error(error);

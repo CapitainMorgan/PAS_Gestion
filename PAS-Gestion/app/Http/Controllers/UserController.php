@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -49,12 +50,35 @@ class UserController extends Controller
 
         $user->update($request->all());
 
+        return back()->with('success', 'User updated successfully');
+    }
+
+    public function updatePassword(Request $request, $id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $validated = $request->validate([
+            'userpassword' => ['required', Password::defaults(), 'confirmed'],
+        ]);
+
+        $request->user()->update([
+            'password' => Hash::make($validated['userpassword']),
+        ]);
+
         return response()->json($user);
     }
 
     // DELETE: Supprimer un user
     public function destroy($id)
     {
+        if (!auth()->check() || auth()->user()->role !== 'admin') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         $user = User::find($id);
 
         if (!$user) {

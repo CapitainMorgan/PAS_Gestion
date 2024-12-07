@@ -9,6 +9,7 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 const form = useForm({
     name: '',
     email: '',
+    recovery_email: '',
     password: '',
     password_confirmation: '',
 });
@@ -49,6 +50,21 @@ const submit = () => {
                     type="email"
                     class="mt-1 block w-full"
                     v-model="form.email"
+                    required
+                    autocomplete="username"
+                />
+
+                <InputError class="mt-2" :message="form.errors.email" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel for="email" value="Email de récupération" />
+
+                <TextInput
+                    id="email"
+                    type="email"
+                    class="mt-1 block w-full"
+                    v-model="form.recovery_email"
                     required
                     autocomplete="username"
                 />

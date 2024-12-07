@@ -8,6 +8,7 @@ use App\Http\Controllers\FraisController;
 use App\Http\Controllers\DepotController;
 use App\Http\Controllers\ParametreController;
 use App\Http\Controllers\VenteController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -39,14 +40,14 @@ Route::get('/fiche-fournisseur-vente/{id}/{date_debut}/{conditionGenerale}', [Fo
 Route::get('/fiche-fournisseur/{id}/{conditionGenerale}', [FournisseurController::class, 'generateFicheFournisseur'])->middleware(['auth', 'verified'])->name('fiche.fournisseur');
 
 Route::get('/depot/{id}', [DepotController::class, 'create'])->middleware(['auth', 'verified'])->name('depot.create');
-Route::post('/depot', [ArticleController::class, 'storeGroupedArticles'])->middleware(['auth', 'verified'])->name('depot.store');
+Route::post('/depot/{EcheanceDays}', [ArticleController::class, 'storeGroupedArticles'])->middleware(['auth', 'verified'])->name('depot.store');
 
 
 
 Route::get('/article.index', [ArticleController::class, 'index'])->middleware(['auth', 'verified'])->name('article.index');
 Route::get('/article.show/{id}', [ArticleController::class, 'show'])->middleware(['auth', 'verified'])->name('article.show');
-Route::get('/article.create', [ArticleController::class, 'create'])->middleware(['auth', 'verified'])->name('article.create');
-Route::post('/article', [ArticleController::class, 'store'])->middleware(['auth', 'verified'])->name('article.store');
+Route::get('/article.create/', [ArticleController::class, 'create'])->middleware(['auth', 'verified'])->name('article.create');
+Route::post('/article/{EchanceDays}', [ArticleController::class, 'store'])->middleware(['auth', 'verified'])->name('article.store');
 Route::post('/article/{id}/frais', [ArticleController::class, 'storeFrais'])->middleware(['auth', 'verified'])->name('fraisArticle.store');
 Route::put('/article/{id}/frais', [ArticleController::class, 'updateFrais'])->middleware(['auth', 'verified'])->name('fraisArticle.update');
 Route::get('/article/{id}/edit', [ArticleController::class, 'edit'])->middleware(['auth', 'verified'])->name('article.edit');
@@ -81,6 +82,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');    
 });
+
+Route::post('/user/{id}/delete', [UserController::class, 'destroy'])->middleware(['auth', 'verified'])->name('user.destroy');
+Route::put('/user/{id}/update', [UserController::class, 'update'])->middleware(['auth', 'verified'])->name('user.update');
+Route::put('/user/{id}/update-password', [UserController::class, 'updatePassword'])->middleware(['auth', 'verified'])->name('user.update-password');
 
 Route::middleware(['auth'])->group(function () {
     Route::delete('/fournisseur/{id}', [FournisseurController::class, 'destroy'])->name('fournisseur.destroy');

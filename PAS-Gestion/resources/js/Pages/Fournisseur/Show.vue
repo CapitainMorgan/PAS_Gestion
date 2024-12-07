@@ -167,7 +167,7 @@ export default {
   },
   mounted() {
     // Vérifier si l'utilisateur est un administrateur
-    this.isAdmin = this.$page.props.auth.user.role === 'admin';
+    this.isAdmin = this.$page.props.auth.user.role  === 'admin';
   },
   computed: {
     totalPages() {
