@@ -57,7 +57,13 @@ class FraisController extends Controller
     // DELETE: Supprimer un frais
     public function destroy($id)
     {
+        if (!auth()->check() || auth()->user()->role !== 'admin') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         $frais = Frais::find($id);
+
+        $id = $frais->article_id;
 
         if (!$frais) {
             return response()->json(['error' => 'Frais not found'], 404);
@@ -65,6 +71,6 @@ class FraisController extends Controller
 
         $frais->delete();
 
-        return response()->json(['message' => 'Frais deleted successfully']);
+        return redirect()->route('article.show', $id)->with('message', 'Frais deleted successfully');
     }
 }

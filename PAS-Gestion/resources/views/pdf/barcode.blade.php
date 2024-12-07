@@ -6,7 +6,7 @@
     <style>
         /* Configuration du format de la page pour A7 en paysage */
         @page {
-            size: 105mm 74mm; /* A7 en paysage */
+            size: 8.9cm 3.8cm; /* A7 en paysage */
             margin: 0; /* Pas de marge */
         }
 
@@ -22,27 +22,35 @@
         }
 
         .barcode {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            width: 100vw;
+            text-align: center;
+            width: 60%;
         }
 
-        .barcode img {
-            max-height: 60%; /* Ajuste la hauteur de l'image pour s'adapter en paysage */
+        .barcode-image {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 5px; /* Espacement entre le code-barres et le texte */
+        }
+
+        .barcode-text {
+            font-size: 14px; /* Ajustez la taille du texte */
+            font-weight: bold;
         }
 
         /* Cacher tous les autres éléments sauf l'image lors de l'impression */
         @media print {
             * { visibility: hidden; }
             .barcode img { visibility: visible; display: block; margin: auto; }
+            .barcode-text { visibility: visible; display: block; margin: auto; }
         }
     </style>
 </head>
 <body>
     <div class="barcode">
-        <img src="{{ $barcodeImage }}" alt="Code-barres">
+        <!-- Affiche le code-barres -->
+        <img class="barcode-image" src="{{ $barcodeImage }}" alt="Code-barres">
+        <!-- Affiche le texte du code-barres en dessous -->
+        <div class="barcode-text">{{ $code }}</div>
     </div>
 
     <!-- JavaScript pour lancer l'impression automatiquement -->

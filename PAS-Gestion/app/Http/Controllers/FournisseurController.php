@@ -115,6 +115,10 @@ class FournisseurController extends Controller
     // DELETE: Supprimer un fournisseur
     public function destroy($id)
     {
+        if (!auth()->check() || auth()->user()->role !== 'admin') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         $fournisseur = Fournisseur::find($id);
 
         if (!$fournisseur) {
@@ -123,6 +127,6 @@ class FournisseurController extends Controller
 
         $fournisseur->delete();
 
-        return response()->json(['message' => 'Fournisseur deleted successfully']);
+        return redirect()->route('fournisseur.index')->with('message', 'Fournisseur supprimer avec succès.');
     }
 }

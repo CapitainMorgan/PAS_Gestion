@@ -81,6 +81,10 @@ class FraisSocieteController extends Controller
     // DELETE: Supprimer un frais de société
     public function destroy($id)
     {
+        if (!auth()->check() || auth()->user()->role !== 'admin') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         $fraisSociete = FraisSociete::find($id);
 
         if (!$fraisSociete) {
@@ -89,6 +93,6 @@ class FraisSocieteController extends Controller
 
         $fraisSociete->delete();
 
-        return response()->json(['message' => 'Frais de société deleted successfully']);
+        return redirect()->route('frais.index')->with('message', 'Frais supprimer avec succès.');
     }
 }

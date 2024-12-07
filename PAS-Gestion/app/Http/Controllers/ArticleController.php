@@ -29,7 +29,7 @@ class ArticleController extends Controller
         $article = Article::with("fournisseur")->find($id);
 
         // Générer le code-barres
-        $code = $article->fournisseur[0]->id . '-' . $article->id . '-' . $article->created_at->format('Ymd');
+        $code = $article->fournisseur->id . '-' . $article->id . '-' . $article->created_at->format('Ymd');
         $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
         $barcode = $generator->getBarcode($code, $generator::TYPE_CODE_128);
         
@@ -193,6 +193,11 @@ class ArticleController extends Controller
     // DELETE: Supprimer un article
     public function destroy($id)
     {
+        
+        if (!auth()->check() || auth()->user()->role !== 'admin') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         $article = Article::find($id);
 
         if (!$article) {
@@ -201,6 +206,6 @@ class ArticleController extends Controller
 
         $article->delete();
 
-        return response()->json(['message' => 'Article deleted successfully']);
+        return redirect()->route('article.index')->with('message', 'Article supprimer avec succès.');
     }
 }

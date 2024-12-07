@@ -4,8 +4,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FournisseurController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\FraisSocieteController;
+use App\Http\Controllers\FraisController;
 use App\Http\Controllers\DepotController;
 use App\Http\Controllers\ParametreController;
+use App\Http\Controllers\VenteController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -77,8 +79,15 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');    
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::delete('/fournisseur/{id}', [FournisseurController::class, 'destroy'])->name('fournisseur.destroy');
+    Route::delete('/article/{id}', [ArticleController::class, 'destroy'])->name('article.destroy');
+    Route::delete('/frais/{id}', [FraisController::class, 'destroy'])->name('frais.destroy');
+    Route::delete('/frais-societe/{id}', [FraisSocieteController::class, 'destroy'])->name('frais-societe.destroy');
+    Route::delete('/vente/{id}', [VenteController::class, 'destroy'])->name('vente.destroy');
 });
 
 require __DIR__.'/auth.php';

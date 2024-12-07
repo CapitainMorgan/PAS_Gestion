@@ -63,6 +63,10 @@ class VenteController extends Controller
     // DELETE: Supprimer une vente
     public function destroy($id)
     {
+        if (!auth()->check() || auth()->user()->role !== 'admin') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         $vente = Vente::find($id);
 
         if (!$vente) {
@@ -71,6 +75,6 @@ class VenteController extends Controller
 
         $vente->delete();
 
-        return response()->json(['message' => 'Vente deleted successfully']);
+        return redirect()->route('vente.index')->with('message', 'Vente supprimer avec succès.');
     }
 }

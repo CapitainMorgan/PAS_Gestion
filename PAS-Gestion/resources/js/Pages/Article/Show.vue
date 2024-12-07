@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
+import DangerButton from '@/components/DangerButton.vue';
 import Modal from '@/components/Modal.vue';
 import TextInput from '@/components/TextInput.vue';
 import InputLabel from '@/components/InputLabel.vue';
@@ -55,12 +56,18 @@ import { Head } from '@inertiajs/vue3';
                           <tr>
                             <th>Description</th>
                             <th>Prix</th>
+                            <th v-if="isAdmin">Action</th>
                           </tr>
                         </thead>
                         <tbody>
                           <tr v-for="frais in article.frais" :key="frais.id">
                             <td @click="showModal(frais)">{{ frais.description }}</td>
                             <td @click="showModal(frais)">{{ frais.prix }}</td>
+                            <td v-if="isAdmin">
+                              <div class="form-group full-width">
+                                <DangerButton class="btn btn-primary" @click="deleteFrais(frais.id)">Supprimer le frais</DangerButton>
+                              </div>
+                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -107,7 +114,10 @@ import { Head } from '@inertiajs/vue3';
                     <div class="form-group full-width">
                       <PrimaryButton class="btn btn-primary" @click="indexArticle()">Retour à la liste des Articles</PrimaryButton>
                     </div>
+                    <div v-if="isAdmin" class="form-group full-width">
+                      <DangerButton class="btn btn-primary" @click="deleteArticle()">Supprimer l'article</DangerButton>
                     </div>
+                  </div>
 
                 </div>
             </div>
@@ -133,7 +143,12 @@ export default {
       prix: null,
       id_frais: null,
       showModalFrais: false,
+      isAdmin: false,
     };
+  },
+  mounted() {
+    // Vérifier si l'utilisateur est un administrateur
+    this.isAdmin = this.$page.props.auth.user.role === 'admin';
   },
   methods: {
     formatDate(date) {
@@ -163,6 +178,18 @@ export default {
     },
     showFournisseur(fournisseurId) {
       this.$inertia.visit(route('fournisseur.show', fournisseurId));
+    },
+    deleteArticle() {
+      if (confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) {
+        // Si l'utilisateur confirme, envoyer la requête DELETE avec Inertia
+        this.$inertia.delete(route('article.destroy', this.article.id));
+      }
+    },
+    deleteFrais(fraisId) {
+      if (confirm('Êtes-vous sûr de vouloir supprimer ce frais ?')) {
+        // Si l'utilisateur confirme, envoyer la requête DELETE avec Inertia
+        this.$inertia.delete(route('frais.destroy', fraisId))    
+      }
     },
     indexArticle() {
       this.$inertia.visit(route('article.index'));

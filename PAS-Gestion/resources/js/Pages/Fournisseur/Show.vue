@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
+import DangerButton from '@/components/DangerButton.vue';
 import Modal from '@/components/Modal.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 import TextInput from '@/components/TextInput.vue';
@@ -128,6 +129,9 @@ import vSelect from 'vue-select';
                     <PrimaryButton class="button" @click="editFournisseur(fournisseur.id)">Modifier le Fournisseur</PrimaryButton>
                     <PrimaryButton class="button" @click="createDepot(fournisseur.id)">Faire un nouveau dépot</PrimaryButton>
                     <PrimaryButton class="button" @click="indexFournisseur()">Retour à la liste des Fournisseurs</PrimaryButton>
+                    <div v-if="isAdmin" class="form-group full-width">
+                      <DangerButton class="btn btn-primary" @click="deleteFournisseur()">Supprimer le fournisseur</DangerButton>
+                    </div>
                 </div>        
                 </div>
             </div>
@@ -158,7 +162,12 @@ export default {
       tempConditionGenerale: this.conditionGenerale,
       dateDepot: null,
       ficheChoice: 1,
+      isAdmin: false,
     };
+  },
+  mounted() {
+    // Vérifier si l'utilisateur est un administrateur
+    this.isAdmin = this.$page.props.auth.user.role === 'admin';
   },
   computed: {
     totalPages() {
@@ -197,6 +206,12 @@ export default {
         month: 'long',
         day: 'numeric',
       });
+    },
+    deleteFournisseur() {
+      if (confirm('Êtes-vous sûr de vouloir supprimer ce fournisseur ?')) {
+        // Si l'utilisateur confirme, envoyer la requête DELETE avec Inertia
+        this.$inertia.delete(route('fournisseur.destroy', this.fournisseur.id));
+      }
     },
     generateFicheClient() {      
       if (this.ficheChoice == 2) {        

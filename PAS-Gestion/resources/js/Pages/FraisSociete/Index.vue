@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
+import DangerButton from '@/components/DangerButton.vue';
 import TextInput from '@/components/TextInput.vue';
 import { Head } from '@inertiajs/vue3';
 </script>
@@ -39,14 +40,18 @@ import { Head } from '@inertiajs/vue3';
                                 <tr>
                                 <th>ID</th>
                                 <th>Description</th>
-                                <th>Prix</th>         
+                                <th>Prix</th>    
+                                <th v-if="isAdmin">Action</th>     
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="frais in paginatedFrais" :key="frais.id">                                
                                   <td @click="editFrais(frais.id)">{{ frais.id }} </td>
                                   <td @click="editFrais(frais.id)">{{ frais.description }} </td>
-                                  <td @click="editFrais(frais.id)">{{ frais.prix }} </td>                                            
+                                  <td @click="editFrais(frais.id)">{{ frais.prix }} </td>    
+                                  <td @click="deleteFrais(frais.id)" v-if="isAdmin">
+                                    <DangerButton>Supprimer</DangerButton>
+                                  </td>                                        
                                 </tr>
                             </tbody>
                         </table>
@@ -92,7 +97,12 @@ import { Head } from '@inertiajs/vue3';
         searchTerm: '',
         currentPage: 1,
         pageSize: 10,
+        isAdmin: false,
       };
+    },
+    mounted() {
+      // Vérifier si l'utilisateur est un administrateur
+      this.isAdmin = this.$page.props.auth.user.role === 'admin';
     },
     computed: {
       filteredFrais() {
@@ -142,6 +152,12 @@ import { Head } from '@inertiajs/vue3';
       },
       editFrais(id) {
         this.$inertia.visit(`/frais/${id}/edit`);
+      },
+      deleteFrais(id) {
+        if (confirm('Êtes-vous sûr de vouloir supprimer ce frais ?')) {
+          // Si l'utilisateur confirme, envoyer la requête DELETE avec Inertia
+          this.$inertia.delete(route('frais-societe.destroy', id));
+        }
       },
     }
   };
