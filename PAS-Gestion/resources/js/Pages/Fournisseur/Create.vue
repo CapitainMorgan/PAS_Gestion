@@ -56,7 +56,8 @@ import vSelect from 'vue-select';
                         class="form-control"
                         id="email"
                         v-model="form.email"
-                        placeholder="Entrez l'email (facultatif)"
+                        placeholder="Entrez l'email"
+                        required
                         />
                     </div>
 
@@ -67,7 +68,8 @@ import vSelect from 'vue-select';
                         class="form-control"
                         id="mobile"
                         v-model="form.mobile"
-                        placeholder="Entrez le mobile (facultatif)"
+                        placeholder="Entrez le mobile"
+                        required
                         />
                     </div>
 
@@ -78,7 +80,8 @@ import vSelect from 'vue-select';
                         class="form-control"
                         id="telephone"
                         v-model="form.telephone"
-                        placeholder="Entrez le téléphone (facultatif)"
+                        placeholder="Entrez le téléphone"
+                        required
                         />
                     </div>
 
@@ -89,7 +92,8 @@ import vSelect from 'vue-select';
                         class="form-control"
                         id="numProf"
                         v-model="form.numProf"
-                        placeholder="Entrez le numéro professionnel (facultatif)"
+                        placeholder="Entrez le numéro professionnel"
+                        required
                         />
                     </div>
 
@@ -100,7 +104,8 @@ import vSelect from 'vue-select';
                         class="form-control"
                         id="rue"
                         v-model="form.rue"
-                        placeholder="Entrez la rue (facultatif)"
+                        placeholder="Entrez la rue"
+                        required
                         />
                     </div>
 
@@ -112,7 +117,8 @@ import vSelect from 'vue-select';
                         class="form-control"
                         id="ville"
                         v-model="form.ville"
-                        placeholder="Entrez la ville (facultatif)"
+                        placeholder="Entrez la ville"
+                        required
                         />
                     </div>
 
@@ -123,7 +129,8 @@ import vSelect from 'vue-select';
                         class="form-control"
                         id="npa"
                         v-model="form.npa"
-                        placeholder="Entrez le NPA (facultatif)"
+                        placeholder="Entrez le NPA"
+                        required
                         />
                     </div>
 
@@ -134,7 +141,8 @@ import vSelect from 'vue-select';
                         class="form-control"
                         id="pays"
                         v-model="form.pays"
-                        placeholder="Entrez le pays (facultatif)"
+                        placeholder="Entrez le pays"
+                        required
                         />
                     </div>
 

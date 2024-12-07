@@ -36,9 +36,10 @@ import vSelect from 'vue-select';
                         <p><strong>Adresse:</strong> 
                           <p v-if="fournisseur.rue || fournisseur.ville || fournisseur.npa || fournisseur.pays">{{ fournisseur.rue }}, {{ fournisseur.ville }}, {{ fournisseur.npa }}, {{ fournisseur.pays }}</p>
                           <p v-else>N/A</p>
-                        </p>                        
+                        3
+                      </p>                        
                         <p><strong>Remarque:</strong> {{ fournisseur.remarque ?? 'N/A' }}</p>
-                        <p><strong>Date de Création:</strong> {{ formatDate(fournisseur.dateCreation) }}</p>
+                        <p><strong>Date de Création:</strong> {{ formatDate(fournisseur.created_at) }}</p>
                     </div>
                     </div>
 
@@ -50,7 +51,6 @@ import vSelect from 'vue-select';
                       <table class="table">
                       <thead>
                           <tr>
-                          <th>ID</th>
                           <th>Description</th>
                           <th>Taille</th>
                           <th>Quantité</th>
@@ -58,12 +58,11 @@ import vSelect from 'vue-select';
                           <th>Prix Vente</th>
                           <th>Prix Client</th>
                           <th>Prix Solde</th>
-                          <th>ID Dépot</th>
+                          <th>Date Dépot</th>
                           </tr>
                       </thead>
                       <tbody>
                           <tr v-for="article in paginatedArticles" :key="article.id">
-                              <td @click="showArticle(article.id)">{{ article.id }}</td>
                               <td @click="showArticle(article.id)">{{ article.description }}</td>
                               <td @click="showArticle(article.id)">{{ article.taille ?? 'N/A' }}</td>
                               <td @click="showArticle(article.id)">{{ article.quantite ?? 'N/A' }}</td>
@@ -71,7 +70,7 @@ import vSelect from 'vue-select';
                               <td @click="showArticle(article.id)">{{ article.prixVente ?? 'N/A' }}</td>
                               <td @click="showArticle(article.id)">{{ article.prixClient ?? 'N/A' }}</td>
                               <td @click="showArticle(article.id)">{{ article.prixSolde ?? 'N/A' }}</td>
-                              <td @click="showArticle(article.id)">{{ article.depot_id ?? 'N/A' }}</td>
+                              <td @click="showArticle(article.id)">{{ formatDate(article.dateDepot) }}</td>
                           </tr>
                       </tbody>
                       </table>
@@ -102,19 +101,20 @@ import vSelect from 'vue-select';
                       </template> 
 
                       <template v-slot:body>
+                        <div class="form-group">
+                          <select v-model="ficheChoice" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                              <option value="1">Fiche Dépot</option>
+                              <option value="2">Fiche Vente</option>
+                              <option value="3">Fiche Conditions Générales</option>
+                          </select>
+                      </div>
+
                         <form @submit.prevent="generateFicheClient">
                           <!-- Choix du depot_id -->
-                          <InputLabel for="depot_id" class="label">Choisir un dépot</InputLabel>
-                          <v-select
-                            :options="depots_id"
-                            v-model="depot_id"
-                            :reduce="depot => depot"
-                            label="depot_id"
-                            placeholder="Choisir un dépot"
-                            search-placeholder="Rechercher un dépot..."
-                            />
-                          <InputLabel for="depotDate" class="label">Depuis le ...</InputLabel>
-                          <TextInput style="width:100%" type="date" v-model="statusDate" required />
+                          <InputLabel v-if="ficheChoice == 1" for="depotDate" class="label">Dépot le ...</InputLabel>
+                          <TextInput v-if="ficheChoice == 1" style="width:100%" type="date" v-model="dateDepot" required />
+                          <InputLabel v-if="ficheChoice == 2" for="venteDate" class="label">Vendu depuis le ...</InputLabel>
+                          <TextInput v-if="ficheChoice == 2" tyle="width:100%" type="date" v-model="statusDate" required />
                           <InputLabel for="conditionGenerale" class="label">Conditions Générales</InputLabel>
                           <textarea v-model="tempConditionGenerale" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" id="conditionGenerale" rows="3" placeholder="Conditions Générales"></textarea>                          
                         </form>
@@ -156,16 +156,11 @@ export default {
       showModalFiche: false,
       statusDate: null,
       tempConditionGenerale: this.conditionGenerale,
-      depot_id: null,
-      depots_id: [],
+      dateDepot: null,
+      ficheChoice: 1,
     };
   },
   computed: {
-    getDepotIdFromFournisseurArticles() {
-      this.depots_id = this.fournisseur.articles.map((article) => article.depot_id);
-      // delete duplicate values
-      this.depots_id = [...new Set(this.depots_id)];
-    },
     totalPages() {
         return Math.ceil(this.fournisseur.articles.length / this.pageSize);
     },
@@ -204,11 +199,11 @@ export default {
       });
     },
     generateFicheClient() {      
-      if (this.statusDate) {        
+      if (this.ficheChoice == 2) {        
         window.open(`/fiche-fournisseur-vente/${this.fournisseur.id}/${this.statusDate}/${this.tempConditionGenerale}`, '_blank');
       }
-      if (this.depot_id) {
-        window.open(`/fiche-fournisseur-depot/${this.fournisseur.id}/${this.depot_id}/${this.tempConditionGenerale}`, '_blank');
+      if (this.ficheChoice == 1) {
+        window.open(`/fiche-fournisseur-depot/${this.fournisseur.id}/${this.dateDepot}/${this.tempConditionGenerale}`, '_blank');
       }
       else {
         window.open(`/fiche-fournisseur/${this.fournisseur.id}/${this.tempConditionGenerale}`, '_blank');

@@ -39,7 +39,6 @@ import { Head } from '@inertiajs/vue3';
                   <table v-if="filteredArticles.length > 0">
                     <thead>
                         <tr>
-                        <th>ID</th>
                         <th>Description</th>
                         <th>Taille</th>
                         <th>Quantité</th>
@@ -51,8 +50,7 @@ import { Head } from '@inertiajs/vue3';
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="article in paginatedArticles" :key="article.id">                          
-                            <td @click="showArticle(article.id)">{{ article.id }}</td>
+                        <tr v-for="article in paginatedArticles" :key="article.id">        
                             <td @click="showArticle(article.id)">{{ article.description }}</td>
                             <td @click="showArticle(article.id)">{{ article.taille ?? 'N/A' }}</td>
                             <td @click="showArticle(article.id)">{{ article.quantite ?? 'N/A' }}</td>

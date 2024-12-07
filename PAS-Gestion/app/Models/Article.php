@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Depot;
+use App\Models\User;
 use App\Models\Fournisseur;
 use App\Models\Vente;
 use App\Models\Frais;
@@ -22,13 +22,16 @@ class Article extends Model
         'prixClient', 
         'prixSolde',
         'status',
-        'depot_id',
+        'dateDepot', 
+        'dateEcheance',
+        'fournisseur_id',
+        'utilisateur_id',
         'vente_id',
     ];
 
-    public function depot()
+    public function user()
     {
-        return $this->belongsTo(Depot::class, 'depot_id');
+        return $this->belongsTo(User::class, 'utilisateur_id');
     }
 
     public function vente()
@@ -38,14 +41,7 @@ class Article extends Model
 
     public function fournisseur()
     {
-        return $this->hasManyThrough(
-            Fournisseur::class, 
-            Depot::class, 
-            'id', 
-            'id', 
-            'depot_id', 
-            'fournisseur_id'
-        );
+        return $this->belongsTo(Fournisseur::class, 'fournisseur_id');
     }
 
     public function frais()

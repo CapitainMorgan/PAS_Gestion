@@ -12,16 +12,15 @@ class CreateFournisseursTable extends Migration
             $table->id();
             $table->string('nom', 50);
             $table->string('prenom', 50);
-            $table->string('rue', 50)->nullable();
-            $table->string('ville', 50)->nullable();
-            $table->string('npa', 10)->nullable();
-            $table->string('pays', 50)->nullable();
-            $table->date('dateCreation')->nullable();
-            $table->string('mobile', 15)->nullable();
-            $table->string('numProf', 20)->nullable();
+            $table->string('rue', 50);
+            $table->string('ville', 50);
+            $table->string('npa', 10);
+            $table->string('pays', 50);
+            $table->string('mobile', 15);
+            $table->string('numProf', 20);
             $table->string('remarque', 255)->nullable();
-            $table->string('email', 50)->nullable();
-            $table->string('telephone', 15)->nullable();
+            $table->string('email', 50);
+            $table->string('telephone', 15);
             $table->timestamps();
         });
     }

@@ -17,8 +17,11 @@ class CreateArticlesTable extends Migration
             $table->string('localisation', 255)->nullable();
             $table->decimal('prixClient', 10, 2)->nullable();
             $table->decimal('prixSolde', 10, 2)->nullable();
-            $table->string('status', 255);           
-            $table->foreignId('depot_id')->constrained('depots')->onDelete('cascade');
+            $table->string('status', 255);   
+            $table->date('dateDepot');
+            $table->date('dateEcheance');
+            $table->foreignId('utilisateur_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('fournisseur_id')->constrained('fournisseurs')->onDelete('cascade');
             $table->foreignId('vente_id')->constrained('ventes')->onDelete('cascade')->nullable();
             $table->timestamps();
         });

@@ -84,6 +84,7 @@ import vSelect from 'vue-select';
                             <option value="En Stock">En Stock</option>
                             <option value="Vendu">Vendu</option>
                             <option value="Rendu">Rendu</option>
+                            <option value="Perdu">Rendu défectueux</option>
                             <option value="Donné">Donné</option>
                         </select>                 
                     </div>    

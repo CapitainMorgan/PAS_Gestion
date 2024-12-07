@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Fournisseur;
-use App\Models\Depot;
 use App\Models\Article;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -36,42 +35,39 @@ class FournisseurController extends Controller
         return redirect()->route('fournisseur.show', $fournisseur->id)->with('success', 'Fournisseur créé avec succès');;
     }
 
-    public function generateFicheDepotFournisseur($id, $depot_id, $conditionGenerale)
+    public function generateFicheDepotFournisseur($id, $date_depot, $conditionGenerale)
     {
         $fournisseur = Fournisseur::findOrFail($id);
         
-        $articles = $fournisseur->articles->where('depot_id', $depot_id);
-        $depot = Depot::findOrFail($depot_id);
+        $articles = $fournisseur->articles->where('dateDepot', '==', $date_depot);
 
         $conditionsArray = explode("\n", $conditionGenerale);
 
-        $pdf = PDF::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles','depot', 'conditionsArray'));
-        return $pdf->download('fiche_fournisseur.pdf');
+        $pdf = PDF::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles','conditionsArray'));
+        return $pdf->stream('fiche_fournisseur.pdf');
     }
     
-    public function generateFicheVenteFournisseur($id,$date_debut, $conditionGenerale)
+    public function generateFicheVenteFournisseur($id, $date_debut, $conditionGenerale)
     {        
         # get all articles of the fournisseur with vente table
         $fournisseur = Fournisseur::with('articles.vente')->find($id);        
-        $articles = $fournisseur->articles->where('vente.created_at', '>=', $date_debut);    
-        $depot = NULL;   
+        $articles = $fournisseur->articles->where('vente.created_at', '>=', $date_debut);      
         
         $conditionsArray = explode("\n", $conditionGenerale);
 
-        $pdf = PDF::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles','depot',  'conditionsArray'));
-        return $pdf->download('fiche_fournisseur.pdf');
+        $pdf = PDF::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles',  'conditionsArray'));
+        return $pdf->stream('fiche_fournisseur.pdf');
     }
 
     public function generateFicheFournisseur($id, $conditionGenerale)
     {
         $fournisseur = Fournisseur::findOrFail($id);
         $articles = NULL;
-        $depot = NULL;  
 
         $conditionsArray = explode("\n", $conditionGenerale);
 
-        $pdf = PDF::loadView('fiches.fiche_fournisseur', compact('fournisseur','articles','depot',  'conditionsArray'));
-        return $pdf->download('fiche_fournisseur.pdf');
+        $pdf = PDF::loadView('fiches.fiche_fournisseur', compact('fournisseur','articles',  'conditionsArray'));
+        return $pdf->stream('fiche_fournisseur.pdf');
     }
 
 

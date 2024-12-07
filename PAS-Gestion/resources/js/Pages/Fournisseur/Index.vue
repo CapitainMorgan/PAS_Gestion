@@ -39,7 +39,6 @@ import { Head } from '@inertiajs/vue3';
                   <table v-if="filteredFournisseurs.length > 0">
                     <thead>
                         <tr>
-                        <th>ID</th>
                         <th>Nom</th>
                         <th>Prénom</th>                        
                         <th>Email</th>
@@ -52,7 +51,6 @@ import { Head } from '@inertiajs/vue3';
                     <tbody>
                         <tr v-for="fournisseur in paginatedFournisseurs" :key="fournisseur.id">
                           
-                            <td @click="showFournisseur(fournisseur.id)">{{ fournisseur.id }}</td>
                             <td @click="showFournisseur(fournisseur.id)">{{ fournisseur.nom ?? 'N/A'}}</td>
                             <td @click="showFournisseur(fournisseur.id)">{{ fournisseur.prenom ?? 'N/A'}}</td>                        
                             <td @click="showFournisseur(fournisseur.id)">{{ fournisseur.email ?? 'N/A' }}</td>

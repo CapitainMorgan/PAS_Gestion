@@ -32,7 +32,7 @@ Route::put('/fournisseur/{id}', [FournisseurController::class, 'update'])->middl
 Route::get('/fournisseur.create', [FournisseurController::class, 'create'])->middleware(['auth', 'verified'])->name('fournisseur.create');
 Route::post('/fournisseur', [FournisseurController::class, 'store'])->middleware(['auth', 'verified'])->name('fournisseur.store');
 
-Route::get('/fiche-fournisseur-depot/{id}/{depot_id}/{conditionGenerale}', [FournisseurController::class, 'generateFicheDepotFournisseur'])->middleware(['auth', 'verified'])->name('fiche.fournisseur_depot');
+Route::get('/fiche-fournisseur-depot/{id}/{date_depot}/{conditionGenerale}', [FournisseurController::class, 'generateFicheDepotFournisseur'])->middleware(['auth', 'verified'])->name('fiche.fournisseur_depot');
 Route::get('/fiche-fournisseur-vente/{id}/{date_debut}/{conditionGenerale}', [FournisseurController::class, 'generateFicheVenteFournisseur'])->middleware(['auth', 'verified'])->name('fiche.fournisseur_vente');
 Route::get('/fiche-fournisseur/{id}/{conditionGenerale}', [FournisseurController::class, 'generateFicheFournisseur'])->middleware(['auth', 'verified'])->name('fiche.fournisseur');
 

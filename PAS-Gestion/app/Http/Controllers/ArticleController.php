@@ -79,16 +79,14 @@ class ArticleController extends Controller
     // POST: Créer un nouvel article
     public function store(Request $request, $EchanceDays = 30)
     {
-        // Crée un dépôt liant l'article et le fournisseur
-        $depot = Depot::create([
-            'fournisseur_id' => $request->fournisseur_id,
-            'dateDepot' => now(),
-            // now + 30 jours
-            'dateEcheance' => now()->addDays($EchanceDays),
-        ]);
+        //add dateDepot to request
+        $request->merge(['dateDepot' => now()]);
 
-        //add depot_id to request
-        $request->merge(['depot_id' => $depot->id]);
+        $request->merge(['dateEcheance' => now()->addDays($EchanceDays)]);
+
+        //add utilisateur_id to request
+
+        $request->merge(['utilisateur_id' => auth()->user()->id]);
 
         //add status to request
         $request->merge(['status' => 'En stock']);
@@ -109,20 +107,14 @@ class ArticleController extends Controller
         //get fournisseur_id from request
         $fournisseur_id = $request->articles[0]['fournisseur_id'];
 
-        // Crée un dépôt liant l'article et le fournisseur
-        $depot = Depot::create([
-            'fournisseur_id' => $fournisseur_id,
-            'dateDepot' => now(),
-            // now + 30 jours
-            'dateEcheance' => now()->addDays($EchanceDays),
-        ]);
-
         foreach ($articles as $article) {
             $article['status'] = 'En stock';
-            $article['depot_id'] = $depot->id;
             $article['vente_id'] = null;
             $article['fournisseur_id'] = $fournisseur_id;
+            $article['dateDepot'] = now();
+            $article['dateEcheance'] = now()->addDays($EchanceDays);
             $article['dateEcheance'] = now()->addDays(30);
+            $article['utilisateur_id'] = auth()->user()->id;
 
             Article::create($article);
         }
@@ -133,8 +125,7 @@ class ArticleController extends Controller
     // GET: Récupérer un article spécifique
     public function show($id)
     {
-        $article = Article::with("fournisseur")->with('frais')->find($id);
-
+        $article = Article::with("fournisseur")->with('frais')->with('user')->find($id);
 
         if (!$article) {
             return response()->json(['error' => 'Article not found'], 404);

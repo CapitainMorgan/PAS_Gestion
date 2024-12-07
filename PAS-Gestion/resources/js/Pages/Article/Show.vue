@@ -29,7 +29,6 @@ import { Head } from '@inertiajs/vue3';
                     <div class="card mb-4">
                         <div class="card-body">
                             <h5 class="card-title">{{ article.description }}</h5>
-                            <p><strong>ID:</strong> {{ article.id }}</p>
                             <p><strong>Taille:</strong> {{ article.taille ?? 'N/A' }}</p>
                             <p><strong>Prix Vente:</strong> {{ article.prixVente ?? 'N/A' }}</p>
                             <p><strong>Prix Client:</strong> {{ article.prixClient ?? 'N/A' }}</p>
@@ -37,9 +36,13 @@ import { Head } from '@inertiajs/vue3';
                             <p><strong>Quantité:</strong> {{ article.quantite ?? 'N/A' }}</p>
                             <p><strong>Localisation:</strong> {{ article.localisation ?? 'N/A' }}</p>
                             <p><strong>Status</strong> {{ article.status }}</p>
-                            <p><strong>ID Dépot:</strong> {{ article.depot_id ?? 'N/A' }}</p>
-                            <p @click="showFournisseur(article.fournisseur[0].id)"><strong>Appartient à:</strong> {{ article.fournisseur[0].nom }} {{ article.fournisseur[0].prenom }}</p>
-                            <p @click="showFournisseur(article.fournisseur[0].id)"><strong>Email du Fournisseur:</strong> {{ article.fournisseur[0].email }}</p>
+                            <p><strong>Créé le:</strong> {{ formatDate(article.created_at) }}</p>
+                            <p><strong>Date d'échéance:</strong> {{ formatDate(article.dateEcheance) }}</p>
+                            <p><strong>Modifié le:</strong> {{ formatDate(article.updated_at) }}</p>                            
+                            <p><strong>Crée par :</strong> {{ article.user.name }} {{ article.user.email }}</p>
+
+                            <p @click="showFournisseur(article.fournisseur.id)"><strong>Appartient à:</strong> {{ article.fournisseur.nom }} {{ article.fournisseur.prenom }}</p>
+                            <p @click="showFournisseur(article.fournisseur.id)"><strong>Email du Fournisseur:</strong> {{ article.fournisseur.email }}</p>
                         </div>
                     </div>
 
@@ -133,6 +136,13 @@ export default {
     };
   },
   methods: {
+    formatDate(date) {
+      return new Date(date).toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    },
     async addFrais() {
       try {
         await this.$inertia.post(route('fraisArticle.store', this.article.id), this.newFrais);
