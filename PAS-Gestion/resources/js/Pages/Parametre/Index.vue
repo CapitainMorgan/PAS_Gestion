@@ -184,9 +184,7 @@ export default {
   methods: {
     updateSettings() {
       this.form.put(route('parametre.update'), {
-        onSuccess: () => {
-            this.form.reset();  // Reset du formulaire après succès de la mise à jour
-        },
+        
       });
     },
     DeleteUser(id) {

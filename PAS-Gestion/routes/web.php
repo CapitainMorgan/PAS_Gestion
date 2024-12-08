@@ -53,6 +53,9 @@ Route::put('/article/{id}/frais', [ArticleController::class, 'updateFrais'])->mi
 Route::get('/article/{id}/edit', [ArticleController::class, 'edit'])->middleware(['auth', 'verified'])->name('article.edit');
 Route::put('/article/{id}', [ArticleController::class, 'update'])->middleware(['auth', 'verified'])->name('article.update');
 Route::get('/generate-barcode/{id}', [ArticleController::class, 'generateBarcode'])->middleware(['auth', 'verified']);
+Route::post('/article/barcode/{barcode}', [ArticleController::class, 'getArticleByBarcode'])
+    ->middleware(['auth', 'verified'])
+    ->name('article.barcode');
 
 
 Route::get('/frais.index', [FraisSocieteController::Class, 'index'])->middleware(['auth', 'verified'])->name('frais.index');
@@ -76,9 +79,7 @@ Route::get('/caisse.index', function () {
 })->middleware(['auth', 'verified'])->name('caisse.index');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [ArticleController::class, 'getArticlesByEndDate'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');    
 });
@@ -94,5 +95,11 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/frais-societe/{id}', [FraisSocieteController::class, 'destroy'])->name('frais-societe.destroy');
     Route::delete('/vente/{id}', [VenteController::class, 'destroy'])->name('vente.destroy');
 });
+
+Route::post('/send-reminder/articles', [ArticleController::class, 'sendReminderForArticles'])
+    ->middleware(['auth', 'verified'])
+    ->name('send-reminder');
+
+
 
 require __DIR__.'/auth.php';

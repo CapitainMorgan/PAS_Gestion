@@ -8,6 +8,8 @@ use App\Models\Frais;
 use App\Models\Fournisseur;
 use App\Models\Vente;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ArticleEndReminderMail;
 use Inertia\Inertia;
 use Milon\Barcode\BarcodeGenerator;
 use Milon\Barcode\DNS1D;
@@ -22,6 +24,58 @@ class ArticleController extends Controller
         return Inertia::render('Article/Index', [
             'articles' => $articles,
         ]);
+    }
+
+    public function getArticleByBarcode($barcode)
+    {
+        //parse the barcode 
+        $barcode = explode('\'', $barcode);
+        
+        $article = Article::find($barcode[1]);
+
+        if (!$article) {
+            return response()->json(['error' => 'Article not found'], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'article' => $article, // Retourne l'article trouvé
+        ]);
+    }
+
+
+    public function getArticlesByEndDate()
+    {
+        $articles = Article::where('dateEcheance', '<', now())->where('statusMail', 0)->with('fournisseur')->get();
+        return Inertia::render('Dashboard', [
+            'articles' => $articles,
+        ]);
+    }
+
+    public function sendReminderForArticles(Request $request)
+    {
+        $articleIds = $request->input('article_ids');
+
+        $articles = Article::whereIn('id', $articleIds)->get();
+
+        if ($articles->isEmpty()) {
+            return response()->json(['error' => 'Aucun article trouvé'], 404);
+        }
+
+        // Trouver les utilisateurs liés à ces articles
+        $user = $articles->first()->user;
+
+        if (!$user || !$user->email) {
+            return response()->json(['error' => 'Aucun utilisateur ou email trouvé pour ces articles'], 404);
+        }
+
+        // Envoi de l'email
+        Mail::to($user->email)->send(new ArticleEndReminderMail($articles));
+
+        // Mettre à jour le statut des articles
+        Article::whereIn('id', $articleIds)->update(['statusMail' => 1]);
+
+        return response()->route('dashboard')->with('success', 'Email envoyé avec succès');
     }
 
     public function generateBarcode($id)
@@ -110,7 +164,7 @@ class ArticleController extends Controller
 
         print_r( $articles);
 
-        /if $EchanceDays is not int convert it to int
+        //if $EchanceDays is not int convert it to int
         if (!is_int($EchanceDays)) {
             $EchanceDays = (int) $EchanceDays;
         }

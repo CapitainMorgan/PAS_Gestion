@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ParametreController extends Controller
 {
@@ -32,9 +33,10 @@ class ParametreController extends Controller
         $data = $request;
 
         $settings = [
-            'app_tva' => $data['tva'],
-            'app_conditions_generales' => $data['conditionsGenerales'],
-            'app_newsletter_email' => $data['newsletterEmail'],
+            'APP_TVA' => $data['tva'],
+            'APP_CONDITIONS_GENERALES' => $data['conditionsGenerales'],
+            'MAIL_USERNAME' => $data['newsletterEmail'],
+            'MAIL_FROM_ADDRESS' => $data['newsletterEmail'],
         ];
 
         $path = base_path('.env');
@@ -46,16 +48,19 @@ class ParametreController extends Controller
                 $envKey = strtoupper($key);
                 $envValue = env($envKey);
 
+                // Échapper les caractères spéciaux
+                $escapedValue = preg_match('/[\s=]/', $value) ? "\"$value\"" : $value;
+
                 if ($envValue) {
-                    $env = str_replace("{$envKey}={$envValue}", "{$envKey}={$value}", $env);
+                    $env = str_replace("{$envKey}={$envValue}", "{$envKey}={$escapedValue}", $env);
                 } else {
-                    $env .= "\n{$envKey}={$value}";
+                    $env .= "\n{$envKey}={$escapedValue}";
                 }
             }
 
             file_put_contents($path, $env);
         }
 
-        return redirect()->back();
+        return response()->route('parametre.index')->with('success', 'Paramètres mis à jour avec succès');
     }
 }

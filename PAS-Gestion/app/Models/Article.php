@@ -24,6 +24,7 @@ class Article extends Model
         'status',
         'dateDepot', 
         'dateEcheance',
+        'statusMail',
         'fournisseur_id',
         'utilisateur_id',
         'vente_id',
