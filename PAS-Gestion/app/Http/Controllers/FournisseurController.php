@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Fournisseur;
 use App\Models\Article;
+use App\Models\Vente;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Barryvdh\Snappy\Facades\SnappyPdf;
@@ -51,7 +52,16 @@ class FournisseurController extends Controller
     {        
         # get all articles of the fournisseur with vente table
         $fournisseur = Fournisseur::with('articles.vente')->find($id);        
-        $articles = $fournisseur->articles->where('vente.created_at', '>=', $date_debut);      
+        $articles = $fournisseur->articles->where('vente.created_at', '>=', $date_debut);  
+        
+        // get all ventes where article_id is in the articles array
+        $ventes = Vente::whereIn('article_id', $articles->pluck('id'))->get();
+
+        //sum quantity of all ventes for each article
+        $articles->map(function ($article) use ($ventes) {
+            $article->quantite = $ventes->where('article_id', $article->id)->sum('quantite');
+            return $article;
+        });
         
         $conditionsArray = explode("\n", $conditionGenerale);
 

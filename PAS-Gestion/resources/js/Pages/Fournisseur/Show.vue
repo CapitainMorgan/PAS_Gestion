@@ -37,7 +37,6 @@ import vSelect from 'vue-select';
                         <p><strong>Adresse:</strong> 
                           <p v-if="fournisseur.rue || fournisseur.ville || fournisseur.npa || fournisseur.pays">{{ fournisseur.rue }}, {{ fournisseur.ville }}, {{ fournisseur.npa }}, {{ fournisseur.pays }}</p>
                           <p v-else>N/A</p>
-                        3
                       </p>                        
                         <p><strong>Remarque:</strong> {{ fournisseur.remarque ?? 'N/A' }}</p>
                         <p><strong>Date de Création:</strong> {{ formatDate(fournisseur.created_at) }}</p>

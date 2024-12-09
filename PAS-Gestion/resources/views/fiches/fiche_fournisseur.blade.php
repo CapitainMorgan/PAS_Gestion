@@ -66,6 +66,7 @@ use Carbon\Carbon;
                             <th>Part Fournisseur</th>
                             <th>Prix Vente Solde</th>
                             <th>Prix Vente</th>
+                            <th>Quantité</th>
                             <th>Delai du Dépôt</th>
                         </tr>
                     </thead>
@@ -81,6 +82,7 @@ use Carbon\Carbon;
                                 <td>{{ $article->prixClient }}</td>
                                 <td>{{ $article->prixSolde }}</td>
                                 <td>{{ $article->prixVente }}</td>
+                                <td>{{ $article->quantite }}</td>
                                 <td>{{ Carbon::parse($article->dateEcheance)->format('d.m.Y') }}</td>
                             </tr>
                         @endforeach
