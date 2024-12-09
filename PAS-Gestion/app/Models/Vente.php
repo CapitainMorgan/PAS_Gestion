@@ -11,6 +11,8 @@ class Vente extends Model
 
     protected $fillable = [
         'user_id',
+        'article_id',
+        'prix_unitaire',
         'quantite',
         'status',
     ];

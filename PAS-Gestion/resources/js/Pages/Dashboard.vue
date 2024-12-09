@@ -2,7 +2,10 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
+import InputLabel from '@/components/InputLabel.vue';
+import TextInput from '@/components/TextInput.vue';
 import { Head } from '@inertiajs/vue3';
+import { start } from '@popperjs/core';
 </script>
 
 <template>
@@ -68,9 +71,22 @@ import { Head } from '@inertiajs/vue3';
                             </nav>
 
                       </div>
+                      <div v-else>
+                        <p>Aucun article en fin d'échéance</p>
+                      </div>  
                     </div>
-
-                    <PrimaryButton style="margin: 10px;" @click="excelExport">Exporter en Excel</PrimaryButton>
+                    <form v-if="false" @submit.prevent="excelExport" class="form-grid" style="padding: 10px;">
+                      <div class="form-group">
+                        <InputLabel for="start_date">Date de début :</InputLabel>
+                        <TextInput type="date" name="start_date" required/>
+                      </div>
+                      <div class="form-group">
+                        <InputLabel for="end_date">Date de fin :</InputLabel>
+                        <TextInput type="date" name="end_date" required/>
+                      </div>
+                    </form>                    
+                    <PrimaryButton v-if="false" style="margin: 10px;" @click="excelExport">Exporter en Excel</PrimaryButton>
+                    
                 </div>
             </div>
         </div>
@@ -93,6 +109,8 @@ import { Head } from '@inertiajs/vue3';
         searchTerm: '',
         currentPage: 1,
         pageSize: 10,
+        start_date: '',
+        end_date: '',
       };
     },
     computed: {
@@ -178,6 +196,22 @@ import { Head } from '@inertiajs/vue3';
       showArticle(id) {
         this.$inertia.visit(route('article.show', id));
       },
+      excelExport() {
+        if(this.start_date != '' || this.end_date != '') {
+          this.$toast.error('Veuillez renseigner les dates de début et de fin');
+          return;
+        }
+
+        this.$inertia.get(route('export.articles'), {
+          start_date: this.start_date,
+          end_date: this.end_date,
+        }).then(() => {
+          this.$toast.success('Exportation en Excel réussie');
+        }).catch((error) => {
+          console.error(error);
+          this.$toast.error('Erreur lors de l\'exportation en Excel');
+        });
+      }
     },
 };
 

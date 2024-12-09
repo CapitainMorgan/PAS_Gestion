@@ -29,7 +29,7 @@ import { Head } from '@inertiajs/vue3';
 
                     <div class="card mb-4">
                         <div class="card-body">
-                            <h5 class="card-title">{{ article.description }}</h5>
+                            <h1 style="font-size: 30px">{{ article.description }}</h1>
                             <p><strong>Taille:</strong> {{ article.taille ?? 'N/A' }}</p>
                             <p><strong>Prix Vente:</strong> {{ article.prixVente ?? 'N/A' }}</p>
                             <p><strong>Prix Client:</strong> {{ article.prixClient ?? 'N/A' }}</p>
@@ -39,7 +39,7 @@ import { Head } from '@inertiajs/vue3';
                             <p><strong>Status</strong> {{ article.status }}</p>
                             <p><strong>Créé le:</strong> {{ formatDate(article.created_at) }}</p>
                             <p><strong>Date d'échéance:</strong> {{ formatDate(article.dateEcheance) }}</p>
-                            <p><strong>Modifié le:</strong> {{ formatDate(article.updated_at) }}</p>                            
+                            <p><strong>Modifié le:</strong> {{ formatDate(article.dateStatus) }}</p>                          
                             <p><strong>Crée par :</strong> {{ article.user.name }} {{ article.user.email }}</p>
 
                             <p @click="showFournisseur(article.fournisseur.id)"><strong>Appartient à:</strong> {{ article.fournisseur.nom }} {{ article.fournisseur.prenom }}</p>
@@ -47,7 +47,7 @@ import { Head } from '@inertiajs/vue3';
                         </div>
                     </div>
 
-                    <SecondaryButton><a class="link" :href="route('article.edit', article.id)">Modifier l'article</a></SecondaryButton>
+                    <SecondaryButton @click="update()">Modifier l'article</SecondaryButton>
 
                     <div v-if="article.frais.length > 0">
                       <h2 style="margin-top: 10px;">Frais associés</h2>
@@ -169,6 +169,9 @@ export default {
         this.$toast.error("Une erreur est survenue lors de l'ajout du frais.");
       }
     },    
+    update() {
+      this.$inertia.visit(route('article.edit', this.article.id));
+    },
     generateBarcode() {
       // Utiliser l'ID de l'article pour générer le code-barres
       const articleId = this.article.id;

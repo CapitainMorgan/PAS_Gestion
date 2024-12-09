@@ -31,14 +31,28 @@ import { Head } from '@inertiajs/vue3';
                     v-model="searchTerm"
                     @input="searchArticles"
                     placeholder="Rechercher par nom..."
-                  />
+                  />                 
 
                   <PrimaryButton @click="createArticle()">Créer un nouveau</PrimaryButton>
+
+                  <div style="margin-top: 10px;">
+                      <select v-model="status" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                          <option value="En Stock">En Stock</option>
+                          <option value="Vendu">Vendu</option>
+                          <option value="Rendu">Rendu</option>
+                          <option value="Perdu">Rendu défectueux</option>
+                          <option value="Donné">Donné</option>
+                          <option value="">Tout</option>
+                      </select>                 
+                  </div> 
+
+                  
               
                   <!-- Tableau des articles -->
                   <table v-if="filteredArticles.length > 0">
                     <thead>
                         <tr>
+                        <th>ID</th>
                         <th>Description</th>
                         <th>Taille</th>
                         <th>Quantité</th>
@@ -46,11 +60,12 @@ import { Head } from '@inertiajs/vue3';
                         <th>Prix Vente</th>
                         <th>Prix Client</th>
                         <th>Prix Solde</th>
-                        <th>ID Dépot</th>
+                        <th>Date dépot</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="article in paginatedArticles" :key="article.id">        
+                        <tr v-for="article in paginatedArticles" :key="article.id">    
+                            <td @click="showArticle(article.id)">{{ article.id }}</td>    
                             <td @click="showArticle(article.id)">{{ article.description }}</td>
                             <td @click="showArticle(article.id)">{{ article.taille ?? 'N/A' }}</td>
                             <td @click="showArticle(article.id)">{{ article.quantite ?? 'N/A' }}</td>
@@ -58,7 +73,7 @@ import { Head } from '@inertiajs/vue3';
                             <td @click="showArticle(article.id)">{{ article.prixVente ?? 'N/A' }}</td>
                             <td @click="showArticle(article.id)">{{ article.prixClient ?? 'N/A' }}</td>
                             <td @click="showArticle(article.id)">{{ article.prixSolde ?? 'N/A' }}</td>
-                            <td @click="showArticle(article.id)">{{ article.depot_id ?? 'N/A' }}</td> 
+                            <td @click="showArticle(article.id)">{{ formatDate(article.dateDepot) }}</td>
                         </tr>
                     </tbody>
                   </table>
@@ -102,16 +117,18 @@ import { Head } from '@inertiajs/vue3';
         searchTerm: '',
         currentPage: 1,
         pageSize: 10,
+        status: 'En Stock',
       };
     },
     computed: {
       filteredArticles() {
         // Filtrer les articles en fonction du terme de recherche
         return this.articles.filter(article =>
-        (article.description?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
+        ((article.description?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
         (article.localisation?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
         (article.taille?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
-        (article.id?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase())
+        (article.id?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase())) &&
+        article.status.includes(this.status)
         );
       },
       totalPages() {
@@ -144,6 +161,13 @@ import { Head } from '@inertiajs/vue3';
       },
     },
     methods: {
+      formatDate(date) {
+      return new Date(date).toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    },
       changePage(page) {
         if (page < 1 || page > this.totalPages) return; // Limiter la page
         this.currentPage = page;

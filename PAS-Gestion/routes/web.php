@@ -9,9 +9,12 @@ use App\Http\Controllers\DepotController;
 use App\Http\Controllers\ParametreController;
 use App\Http\Controllers\VenteController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use App\Exports\ArticlesExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Inertia\Inertia;
 
 Route::get('/', function () {
@@ -52,6 +55,7 @@ Route::post('/article/{id}/frais', [ArticleController::class, 'storeFrais'])->mi
 Route::put('/article/{id}/frais', [ArticleController::class, 'updateFrais'])->middleware(['auth', 'verified'])->name('fraisArticle.update');
 Route::get('/article/{id}/edit', [ArticleController::class, 'edit'])->middleware(['auth', 'verified'])->name('article.edit');
 Route::put('/article/{id}', [ArticleController::class, 'update'])->middleware(['auth', 'verified'])->name('article.update');
+Route::post('/articles/updateStatus', [ArticleController::class, 'changeStatusArticles'])->middleware(['auth', 'verified'])->name('article.updateStatus');
 Route::get('/generate-barcode/{id}', [ArticleController::class, 'generateBarcode'])->middleware(['auth', 'verified']);
 Route::post('/article/barcode/{barcode}', [ArticleController::class, 'getArticleByBarcode'])
     ->middleware(['auth', 'verified'])
@@ -100,6 +104,12 @@ Route::post('/send-reminder/articles', [ArticleController::class, 'sendReminderF
     ->middleware(['auth', 'verified'])
     ->name('send-reminder');
 
+Route::post('/api/cart/add', [CartController::class, 'addToCart']);
+Route::get('/api/cart', [CartController::class, 'getCart']);
+Route::post('/api/cart/clear', [CartController::class, 'clearCart']);
 
+Route::get('/export/articles', function (Request $request) {
+    return Excel::download(new ArticlesExport($startDate, $endDate), 'articles_export.xlsx');
+})->middleware(['auth', 'verified'])->name('export.articles');
 
 require __DIR__.'/auth.php';

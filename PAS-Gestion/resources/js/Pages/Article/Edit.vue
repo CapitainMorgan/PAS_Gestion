@@ -77,6 +77,11 @@ import vSelect from 'vue-select';
                         <TextInput v-model="form.localisation" type="text" class="form-control" placeholder="Localisation" />
                     </div>
 
+                    <div class="form-group">
+                        <InputLabel for="Date de vente/rendu" class="form-label">Date de vente/rendu</InputLabel>
+                        <TextInput v-model="form.dateStatus" type="date" class="form-control" placeholder="Localisation" />
+                    </div>
+
                     <!-- Status -->
                     <div class="form-group">
                         <InputLabel for="status" class="form-label">Status</InputLabel>
@@ -130,6 +135,7 @@ export default {
         quantite: this.article.quantite,
         localisation: this.article.localisation,
         status: this.article.status,
+        dateStatus: this.article.dateStatus,
         vente_status: this.article.vente_status,
       }),
     };

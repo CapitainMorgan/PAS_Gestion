@@ -27,21 +27,77 @@ class ArticleController extends Controller
     }
 
     public function getArticleByBarcode($barcode)
-    {
-        //parse the barcode 
-        $barcode = explode('\'', $barcode);
+    {   
         
-        $article = Article::find($barcode[1]);
+        //check if there is ' in the barcode
+
+        if (strpos($barcode, '\'') === false) {
+            $id = $barcode;
+        } else {            
+            //parse the barcode 
+            $barcode = explode('\'', $barcode);
+            $id = $barcode[1];
+        }
+        
+        $article = Article::find($id);
 
         if (!$article) {
             return response()->json(['error' => 'Article not found'], 404);
         }
 
         return response()->json([
-            'success' => true,
             'article' => $article, // Retourne l'article trouvé
         ]);
     }
+
+    public function changeStatusArticles(Request $request)
+    {
+        $articles = $request->input('articles');
+
+        $status = $request->input('status');
+
+        $status_vente = $request->input('status_vente');
+        
+
+        foreach ($articles as $article) {
+
+            $articleItem = Article::find($article['id']);
+
+            if (!$articleItem) {
+                return response()->json(['error' => 'Article not found'], 404);
+            }
+            // check if prixSolde is set
+            if ($article['prixSolde'] != NULL) {
+                $prix = $article['prixSolde'];
+            }else{
+                $prix = $article['prixVente'];
+            }
+            $vente = $this->createVenteIfStatusIsVendu($article['id'], $status, $status_vente, $prix ,$article['quantiteVente']);
+
+            if ($vente) {
+                $articleItem->vente_id = $vente->id;
+            }        
+            
+            if ($article['quantiteVente'] > $article['quantite']) {
+                return response()->json(['error' => 'La quantité vendue ne peut pas être supérieure à la quantité en stock'], 400);
+            }
+            // met a jour la quantite
+            $articleItem->quantite = $article['quantite'] - $article['quantiteVente'] ;
+
+            if ($status != 'Vendu' && $articleItem->quantite != 0) {
+                $articleItem->status = $status;
+            } else {
+                $articleItem->status = 'En stock';
+            }
+
+            $articleItem->dateStatus = now();
+
+            $articleItem->save();
+
+        }
+
+        return response()->json(['message' => 'Articles mis à jour avec succès']);
+    }    
 
 
     public function getArticlesByEndDate()
@@ -102,7 +158,7 @@ class ArticleController extends Controller
         ]);
     }
 
-    private function createVenteIfStatusIsVendu($articleId, $status, $status_vente = 'Cash', $quantite = 1)
+    private function createVenteIfStatusIsVendu($articleId, $status, $status_vente = 'Cash', $prix, $quantite = 1)
     {
         if ($status_vente == NULL) {
             $status_vente = 'Cash';
@@ -111,6 +167,8 @@ class ArticleController extends Controller
         if ($status == 'Vendu') {
             $vente = new Vente();
             $vente->quantite = $quantite;
+            $vente->prix_unitaire = $prix;
+            $vente->article_id = $articleId;
             $vente->status = $status_vente;
             $vente->utilisateur_id = auth()->user()->id;
             $vente->save();
@@ -151,6 +209,8 @@ class ArticleController extends Controller
         //add status to request
         $request->merge(['status' => 'En stock']);
 
+        $request->merge(['dateStatus' => now()]);
+
         $article = Article::create($request->all());  
 
         return redirect()->route('article.show', $article->id)->with('success', 'Article créé avec succès');;
@@ -178,7 +238,7 @@ class ArticleController extends Controller
             $article['fournisseur_id'] = $fournisseur_id;
             $article['dateDepot'] = now();
             $article['dateEcheance'] = now()->addDays($EchanceDays);
-            $article['dateEcheance'] = now()->addDays(30);
+            $article['dateStatus'] = now();
             $article['utilisateur_id'] = auth()->user()->id;
 
             Article::create($article);
@@ -247,6 +307,13 @@ class ArticleController extends Controller
 
             if ($vente) {
                 $request->merge(['vente_id' => $vente->id]);
+            }
+        }
+
+        //check if status changed
+        if ($request->status != $article->status) {
+            if($request->dateStatus == $article->dateStatus){
+                $request->merge(['dateStatus' => now()]);
             }
         }
 
