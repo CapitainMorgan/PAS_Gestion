@@ -6,7 +6,7 @@ use Carbon\Carbon;
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Fiche Fournisseur</title>
+    <title>Fiche Fournisseur de @if ($status === "vente") Vente @else Dépôt @endif</title>
     <style>
         body { font-family: Arial, sans-serif; font-size: 12px; height: 100%; margin: 0; }
         .header { text-align: center; font-weight: bold; font-size: 18px; margin-bottom: 10px; }
@@ -21,6 +21,7 @@ use Carbon\Carbon;
     <div class="content" style="min-height: calc(100vh - 60px); display: flex; flex-direction: column;">
         <div class="main" style="flex=1">
             <div class="header">
+                Fiche fournisseur de @if ($status === "vente") vente @else dépôt @endif<br>
                 Prêt à Séduire<br>
                 Rue du Liseron 9, 1006 Lausanne-Ouchy Tél: 021 601 32 29
             </div>
@@ -78,7 +79,7 @@ use Carbon\Carbon;
                             <tr>
                                 <td>{{ $num++ }}</td>
                                 <td>{{ $article->description }}</td>
-                                <td>@if ($article->vente !== NULL) {{ $article->vente->status }} @endif</td> <!-- Visa si nécessaire -->
+                                <td>@if ($status === "vente") {{ $article->vente->status }} @endif</td> <!-- Visa si nécessaire -->
                                 <td>{{ $article->prixClient }}</td>
                                 <td>{{ $article->prixSolde }}</td>
                                 <td>{{ $article->prixVente }}</td>

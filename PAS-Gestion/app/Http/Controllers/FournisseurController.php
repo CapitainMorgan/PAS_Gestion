@@ -44,7 +44,9 @@ class FournisseurController extends Controller
 
         $conditionsArray = explode("\n", $conditionGenerale);
 
-        $pdf = PDF::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles','conditionsArray'));
+        $status = 'dépôt';
+
+        $pdf = PDF::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles','conditionsArray', 'status'));
         return $pdf->stream('fiche_fournisseur.pdf');
     }
     
@@ -65,7 +67,9 @@ class FournisseurController extends Controller
         
         $conditionsArray = explode("\n", $conditionGenerale);
 
-        $pdf = PDF::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles',  'conditionsArray'));
+        $status = 'vente';
+
+        $pdf = PDF::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles',  'conditionsArray', 'status'));
         return $pdf->stream('fiche_fournisseur.pdf');
     }
 
