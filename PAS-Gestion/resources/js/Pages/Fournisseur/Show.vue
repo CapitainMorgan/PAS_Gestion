@@ -129,7 +129,7 @@ import vSelect from 'vue-select';
                     <PrimaryButton class="button" @click="createDepot(fournisseur.id)">Faire un nouveau dépot</PrimaryButton>
                     <PrimaryButton class="button" @click="indexFournisseur()">Retour à la liste des Fournisseurs</PrimaryButton>
                     <div v-if="isAdmin" class="form-group full-width">
-                      <DangerButton class="btn btn-primary" @click="deleteFournisseur()">Supprimer le fournisseur</DangerButton>
+                      <DangerButton class="boutton" @click="deleteFournisseur()">Supprimer le fournisseur</DangerButton>
                     </div>
                 </div>        
                 </div>

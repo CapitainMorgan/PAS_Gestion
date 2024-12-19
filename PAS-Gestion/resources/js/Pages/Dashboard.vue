@@ -85,7 +85,7 @@ import { start } from '@popperjs/core';
                         <TextInput type="date" name="end_date" required/>
                       </div>
                     </form>                    
-                    <PrimaryButton v-if="false" style="margin: 10px;" @click="excelExport">Exporter en Excel</PrimaryButton>
+                    <PrimaryButton style="margin: 10px;" @click="excelExport">Exporter en Excel</PrimaryButton>
                     
                 </div>
             </div>
@@ -202,15 +202,13 @@ import { start } from '@popperjs/core';
           return;
         }
 
-        this.$inertia.get(route('export.articles'), {
+        const url = route('export.articles', {
           start_date: this.start_date,
           end_date: this.end_date,
-        }).then(() => {
-          this.$toast.success('Exportation en Excel réussie');
-        }).catch((error) => {
-          console.error(error);
-          this.$toast.error('Erreur lors de l\'exportation en Excel');
         });
+
+        // Ouvre la route dans une nouvelle fenêtre
+        window.open(url, '_blank');
       }
     },
 };

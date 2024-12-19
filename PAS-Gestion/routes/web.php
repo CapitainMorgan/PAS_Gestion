@@ -108,8 +108,8 @@ Route::post('/api/cart/add', [CartController::class, 'addToCart']);
 Route::get('/api/cart', [CartController::class, 'getCart']);
 Route::post('/api/cart/clear', [CartController::class, 'clearCart']);
 
-Route::get('/export/articles', function (Request $request) {
-    return Excel::download(new ArticlesExport($startDate, $endDate), 'articles_export.xlsx');
-})->middleware(['auth', 'verified'])->name('export.articles');
+Route::get('/export-articles', [ArticleController::class, 'exportArticles'])
+    ->middleware('auth')
+    ->name('export.articles');
 
 require __DIR__.'/auth.php';

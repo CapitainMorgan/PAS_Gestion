@@ -340,4 +340,14 @@ class ArticleController extends Controller
 
         return redirect()->route('article.index')->with('message', 'Article supprimer avec succès.');
     }
+
+    public function exportArticles(Request $request)
+    {
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
+        return view('exports.articles', [
+            'articles' => Article::whereBetween('dateDepot', [$startDate, $endDate])->get(),
+        ]);
+    }
 }
