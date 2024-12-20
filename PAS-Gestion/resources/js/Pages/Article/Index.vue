@@ -127,7 +127,7 @@ import { Head } from '@inertiajs/vue3';
         ((article.description?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
         (article.localisation?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
         (article.taille?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
-        (article.id?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase())) &&
+        (article.id?.toString().toLowerCase() ?? '').includes(this.searchTerm.toLowerCase())) &&
         article.status.includes(this.status)
         );
       },

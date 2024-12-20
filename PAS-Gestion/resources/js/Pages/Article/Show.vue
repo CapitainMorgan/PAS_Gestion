@@ -38,7 +38,12 @@ import { Head } from '@inertiajs/vue3';
                             <p><strong>Localisation:</strong> {{ article.localisation ?? 'N/A' }}</p>
                             <p><strong>Status</strong> {{ article.status }}</p>
                             <p><strong>Créé le:</strong> {{ formatDate(article.created_at) }}</p>
-                            <p><strong>Date d'échéance:</strong> {{ formatDate(article.dateEcheance) }}</p>
+                            <p><strong>Date d'échéance:</strong> {{ formatDate(article.dateEcheance) }}</p> 
+                            <div v-if="new Date(article.dateEcheance) < new Date()">
+                              <p v-if="article.statusMail == 0" style="color: red;"> Article en fin d'écheance</p> 
+                              <p v-if="article.statusMail == 1" >Mail envoyé</p>
+                              <p v-if="article.statusMail == 0" >Mail non envoyé</p>
+                            </div>
                             <p><strong>Modifié le:</strong> {{ formatDate(article.dateStatus) }}</p>                          
                             <p><strong>Crée par :</strong> {{ article.user.name }} {{ article.user.email }}</p>
 

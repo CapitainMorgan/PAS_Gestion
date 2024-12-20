@@ -75,7 +75,7 @@ import { start } from '@popperjs/core';
                         <p>Aucun article en fin d'échéance</p>
                       </div>  
                     </div>
-                    <form v-if="false" @submit.prevent="excelExport" class="form-grid" style="padding: 10px;">
+                    <form @submit.prevent="excelExport" class="form-grid" style="padding: 10px;">
                       <div class="form-group">
                         <InputLabel for="start_date">Date de début :</InputLabel>
                         <TextInput type="date" name="start_date" required/>

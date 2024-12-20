@@ -112,11 +112,6 @@ import { Head } from '@inertiajs/vue3';
       handleBarcodeScan(event) {
         // Vérifie si c'est une touche de caractère valide
 
-        // Détecte "Enter" ou le caractère de fin de saisie
-        if (event.key === 'Enter' || event.key === 'Tab') {
-          this.processBarcode(); // Traite le code-barres complet
-        }
-
         clearTimeout(this.scanTimeout);
 
         // Définir un délai pour considérer le scan comme terminé
@@ -133,12 +128,10 @@ import { Head } from '@inertiajs/vue3';
         
         if (response.data && response.data.article) {
 
-          
           // Ajout de la quantité de vente
           response.data.article.quantiteVente = 1;
 
           this.addToCart(response.data.article);
-
 
         } else
           console.log('Article non trouvé');

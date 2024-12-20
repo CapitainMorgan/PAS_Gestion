@@ -42,11 +42,29 @@ import vSelect from 'vue-select';
                         <p><strong>Date de Création:</strong> {{ formatDate(fournisseur.created_at) }}</p>
                     </div>
                     </div>
+                    <TextInput
+                      type="text"
+                      class="form-control search-input"
+                      v-model="searchTerm"
+                      @input="searchArticles"
+                      placeholder="Rechercher par nom..."
+                    />                 
 
-                    <div v-if="!fournisseur.articles.length" class="alert alert-info">
+                    <div style="margin-top: 10px;">
+                        <select v-model="status" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <option value="En Stock">En Stock</option>
+                            <option value="Vendu">Vendu</option>
+                            <option value="Rendu">Rendu</option>
+                            <option value="Perdu">Rendu défectueux</option>
+                            <option value="Donné">Donné</option>
+                            <option value="">Tout</option>
+                        </select>                 
+                    </div> 
+
+                    <div v-if="!filteredArticles.length" class="alert alert-info">
                     Aucun article trouvé pour ce fournisseur.
                     </div>
-                    <div v-else>
+                    <div v-else style="margin-top: 10px;">
                       <h1>Articles du Fournisseur</h1>
                       <table class="table">
                       <thead>
@@ -128,7 +146,7 @@ import vSelect from 'vue-select';
                     <PrimaryButton class="button" @click="editFournisseur(fournisseur.id)">Modifier le Fournisseur</PrimaryButton>
                     <PrimaryButton class="button" @click="createDepot(fournisseur.id)">Faire un nouveau dépot</PrimaryButton>
                     <PrimaryButton class="button" @click="indexFournisseur()">Retour à la liste des Fournisseurs</PrimaryButton>
-                    <div v-if="isAdmin" class="form-group full-width">
+                    <div v-if="isAdmin" style="margin-top: 10px;">
                       <DangerButton class="boutton" @click="deleteFournisseur()">Supprimer le fournisseur</DangerButton>
                     </div>
                 </div>        
@@ -162,6 +180,8 @@ export default {
       dateDepot: null,
       ficheChoice: 1,
       isAdmin: false,
+      searchTerm: '',
+      status: 'En Stock',
     };
   },
   mounted() {
@@ -170,11 +190,11 @@ export default {
   },
   computed: {
     totalPages() {
-        return Math.ceil(this.fournisseur.articles.length / this.pageSize);
+        return Math.ceil(this.filteredArticles.length / this.pageSize);
     },
     paginatedArticles() {
       const start = (this.currentPage - 1) * this.pageSize;
-      return this.fournisseur.articles.slice(start, start + this.pageSize);
+      return this.filteredArticles.slice(start, start + this.pageSize);
     },
     visiblePages() {
       const pages = [];
@@ -196,6 +216,16 @@ export default {
       }
 
       return pages;
+    },
+    filteredArticles() {
+      // Filtrer les articles en fonction du terme de recherche
+      return this.fournisseur.articles.filter(article =>
+      ((article.description?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
+      (article.localisation?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
+      (article.taille?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
+      (article.id?.toString().toLowerCase() ?? '').includes(this.searchTerm.toLowerCase())) &&
+      article.status.includes(this.status)
+      );
     },
   },
   methods: {

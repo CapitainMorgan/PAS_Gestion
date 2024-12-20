@@ -37,20 +37,27 @@
             font-weight: bold;
         }
 
+        .text {
+            font-size: 7px; /* Ajustez la taille du texte */
+        }
+
         /* Cacher tous les autres éléments sauf l'image lors de l'impression */
         @media print {
             * { visibility: hidden; }
             .barcode img { visibility: visible; display: block; margin: auto; }
             .barcode-text { visibility: visible; display: block; margin: auto; }
+            .text { visibility: visible; display: block; margin: auto; }
         }
     </style>
 </head>
 <body>
     <div class="barcode">
+        <div class="text">Art : {{ $code }} Frs: {{ $article['prixVente'] }}</div>
         <!-- Affiche le code-barres -->
         <img class="barcode-image" src="{{ $barcodeImage }}" alt="Code-barres">
         <!-- Affiche le texte du code-barres en dessous -->
         <div class="barcode-text">{{ $code }}</div>
+        <div class="text">{{ $article['description'] }} <br> Taille : {{ $article['taille'] }}</div>
     </div>
 
     <!-- JavaScript pour lancer l'impression automatiquement -->

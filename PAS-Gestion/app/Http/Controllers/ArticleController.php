@@ -102,7 +102,7 @@ class ArticleController extends Controller
 
     public function getArticlesByEndDate()
     {
-        $articles = Article::where('dateEcheance', '<', now())->where('statusMail', 0)->with('fournisseur')->get();
+        $articles = Article::where('dateEcheance', '<', now())->where('statusMail', 0)->where('status', 'En Stock')->with('fournisseur')->get();
         return Inertia::render('Dashboard', [
             'articles' => $articles,
         ]);
@@ -147,7 +147,7 @@ class ArticleController extends Controller
         $barcodeBase64 = base64_encode($barcode);
         $barcodeImage = 'data:image/png;base64,' . $barcodeBase64;
 
-        return view('pdf.barcode', compact('barcodeImage', 'code'));
+        return view('pdf.barcode', compact('barcodeImage', 'code', 'article'));
     }
 
     public function create()
@@ -207,7 +207,7 @@ class ArticleController extends Controller
         $request->merge(['utilisateur_id' => auth()->user()->id]);
 
         //add status to request
-        $request->merge(['status' => 'En stock']);
+        $request->merge(['status' => 'En Stock']);
 
         $request->merge(['dateStatus' => now()]);
 
