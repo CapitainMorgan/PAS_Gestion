@@ -78,11 +78,11 @@ import { start } from '@popperjs/core';
                     <form @submit.prevent="excelExport" class="form-grid" style="padding: 10px;">
                       <div class="form-group">
                         <InputLabel for="start_date">Date de début :</InputLabel>
-                        <TextInput type="date" name="start_date" required/>
+                        <TextInput type="date" name="start_date" v-model="start_date" required/>
                       </div>
                       <div class="form-group">
                         <InputLabel for="end_date">Date de fin :</InputLabel>
-                        <TextInput type="date" name="end_date" required/>
+                        <TextInput type="date" name="end_date" v-model="end_date" required/>
                       </div>
                     </form>                    
                     <PrimaryButton style="margin: 10px;" @click="excelExport">Exporter en Excel</PrimaryButton>
@@ -197,8 +197,8 @@ import { start } from '@popperjs/core';
         this.$inertia.visit(route('article.show', id));
       },
       excelExport() {
-        if(this.start_date != '' || this.end_date != '') {
-          this.$toast.error('Veuillez renseigner les dates de début et de fin');
+        if(this.start_date == '' || this.end_date == '') {
+          alert('Veuillez renseigner les dates de début et de fin');
           return;
         }
 

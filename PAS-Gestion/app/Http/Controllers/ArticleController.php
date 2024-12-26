@@ -7,6 +7,8 @@ use App\Models\Depot;
 use App\Models\Frais;
 use App\Models\Fournisseur;
 use App\Models\Vente;
+use App\Models\User;
+use App\Models\FraisSociete;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ArticleEndReminderMail;
@@ -222,8 +224,6 @@ class ArticleController extends Controller
         //get array of articles from request
         $articles = $request->articles;
 
-        print_r( $articles);
-
         //if $EchanceDays is not int convert it to int
         if (!is_int($EchanceDays)) {
             $EchanceDays = (int) $EchanceDays;
@@ -233,7 +233,7 @@ class ArticleController extends Controller
         $fournisseur_id = $request->articles[0]['fournisseur_id'];
 
         foreach ($articles as $article) {
-            $article['status'] = 'En stock';
+            $article['status'] = 'En Stock';
             $article['vente_id'] = null;
             $article['fournisseur_id'] = $fournisseur_id;
             $article['dateDepot'] = now();
@@ -241,10 +241,16 @@ class ArticleController extends Controller
             $article['dateStatus'] = now();
             $article['utilisateur_id'] = auth()->user()->id;
 
-            Article::create($article);
+            $createdArticle = Article::create($article);
+
+            $barcodeUrls[] = `/generate-barcode/` . $createdArticle->id;
         }
 
-        return redirect()->route('fournisseur.show', $fournisseur_id)->with('success', 'Articles créés avec succès');
+
+        return response()->json([
+            'success' => true,
+            'barcodeUrls' => $barcodeUrls,
+        ]);
     }
 
     // GET: Récupérer un article spécifique
@@ -343,11 +349,172 @@ class ArticleController extends Controller
 
     public function exportArticles(Request $request)
     {
+        // Récupérer les données depuis la vue
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
-        return view('exports.articles', [
-            'articles' => Article::whereBetween('dateDepot', [$startDate, $endDate])->get(),
-        ]);
+        $articles = Article::with('vente', 'user')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get();
+
+        $ventes = Vente::whereBetween('created_at', [$startDate, $endDate])->with('article')->with('user')->get();
+
+        $fournisseurs = Fournisseur::whereBetween('created_at', [$startDate, $endDate])->get();
+
+        $articlesStatus = Article::whereBetween('dateStatus', [$startDate, $endDate])->get();
+
+        $fraisSocietes = FraisSociete::whereBetween('created_at', [$startDate, $endDate])->get();
+
+        // Création du fichier Excel
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+
+        // Onglet 0 : Informations générales
+        $sheet0 = $spreadsheet->getActiveSheet();
+        $sheet0->setTitle('Informations');
+        $sheet0->setCellValue('A1', 'Date Export');
+        $sheet0->setCellValue('B1', 'Date Début');
+        $sheet0->setCellValue('C1', 'Date Fin');
+        $sheet0->setCellValue('A2', now());
+        $sheet0->setCellValue('B2', $startDate);
+        $sheet0->setCellValue('C2', $endDate);
+
+
+        // Onglet 1 : Ventes
+        $sheet1 = $spreadsheet->createSheet();
+        $sheet1->setTitle('Ventes');
+        $sheet1->setCellValue('A1', 'ID');
+        $sheet1->setCellValue('B1', 'Date');
+        $sheet1->setCellValue('C1', 'Prix Unitaire');
+        $sheet1->setCellValue('D1', 'Quantité');
+        $sheet1->setCellValue('E1', 'Total');
+        $sheet1->setCellValue('F1', 'Utilisateur');
+        $sheet1->setCellValue('G1', 'Article');    
+        $sheet1->setCellValue('H1', 'Status');
+        $sheet1->setCellValue('I1', 'ID Article');
+        $row = 2;
+        foreach ($ventes as $vente) {
+            $sheet1->setCellValue('A' . $row, $vente->id);
+            $sheet1->setCellValue('B' . $row, $vente->created_at);
+            $sheet1->setCellValue('C' . $row, $vente->prix_unitaire);
+            $sheet1->setCellValue('D' . $row, $vente->quantite);
+            $sheet1->setCellValue('E' . $row, $vente->prix_unitaire * $vente->quantite);
+            $sheet1->setCellValue('F' . $row, $vente->user->name);
+            $sheet1->setCellValue('G' . $row, $vente->article->description);
+            $sheet1->setCellValue('H' . $row, $vente->status);
+            $sheet1->setCellValue('I' . $row, $vente->article_id);
+            $row++;
+        }
+
+        // Onglet 2 : Articles
+        $sheet2 = $spreadsheet->createSheet();
+        $sheet2->setTitle('Articles');
+        $sheet2->setCellValue('A1', 'ID');
+        $sheet2->setCellValue('B1', 'Description');
+        $sheet2->setCellValue('C1', 'Date Création');
+        $sheet2->setCellValue('D1', 'Localisation');
+        $sheet2->setCellValue('E1', 'Créateur');
+        $sheet2->setCellValue('F1', 'Quantité');
+        $sheet2->setCellValue('G1', 'Prix Vente');
+        $sheet2->setCellValue('H1', 'Prix Client');
+        $sheet2->setCellValue('I1', 'Prix Solde');
+        $sheet2->setCellValue('J1', 'Status');
+        $row = 2;
+        foreach ($articles as $article) {
+            $sheet2->setCellValue('A' . $row, $article->id);
+            $sheet2->setCellValue('B' . $row, $article->description);
+            $sheet2->setCellValue('C' . $row, $article->created_at);
+            $sheet2->setCellValue('D' . $row, $article->localisation);
+            $sheet2->setCellValue('E' . $row, $article->user->name);
+            $sheet2->setCellValue('F' . $row, $article->quantite);
+            $sheet2->setCellValue('G' . $row, $article->prixVente);
+            $sheet2->setCellValue('H' . $row, $article->prixClient);
+            $sheet2->setCellValue('I' . $row, $article->prixSolde);
+            $sheet2->setCellValue('J' . $row, $article->status);
+            $row++;
+        }
+
+        // Onglet 3 : Fournisseurs
+        $sheet3 = $spreadsheet->createSheet();
+        $sheet3->setTitle('Fournisseurs');
+        $sheet3->setCellValue('A1', 'ID');
+        $sheet3->setCellValue('B1', 'Nom');
+        $sheet3->setCellValue('C1', 'Date Création');
+        $sheet3->setCellValue('D1', 'rue');
+        $sheet3->setCellValue('E1', 'ville');
+        $sheet3->setCellValue('F1', 'code postal');
+        $sheet3->setCellValue('G1', 'pays');
+        $sheet3->setCellValue('H1', 'email');
+        $sheet3->setCellValue('I1', 'mobile');
+        $sheet3->setCellValue('J1', 'telephone');
+        $sheet3->setCellValue('K1', 'numPro');
+        $row = 2;
+        foreach ($fournisseurs as $fournisseur) {
+            $sheet3->setCellValue('A' . $row, $fournisseur->id);
+            $sheet3->setCellValue('B' . $row, $fournisseur->nom . ' ' . $fournisseur->prenom);
+            $sheet3->setCellValue('C' . $row, $fournisseur->created_at);
+            $sheet3->setCellValue('D' . $row, $fournisseur->rue);
+            $sheet3->setCellValue('E' . $row, $fournisseur->ville);
+            $sheet3->setCellValue('F' . $row, $fournisseur->npa);
+            $sheet3->setCellValue('G' . $row, $fournisseur->pays);
+            $sheet3->setCellValue('H' . $row, $fournisseur->email);
+            $sheet3->setCellValue('I' . $row, $fournisseur->mobile);
+            $sheet3->setCellValue('J' . $row, $fournisseur->telephone);
+            $sheet3->setCellValue('K' . $row, $fournisseur->numProf);
+            $row++;
+        }
+
+        // Onglet 4 : Articles avec changement de statut
+        $sheet4 = $spreadsheet->createSheet();
+        $sheet4->setTitle('Articles Status');
+        $sheet4->setCellValue('A1', 'ID');
+        $sheet4->setCellValue('B1', 'Description');
+        $sheet4->setCellValue('C1', 'Date Création');
+        $sheet4->setCellValue('D1', 'Localisation');
+        $sheet4->setCellValue('E1', 'Créateur');
+        $sheet4->setCellValue('F1', 'Quantité');
+        $sheet4->setCellValue('G1', 'Prix Vente');
+        $sheet4->setCellValue('H1', 'Prix Client');
+        $sheet4->setCellValue('I1', 'Prix Solde');
+        $sheet4->setCellValue('J1', 'Status');
+        $sheet4->setCellValue('K1', 'Date Status');
+        $row = 2;
+        foreach ($articlesStatus as $article) {
+            $sheet4->setCellValue('A' . $row, $article->id);
+            $sheet4->setCellValue('B' . $row, $article->description);
+            $sheet4->setCellValue('C' . $row, $article->created_at);
+            $sheet4->setCellValue('D' . $row, $article->localisation);
+            $sheet4->setCellValue('E' . $row, $article->user->name);
+            $sheet4->setCellValue('F' . $row, $article->quantite);
+            $sheet4->setCellValue('G' . $row, $article->prixVente);
+            $sheet4->setCellValue('H' . $row, $article->prixClient);
+            $sheet4->setCellValue('I' . $row, $article->prixSolde);
+            $sheet4->setCellValue('J' . $row, $article->status);
+            $sheet4->setCellValue('K' . $row, $article->dateStatus);
+            $row++;
+        }
+
+        // Onglet 5 : Frais Société
+        $sheet5 = $spreadsheet->createSheet();
+        $sheet5->setTitle('Frais Société');
+        $sheet5->setCellValue('A1', 'ID');
+        $sheet5->setCellValue('B1', 'Description');
+        $sheet5->setCellValue('C1', 'Prix');
+        $row = 2;
+        foreach ($fraisSocietes as $frais) {
+            $sheet5->setCellValue('A' . $row, $frais->id);
+            $sheet5->setCellValue('B' . $row, $frais->description);
+            $sheet5->setCellValue('C' . $row, $frais->prix);
+            $row++;
+        }
+
+        // Téléchargement du fichier
+        $fileName = 'Export_Articles_' . date('Y-m-d_H-i-s') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment; filename=\"$fileName\"");
+        header('Cache-Control: max-age=0');
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
     }
 }

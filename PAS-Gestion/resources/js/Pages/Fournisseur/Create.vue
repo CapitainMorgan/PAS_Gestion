@@ -69,7 +69,6 @@ import vSelect from 'vue-select';
                         id="mobile"
                         v-model="form.mobile"
                         placeholder="Entrez le mobile"
-                        required
                         />
                     </div>
 
@@ -93,7 +92,6 @@ import vSelect from 'vue-select';
                         id="numProf"
                         v-model="form.numProf"
                         placeholder="Entrez le numéro professionnel"
-                        required
                         />
                     </div>
 

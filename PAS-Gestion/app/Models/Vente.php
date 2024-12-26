@@ -4,13 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\Article;
 
 class Vente extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'utilisateur_id',
         'article_id',
         'prix_unitaire',
         'quantite',
@@ -19,11 +21,11 @@ class Vente extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'utilisateur_id');
     }
 
-    public function articles()
+    public function article()
     {
-        return $this->hasMany(Article::class, 'vente_id');
+        return $this->belongsTo(Article::class, 'article_id');
     }
 }

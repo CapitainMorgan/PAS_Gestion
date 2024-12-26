@@ -55,7 +55,7 @@ import vSelect from 'vue-select';
                             <option value="En Stock">En Stock</option>
                             <option value="Vendu">Vendu</option>
                             <option value="Rendu">Rendu</option>
-                            <option value="Perdu">Rendu défectueux</option>
+                            <option value="Rendu défectueux">Rendu défectueux</option>
                             <option value="Donné">Donné</option>
                             <option value="">Tout</option>
                         </select>                 
@@ -218,14 +218,26 @@ export default {
       return pages;
     },
     filteredArticles() {
-      // Filtrer les articles en fonction du terme de recherche
-      return this.fournisseur.articles.filter(article =>
-      ((article.description?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
-      (article.localisation?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
-      (article.taille?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
-      (article.id?.toString().toLowerCase() ?? '').includes(this.searchTerm.toLowerCase())) &&
-      article.status.includes(this.status)
-      );
+      // Diviser le terme de recherche en mots clés
+      const searchTerms = this.searchTerm.toLowerCase().split(/\s+/);
+
+      return this.fournisseur.articles.filter(article => {
+        // Combiner les champs de l'article à rechercher dans une seule chaîne
+        const articleFields = [
+          article.description?.toLowerCase() ?? '',
+          article.localisation?.toLowerCase() ?? '',
+          article.taille?.toLowerCase() ?? '',
+          article.id?.toString().toLowerCase() ?? ''
+        ].join(' ');
+
+        // Vérifier si tous les mots clés de recherche sont présents dans les champs de l'article
+        const matchesSearch = searchTerms.every(term => articleFields.includes(term));
+
+        // Appliquer également le filtre par statut
+        const matchesStatus = article.status.includes(this.status);
+
+        return matchesSearch && matchesStatus;
+      });
     },
   },
   methods: {

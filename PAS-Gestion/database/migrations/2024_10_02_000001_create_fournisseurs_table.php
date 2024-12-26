@@ -16,8 +16,8 @@ class CreateFournisseursTable extends Migration
             $table->string('ville', 50);
             $table->string('npa', 10);
             $table->string('pays', 50);
-            $table->string('mobile', 15);
-            $table->string('numProf', 20);
+            $table->string('mobile', 15)->nullabe();
+            $table->string('numProf', 20)->nullabe();
             $table->string('remarque', 255)->nullable();
             $table->string('email', 50);
             $table->string('telephone', 15);

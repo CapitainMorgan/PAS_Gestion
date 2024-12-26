@@ -106,15 +106,25 @@ import { Head } from '@inertiajs/vue3';
     },
     computed: {
       filteredFournisseurs() {
-        // Filtrer les fournisseurs en fonction du terme de recherche
-        return this.fournisseurs.filter(fournisseur =>
-        (fournisseur.nom?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
-        (fournisseur.prenom?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
-        (fournisseur.email?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
-        (fournisseur.mobile?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
-        (fournisseur.numProf?.toLowerCase() ?? '').includes(this.searchTerm.toLowerCase()) ||
-        (fournisseur.id?.toString().toLowerCase() ?? '').includes(this.searchTerm.toLowerCase())
-        );
+        // Diviser le terme de recherche en mots clés
+      const searchTerms = this.searchTerm.toLowerCase().split(/\s+/);
+
+      return this.fournisseurs.filter(fournisseur => {
+        // Combiner les champs de l'article à rechercher dans une seule chaîne
+        const articleFields = [
+          fournisseur.nom?.toLowerCase() ?? '',
+          fournisseur.prenom?.toLowerCase() ?? '',
+          fournisseur.email?.toLowerCase() ?? '',
+          fournisseur.mobile?.toLowerCase() ?? '',
+          fournisseur.numProf?.toLowerCase() ?? '',
+          fournisseur.id?.toString().toLowerCase() ?? ''
+        ].join(' ');
+
+        // Vérifier si tous les mots clés de recherche sont présents dans les champs de l'article
+        const matchesSearch = searchTerms.every(term => articleFields.includes(term));
+
+        return matchesSearch;
+      });
       },
       totalPages() {
         return Math.ceil(this.filteredFournisseurs.length / this.pageSize);

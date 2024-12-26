@@ -170,15 +170,27 @@ import vSelect from 'vue-select';
   
       async submitArticles() {
         // Utiliser une requête pour envoyer les données au backend
-        // Par exemple, avec Inertia ou une requête Axios pour l'API
-        try {
-          await this.$inertia.post(route('depot.store', this.EcheanceDays), { articles: this.articles });
-          this.$toast.success('Articles créé avec succès');
-        } catch (error) {
-          console.error(error);
-          this.$toast.error('Une erreur est survenue lors de la création des articles');
-        }
-      }
+        axios.post(route('depot.store', this.EcheanceDays), { articles: this.articles })
+        .then(response => {
+          if (response.data.success) {
+            const barcodeUrls = response.data.barcodeUrls;
+
+            // Ouvrir chaque URL dans un nouvel onglet
+            /*barcodeUrls.forEach((url, index) => {
+              setTimeout(() => {
+                window.open('/generate-barcode/' + url, '_blank');
+              }, index * 300); 
+            });*/
+
+            // Rediriger vers la page des fournisseurs details
+            this.$inertia.visit(route('fournisseur.show', this.fournisseur_id));
+          }
+        })
+        .catch(error => {
+          console.error('Erreur lors de la création des articles', error);
+          this.$toast.error('Erreur lors de la création des articles.');
+        });
+      },
     },
   };
   </script>

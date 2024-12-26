@@ -11,6 +11,7 @@ const showingNavigationDropdown = ref(false);
 </script>
 
 <template>
+     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" rel="stylesheet">
     <div>
         <div class="min-h-screen bg-gray-100">
             <nav
@@ -230,3 +231,5 @@ const showingNavigationDropdown = ref(false);
         </div>
     </div>
 </template>
+
+
