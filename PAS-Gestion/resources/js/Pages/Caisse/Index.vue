@@ -133,14 +133,13 @@ import { Head } from '@inertiajs/vue3';
 
           this.addToCart(response.data.article);
 
-        } else
-          console.log('Article non trouvé');
-
+        } 
         this.scannedBarcode = '';
       }
       catch (error) {
         console.error(error);
-        alert('Article non trouvé');
+        this.scannedBarcode = '';
+        alert('Article non trouvé');        
       }
         
       },

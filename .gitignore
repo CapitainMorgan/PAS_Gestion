@@ -27,3 +27,4 @@ db_extract/Gestion-DépotsBd-Old.accde
 db_extract/*.csv
 PAS-Gestion/.env-prod
 db_extract/Gestion-DépotsBd.laccdb
+db_extract/Gestion-DépotsBd.laccdb

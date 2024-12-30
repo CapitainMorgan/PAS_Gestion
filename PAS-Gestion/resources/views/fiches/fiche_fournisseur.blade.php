@@ -63,7 +63,6 @@ use Carbon\Carbon;
                         <tr>
                             <th></th>
                             <th>Libellé</th>
-                            <th>Moyen de paiement</th>
                             <th>Part Fournisseur</th>
                             <th>Prix Vente Solde</th>
                             <th>Prix Vente</th>
@@ -79,7 +78,6 @@ use Carbon\Carbon;
                             <tr>
                                 <td>{{ $num++ }}</td>
                                 <td>{{ $article->description }}</td>
-                                <td>@if ($status === "vente") {{ $article->vente->status }} @endif</td> <!-- Visa si nécessaire -->
                                 <td>{{ $article->prixClient }}</td>
                                 <td>{{ $article->prixSolde }}</td>
                                 <td>{{ $article->prixVente }}</td>

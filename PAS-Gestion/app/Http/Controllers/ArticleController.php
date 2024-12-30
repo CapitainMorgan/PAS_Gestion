@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Article;
@@ -36,6 +35,9 @@ class ArticleController extends Controller
         if (strpos($barcode, '\'') === false) {
             $id = $barcode;
         } else {            
+            
+            // idbarcode = barcode without '
+            $idbarcode = str_replace("'", "", $barcode);
             //parse the barcode 
             $barcode = explode('\'', $barcode);
             $id = $barcode[1];
@@ -44,7 +46,11 @@ class ArticleController extends Controller
         $article = Article::find($id);
 
         if (!$article) {
-            return response()->json(['error' => 'Article not found'], 404);
+            # check with full barcode without '
+            $article = Article::find($idbarcode);
+            if (!$article) {
+                return response()->json(['error' => $idbarcode], 404);
+            }
         }
 
         return response()->json([
@@ -364,10 +370,10 @@ class ArticleController extends Controller
         $articlesStatus = Article::whereBetween('dateStatus', [$startDate, $endDate])->get();
 
         $fraisSocietes = FraisSociete::whereBetween('created_at', [$startDate, $endDate])->get();
-
+        
         // Création du fichier Excel
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-
+        
         // Onglet 0 : Informations générales
         $sheet0 = $spreadsheet->getActiveSheet();
         $sheet0->setTitle('Informations');
@@ -515,6 +521,7 @@ class ArticleController extends Controller
 
         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
         $writer->save('php://output');
-        exit;
+        
+        exit();
     }
 }

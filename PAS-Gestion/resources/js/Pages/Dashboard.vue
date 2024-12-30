@@ -207,6 +207,8 @@ import { start } from '@popperjs/core';
           end_date: this.end_date,
         });
 
+        console.log(url);
+
         // Ouvre la route dans une nouvelle fenêtre
         window.open(url, '_blank');
       }
