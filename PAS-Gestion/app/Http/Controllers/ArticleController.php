@@ -64,8 +64,7 @@ class ArticleController extends Controller
 
         $status = $request->input('status');
 
-        $status_vente = $request->input('status_vente');
-        
+        $status_vente = $request->input('vente_status');
 
         foreach ($articles as $article) {
 
@@ -92,10 +91,10 @@ class ArticleController extends Controller
             // met a jour la quantite
             $articleItem->quantite = $article['quantite'] - $article['quantiteVente'] ;
 
-            if ($status != 'Vendu' && $articleItem->quantite != 0) {
+            if ($status == 'Vendu' && $articleItem->quantite != 0) {
+                $articleItem->status = 'En Stock';
+            } else {                
                 $articleItem->status = $status;
-            } else {
-                $articleItem->status = 'En stock';
             }
 
             $articleItem->dateStatus = now();
@@ -166,7 +165,7 @@ class ArticleController extends Controller
         ]);
     }
 
-    private function createVenteIfStatusIsVendu($articleId, $status, $status_vente = 'Cash', $prix, $quantite = 1)
+    private function createVenteIfStatusIsVendu($articleId, $status, $status_vente, $prix, $quantite = 1)
     {
         if ($status_vente == NULL) {
             $status_vente = 'Cash';
