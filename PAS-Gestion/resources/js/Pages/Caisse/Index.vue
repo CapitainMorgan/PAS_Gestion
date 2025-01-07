@@ -54,9 +54,9 @@ import { Head } from '@inertiajs/vue3';
                               <td @click="showArticle(article.id)" class="border px-4 py-2">{{ article.status }}</td>
                               <td @click="showArticle(article.id)" class="border px-4 py-2">{{ article.localisation }}</td>
                               <td @click="showArticle(article.id)" class="border px-4 py-2">{{ article.prixVente }} CHF</td>
-                              <td class="border px-4 py-2"><TextInput v-model="article.prixSolde" type="number" class="form-control" placeholder="Prix Solde" /> CHF</td>
+                              <td class="border px-4 py-2"><TextInput v-model="article.prixSolde" type="number" class="form-control" placeholder="Prix Solde" @change="updateCart" /> CHF</td>
                               <td @click="showArticle(article.id)" class="border px-4 py-2">{{ article.quantite }}</td>
-                              <td class="border px-4 py-2"><TextInput v-model="article.quantiteVente" type="number" class="form-control" placeholder="Quantité" /></td>
+                              <td class="border px-4 py-2"><TextInput v-model="article.quantiteVente" type="number" class="form-control" placeholder="Quantité" @change="updateCart" /></td>
                               <td v-if="article.prixSolde == null" class="border px-4 py-2">{{ article.prixVente * article.quantiteVente }} CHF</td>
                               <td v-else class="border px-4 py-2">{{ article.prixSolde * article.quantiteVente }} CHF</td>
                             </tr>
@@ -113,7 +113,7 @@ import { Head } from '@inertiajs/vue3';
     mounted() {
       // Place automatiquement le focus sur l'input
       this.$refs.barcodeInput.focus();
-      this.loadCart();http://pas-gestion.test/generate-barcode/3
+      this.loadCart();
        // Ajoute un écouteur d'événements global pour capturer les saisies
       window.addEventListener('keydown', this.handleBarcodeScan);
     },
@@ -173,6 +173,10 @@ import { Head } from '@inertiajs/vue3';
           const response = await axios.post('/api/cart/add', { article });
           this.articles = response.data.cart;
         }        
+      },
+      async updateCart() {
+        const response = await axios.post('/api/cart/update', { articles: this.articles });
+        this.articles = response.data.cart;
       },
       async loadCart() {
         const response = await axios.get('/api/cart');

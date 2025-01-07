@@ -108,6 +108,7 @@ Route::post('/send-reminder/articles', [ArticleController::class, 'sendReminderF
 Route::post('/api/cart/add', [CartController::class, 'addToCart']);
 Route::get('/api/cart', [CartController::class, 'getCart']);
 Route::post('/api/cart/clear', [CartController::class, 'clearCart']);
+Route::post('/api/cart/update', [CartController::class, 'updateArticle']);
 
 Route::get('/export-articles', [ArticleController::class, 'exportArticles'])
     ->middleware('auth')

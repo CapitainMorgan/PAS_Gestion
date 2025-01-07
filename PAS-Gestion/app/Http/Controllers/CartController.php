@@ -18,14 +18,36 @@ class CartController extends Controller
         return response()->json(['success' => true, 'cart' => $cart]);
     }
 
+    public function updateArticle(Request $request)
+    {
+        $cart = session()->get('cart', []);
+
+        $articles = $request->input('articles');
+        foreach ($articles as $article) {
+            $index = array_search($article['id'], array_column($cart, 'id'));
+
+            if ($index !== false) {
+                $cart[$index]['quantiteVente'] = $article['quantiteVente'];
+                $cart[$index]['prixSolde'] = $article['prixSolde'];
+            }
+        }
+
+        session()->put('cart', $cart);
+
+        return response()->json(['success' => true, 'cart' => $cart]);
+    }
+
     public function getCart()
     {
         $cart = session()->get('cart', []);
 
         //reload all articles from the cart to get the updated article but keep the quantiteVente
         $cart = array_map(function ($article) {
+            $quantiteVente = $article['quantiteVente'];
+            $prixSolde = $article['prixSolde'];
             $article = Article::find($article['id']);
-            $article->quantiteVente = 1;
+            $article->quantiteVente = $quantiteVente;
+            $article->prixSolde = $prixSolde;
             return $article;
         }, $cart);
 

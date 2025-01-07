@@ -98,7 +98,7 @@ class FournisseurController extends Controller
     public function show($id)
     {
         $fournisseur = Fournisseur::with(['articles' => function ($query) {
-            $query->orderBy('created_at', 'desc'); 
+            $query->orderBy('created_at', 'asc'); 
         }])->find($id);
 
         $conditionGenerale = config('app_settings.conditions_generales');
