@@ -60,6 +60,10 @@ import { Head } from '@inertiajs/vue3';
                               <td v-if="article.prixSolde == null" class="border px-4 py-2">{{ article.prixVente * article.quantiteVente }} CHF</td>
                               <td v-else class="border px-4 py-2">{{ article.prixSolde * article.quantiteVente }} CHF</td>
                             </tr>
+                            <tr>
+                              <td colspan="8" class="border px-4 py-2 font-bold text-right">Total :</td>
+                              <td class="border px-4 py-2 font-bold">{{ totalPrice }} CHF</td>
+                            </tr>
                           </tbody>
                         </table>
 
@@ -96,6 +100,15 @@ import { Head } from '@inertiajs/vue3';
         vente_status: 'Cash',
         scanTimeout: null,
       };
+    },
+    computed: {
+      totalPrice() {
+        return this.articles.reduce((total, article) => {
+          const price = article.prixSolde ?? article.prixVente;
+          const quantity = article.quantiteVente ?? 0;
+          return total + price * quantity;
+        }, 0);
+      }
     },
     mounted() {
       // Place automatiquement le focus sur l'input

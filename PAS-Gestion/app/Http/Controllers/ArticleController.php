@@ -21,7 +21,7 @@ class ArticleController extends Controller
     // GET: Récupérer tous les articles
     public function index()
     {
-        $articles = Article::all();
+        $articles = Article::orderBy('created_at', 'desc')->with('fournisseur')->get();
         return Inertia::render('Article/Index', [
             'articles' => $articles,
         ]);
@@ -109,7 +109,7 @@ class ArticleController extends Controller
 
     public function getArticlesByEndDate()
     {
-        $articles = Article::where('dateEcheance', '<', now())->where('statusMail', 0)->where('status', 'En Stock')->with('fournisseur')->get();
+        $articles = Article::where('dateEcheance', '<', now())->where('statusMail', 0)->where('status', 'En Stock')->with('fournisseur')->orderBy('dateEcheance', 'asc')->get();
         return Inertia::render('Dashboard', [
             'articles' => $articles,
         ]);
@@ -145,8 +145,17 @@ class ArticleController extends Controller
     {
         $article = Article::with("fournisseur")->find($id);
 
+        $id = $article->id;
+
+        //test si l'id de l'article commence par l'id du fournisseur et fini par la date de creation "Ymd"
+        if (str_starts_with($id, $article->fournisseur->id) && str_ends_with($id, $article->created_at->format('ymd'))) {
+            //id = id de l'article sans le fournisseur et la date de creation
+            $id = str_replace($article->fournisseur->id, "", $id);
+            $id = str_replace($article->created_at->format('ymd'), "", $id);            
+        }
+
         // Générer le code-barres
-        $code = $article->fournisseur->id . '-' . $article->id . '-' . $article->created_at->format('Ymd');
+        $code = $article->fournisseur->id . '-' . $id . '-' . $article->created_at->format('Ymd');
         $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
         $barcode = $generator->getBarcode($code, $generator::TYPE_CODE_128);
         

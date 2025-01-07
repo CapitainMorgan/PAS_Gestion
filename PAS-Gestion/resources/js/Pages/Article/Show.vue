@@ -30,6 +30,11 @@ import { Head } from '@inertiajs/vue3';
                     <div class="card mb-4">
                         <div class="card-body">
                             <h1 style="font-size: 30px">{{ article.description }}</h1>
+                            <p @click="showFournisseur(article.fournisseur.id)"><strong>ID Fournisseur:</strong> {{ article.fournisseur.id ?? 'N/A' }}</p>
+                            <p @click="showFournisseur(article.fournisseur.id)"><strong>Appartient à:</strong> {{ article.fournisseur.nom }} {{ article.fournisseur.prenom }}</p>
+                            <p @click="showFournisseur(article.fournisseur.id)"><strong>Email du Fournisseur:</strong> {{ article.fournisseur.email }}</p>
+
+                            <p><strong>ID Article:</strong> {{ article.id }}</p>
                             <p><strong>Taille:</strong> {{ article.taille ?? 'N/A' }}</p>
                             <p><strong>Prix Vente:</strong> {{ article.prixVente ?? 'N/A' }}</p>
                             <p><strong>Prix Client:</strong> {{ article.prixClient ?? 'N/A' }}</p>
@@ -47,8 +52,6 @@ import { Head } from '@inertiajs/vue3';
                             <p><strong>Modifié le:</strong> {{ formatDate(article.dateStatus) }}</p>                          
                             <p><strong>Crée par :</strong> {{ article.user.name }} {{ article.user.email }}</p>
 
-                            <p @click="showFournisseur(article.fournisseur.id)"><strong>Appartient à:</strong> {{ article.fournisseur.nom }} {{ article.fournisseur.prenom }}</p>
-                            <p @click="showFournisseur(article.fournisseur.id)"><strong>Email du Fournisseur:</strong> {{ article.fournisseur.email }}</p>
                         </div>
                     </div>
 

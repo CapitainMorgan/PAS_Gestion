@@ -97,7 +97,9 @@ class FournisseurController extends Controller
     // GET: Récupérer un fournisseur spécifique
     public function show($id)
     {
-        $fournisseur = Fournisseur::with('articles')->find($id);
+        $fournisseur = Fournisseur::with(['articles' => function ($query) {
+            $query->orderBy('created_at', 'desc'); 
+        }])->find($id);
 
         $conditionGenerale = config('app_settings.conditions_generales');
 

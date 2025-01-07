@@ -23,7 +23,7 @@
 
         .barcode {
             text-align: center;
-            width: 60%;
+            width: 100%;
         }
 
         .barcode-image {
@@ -33,13 +33,17 @@
         }
 
         .barcode-text {
-            font-size: 14px; /* Ajustez la taille du texte */
+            font-size: 18px; /* Ajustez la taille du texte */
             font-weight: bold;
         }
 
         .text {
-            font-size: 7px; /* Ajustez la taille du texte */
+            font-size: 12px; /* Ajustez la taille du texte */
         }
+		
+		.text-prix {
+			font-size:14px;
+		}
 
         /* Cacher tous les autres éléments sauf l'image lors de l'impression */
         @media print {
@@ -47,12 +51,13 @@
             .barcode img { visibility: visible; display: block; margin: auto; }
             .barcode-text { visibility: visible; display: block; margin: auto; }
             .text { visibility: visible; display: block; margin: auto; }
+			.text-prix { visibility: visible; display: block; margin: auto; }
         }
     </style>
 </head>
 <body>
     <div class="barcode">
-        <div class="text">Art : {{ $code }} Frs: {{ $article['prixVente'] }}</div>
+        <div class="text" style="margin-bottom:5px;float:left;margin-left:10%;">Art : {{ $code }} </div><div class="text-prix" style="float:right;margin-right:10%;"> Frs: {{ $article['prixVente'] }}</div>
         <!-- Affiche le code-barres -->
         <img class="barcode-image" src="{{ $barcodeImage }}" alt="Code-barres">
         <!-- Affiche le texte du code-barres en dessous -->

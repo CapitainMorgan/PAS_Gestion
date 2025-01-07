@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -59,17 +61,17 @@ class UserController extends Controller
 
         if (!$user) {
             return response()->json(['error' => 'User not found'], 404);
-        }
+        }       
 
-        $validated = $request->validate([
-            'userpassword' => ['required', Password::defaults(), 'confirmed'],
+        /*$validated = $request->validate([
+            'password' => ['required', Password::defaults(), 'confirmed'],
+        ]);*/
+
+        $user->update([
+            'password' => Hash::make($request['password']),
         ]);
 
-        $request->user()->update([
-            'password' => Hash::make($validated['userpassword']),
-        ]);
-
-        return response()->json($user);
+        return response()->json($request);
     }
 
     // DELETE: Supprimer un user

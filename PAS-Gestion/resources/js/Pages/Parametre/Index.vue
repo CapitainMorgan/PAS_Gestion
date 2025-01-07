@@ -212,7 +212,7 @@ export default {
       }
 
       // Mettre à jour le mot de passe d'un utilisateur
-      this.$inertia.put(route('user.update-password', this.user.id), this.userpassword);
+      this.$inertia.put(route('user.update-password', this.user.id), { password: this.userpassword });
 
       this.userpassword = '';
       this.repeteduserpassword = '';
