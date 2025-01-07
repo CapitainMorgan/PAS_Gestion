@@ -48,6 +48,7 @@ Route::post('/depot/{EcheanceDays}', [ArticleController::class, 'storeGroupedArt
 
 
 Route::get('/article.index', [ArticleController::class, 'index'])->middleware(['auth', 'verified'])->name('article.index');
+Route::get('/articles/search', [ArticleController::class, 'search'])->middleware(['auth', 'verified'])->name('article.search');
 Route::get('/article.show/{id}', [ArticleController::class, 'show'])->middleware(['auth', 'verified'])->name('article.show');
 Route::get('/article.create/', [ArticleController::class, 'create'])->middleware(['auth', 'verified'])->name('article.create');
 Route::post('/article/{EchanceDays}', [ArticleController::class, 'store'])->middleware(['auth', 'verified'])->name('article.store');

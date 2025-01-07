@@ -36,7 +36,7 @@ import { Head } from '@inertiajs/vue3';
                   <PrimaryButton @click="createArticle()">Créer un nouveau</PrimaryButton>
 
                   <div style="margin-top: 10px;">
-                      <select v-model="status" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                      <select v-model="status" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" @change="searchArticles">
                           <option value="En Stock">En Stock</option>
                           <option value="Vendu">Vendu</option>
                           <option value="Rendu">Rendu</option>
@@ -49,7 +49,7 @@ import { Head } from '@inertiajs/vue3';
                   
               
                   <!-- Tableau des articles -->
-                  <table v-if="filteredArticles.length > 0">
+                  <table v-if="articles.length > 0">
                     <thead>
                         <tr>
                         <th>ID</th>
@@ -64,7 +64,7 @@ import { Head } from '@inertiajs/vue3';
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="article in paginatedArticles" :key="article.id">    
+                        <tr v-for="article in articles" :key="article.id">    
                             <td @click="showArticle(article.id)">{{ article.id }}</td>    
                             <td @click="showArticle(article.id)">{{ article.description }}</td>
                             <td @click="showArticle(article.id)">{{ article.taille ?? 'N/A' }}</td>
@@ -85,13 +85,13 @@ import { Head } from '@inertiajs/vue3';
                   <nav aria-label="Page navigation">
                     <ul class="pagination">
                       <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                        <SecondaryButton class="page-link" @click="changePage(currentPage - 1)">Précédent</SecondaryButton>
+                        <SecondaryButton class="page-link" @click="fetchArticles(currentPage - 1)">Précédent</SecondaryButton>
                       </li>
                       <li v-for="page in visiblePages" :key="page" class="page-item" :class="{ active: currentPage === page }">
-                        <SecondaryButton class="page-link" @click="changePage(page)">{{ page }}</SecondaryButton>
+                        <SecondaryButton class="page-link" @click="fetchArticles(page)">{{ page }}</SecondaryButton>
                       </li>
                       <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                        <SecondaryButton class="page-link" @click="changePage(currentPage + 1)">Suivant</SecondaryButton>
+                        <SecondaryButton class="page-link" @click="fetchArticles(currentPage + 1)">Suivant</SecondaryButton>
                       </li>
                     </ul>
                   </nav>
@@ -107,49 +107,23 @@ import { Head } from '@inertiajs/vue3';
 
   export default {
     props: {
-      articles: {
+      /*articles: {
         type: Array,
         default: () => [], // Assurez-vous que c'est un tableau par défaut
-      },
+      },*/
     },
     data() {
       return {
+        articles: [],
         searchTerm: '',
         currentPage: 1,
+        totalPages: 0,
         pageSize: 10,
         status: 'En Stock',
+        isLoading: false,
       };
     },
     computed: {
-      filteredArticles() {
-        // Diviser le terme de recherche en mots clés
-        const searchTerms = this.searchTerm.toLowerCase().split(/\s+/);
-
-        return this.articles.filter(article => {
-          // Combiner les champs de l'article à rechercher dans une seule chaîne
-          const articleFields = [
-            article.description?.toLowerCase() ?? '',
-            article.localisation?.toLowerCase() ?? '',
-            article.taille?.toLowerCase() ?? '',
-            article.id?.toString().toLowerCase() ?? ''
-          ].join(' ');
-
-          // Vérifier si tous les mots clés de recherche sont présents dans les champs de l'article
-          const matchesSearch = searchTerms.every(term => articleFields.includes(term));
-
-          // Appliquer également le filtre par statut
-          const matchesStatus = article.status.includes(this.status);
-
-          return matchesSearch && matchesStatus;
-        });
-      },
-      totalPages() {
-        return Math.ceil(this.filteredArticles.length / this.pageSize);
-      },
-      paginatedArticles() {
-        const start = (this.currentPage - 1) * this.pageSize;
-        return this.filteredArticles.slice(start, start + this.pageSize);
-      },
       visiblePages() {
         const pages = [];
         const start = Math.max(1, this.currentPage - 1);
@@ -172,17 +146,31 @@ import { Head } from '@inertiajs/vue3';
         return pages;
       },
     },
+    mounted() {
+      this.fetchArticles(); // Charger les articles à l'initialisation
+    },
     methods: {
       formatDate(date) {
-      return new Date(date).toLocaleDateString('fr-FR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-    },
-      changePage(page) {
-        if (page < 1 || page > this.totalPages) return; // Limiter la page
-        this.currentPage = page;
+        return new Date(date).toLocaleDateString('fr-FR', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+      },
+      fetchArticles(page = 1) {
+        axios
+          .get(`/articles/search`, { params: { page, search: this.searchTerm, status: this.status } })
+          .then((response) => {
+            this.articles = response.data.data;
+            this.currentPage = response.data.current_page;
+            this.totalPages = response.data.last_page;
+          })
+          .catch((error) => {
+            console.error("Erreur lors de la récupération des articles :", error);
+          });
+      },      
+      searchArticles() {
+        this.fetchArticles(1); // Recharger à la première page après la recherche
       },
       createArticle() {
         this.$inertia.visit(route('article.create'));

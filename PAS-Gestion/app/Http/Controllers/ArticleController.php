@@ -21,10 +21,38 @@ class ArticleController extends Controller
     // GET: Récupérer tous les articles
     public function index()
     {
-        $articles = Article::orderBy('created_at', 'desc')->with('fournisseur')->get();
+        //$articles = Article::orderBy('created_at', 'desc')->with('fournisseur')->get();
         return Inertia::render('Article/Index', [
-            'articles' => $articles,
+            //'articles' => $articles,
         ]);
+    }
+
+    public function search(Request $request)
+    {
+        $articles = Article::query();
+
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $keywords = explode(' ', $search);
+            $status = $request->input('status');
+            $articles->where(function ($query) use ($keywords, $status) {
+                foreach ($keywords as $keyword) {
+                    $query->where(function ($subQuery) use ($keyword, $status) {
+                        $subQuery->where('description', 'like', "%{$keyword}%")
+                                 ->orWhere('localisation', 'like', "%{$keyword}%")
+                                 ->orWhere('taille', 'like', "%{$keyword}%")
+                                 ->orWhere('id', 'like', "%{$keyword}%");
+                    });
+                }
+            });
+            
+            if (!empty($status)) {
+                $articles->where('status', '=', $status);
+            }
+        }
+
+        $articles = $articles->orderBy('created_at', 'desc')->paginate(10); // 10 articles par page
+        return response()->json($articles);
     }
 
     public function getArticleByBarcode($barcode)
