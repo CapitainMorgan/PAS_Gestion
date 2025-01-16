@@ -102,7 +102,7 @@ class ArticleController extends Controller
                 return response()->json(['error' => 'Article not found'], 404);
             }
             // check if prixSolde is set
-            if ($article['prixSolde'] != NULL) {
+            if ($article['prixSolde'] != NULL && $article['prixSolde'] != 0) {
                 $prix = $article['prixSolde'];
             }else{
                 $prix = $article['prixVente'];

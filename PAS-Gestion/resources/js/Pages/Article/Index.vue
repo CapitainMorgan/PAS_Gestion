@@ -61,6 +61,7 @@ import { Head } from '@inertiajs/vue3';
                         <th>Prix Client</th>
                         <th>Prix Solde</th>
                         <th>Date dépot</th>
+                        <th>Date chagement de status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -74,6 +75,7 @@ import { Head } from '@inertiajs/vue3';
                             <td @click="showArticle(article.id)">{{ article.prixClient ?? 'N/A' }}</td>
                             <td @click="showArticle(article.id)">{{ article.prixSolde ?? 'N/A' }}</td>
                             <td @click="showArticle(article.id)">{{ formatDate(article.dateDepot) }}</td>
+                            <td @click="showArticle(article.id)">{{ formatDate(article.dateStatus) }}</td>
                         </tr>
                     </tbody>
                   </table>

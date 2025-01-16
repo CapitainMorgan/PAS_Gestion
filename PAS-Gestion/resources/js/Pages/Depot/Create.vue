@@ -43,7 +43,7 @@ import vSelect from 'vue-select';
                             <!-- Prix de Vente -->
                             <div class="form-group">
                                 <InputLabel for="prixVente" class="form-label">Prix de Vente</InputLabel>
-                                <TextInput v-model="newArticle.prixVente" type="number" class="form-control" placeholder="Prix de Vente" />
+                                <TextInput v-model="newArticle.prixVente" type="number" class="form-control" placeholder="Prix de Vente" @input="newArticle.prixClient = newArticle.prixVente/2"/>
                             </div>
 
                             <!-- Prix Client -->
@@ -70,7 +70,7 @@ import vSelect from 'vue-select';
                             
 
                             <div class="form-group full-width">
-                            <SecondaryButton type="submit" class="btn btn-primary">Ajouter un autre article</SecondaryButton>
+                            <PrimaryButton type="submit" class="btn btn-primary">Ajouter un autre article</PrimaryButton>
                             </div>
                         </form>
 

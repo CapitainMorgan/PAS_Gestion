@@ -6,13 +6,23 @@ use App\Models\Vente;
 use App\Models\Article;  // Pour valider l'existence de l'article
 use App\Models\Utilisateur; // Pour valider l'existence de l'utilisateur
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class VenteController extends Controller
 {
     // GET: Récupérer toutes les ventes
     public function index()
     {
-        $ventes = Vente::all();
+        return Inertia::render('Vente/Index', );
+    }
+
+    public function search(Request $request)
+    {
+        $ventes = Vente::with('article.fournisseur')
+            ->where('created_at', 'like', '%' . $request->date . '%');
+
+        $ventes = $ventes->orderBy('created_at', 'asc')->paginate(15);
+
         return response()->json($ventes);
     }
 

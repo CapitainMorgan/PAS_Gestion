@@ -32,6 +32,7 @@ Route::get('/dashboard', function () {
 
 
 Route::get('/fournisseur.index', [FournisseurController::class, 'index'])->middleware(['auth', 'verified'])->name('fournisseur.index');
+Route::get('/fournisseurs/search', [FournisseurController::class, 'search'])->middleware(['auth', 'verified'])->name('fournisseur.search');
 Route::get('/fournisseur.show/{id}', [FournisseurController::class, 'show'])->middleware(['auth', 'verified'])->name('fournisseur.show');
 Route::get('/fournisseur/{id}/edit', [FournisseurController::class, 'edit'])->middleware(['auth', 'verified'])->name('fournisseur.edit');
 Route::put('/fournisseur/{id}', [FournisseurController::class, 'update'])->middleware(['auth', 'verified'])->name('fournisseur.update');
@@ -105,10 +106,14 @@ Route::post('/send-reminder/articles', [ArticleController::class, 'sendReminderF
     ->middleware(['auth', 'verified'])
     ->name('send-reminder');
 
-Route::post('/api/cart/add', [CartController::class, 'addToCart']);
-Route::get('/api/cart', [CartController::class, 'getCart']);
-Route::post('/api/cart/clear', [CartController::class, 'clearCart']);
-Route::post('/api/cart/update', [CartController::class, 'updateArticle']);
+Route::post('/api/cart/add', [CartController::class, 'addToCart'])->middleware(['auth', 'verified']);
+Route::get('/api/cart', [CartController::class, 'getCart'])->middleware(['auth', 'verified']);
+Route::post('/api/cart/clear', [CartController::class, 'clearCart'])->middleware(['auth', 'verified']);
+Route::post('/api/cart/update', [CartController::class, 'updateArticle'])->middleware(['auth', 'verified']);
+Route::post('/api/cart/remove', [CartController::class, 'removeArticle'])->middleware(['auth', 'verified']);
+
+Route::get('/vente.index', [VenteController::class, 'index'])->middleware(['auth', 'verified'])->name('vente.index');
+Route::get('/ventes/search', [VenteController::class, 'search'])->middleware(['auth', 'verified'])->name('vente.search');
 
 Route::get('/export-articles', [ArticleController::class, 'exportArticles'])
     ->middleware('auth')

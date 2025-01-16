@@ -15,11 +15,37 @@ class FournisseurController extends Controller
     // GET: Récupérer tous les fournisseurs
     public function index()
     {
-        $fournisseurs = Fournisseur::all();
+        //$fournisseurs = Fournisseur::all();
 
         return Inertia::render('Fournisseur/Index', [
-            'fournisseurs' => $fournisseurs,
+            //'fournisseurs' => $fournisseurs,
         ]);
+    }
+
+    // GET: Rechercher un fournisseur
+    public function search(Request $request)
+    {
+        $search = $request->search;
+        
+        $keywords = explode(' ', $search);
+
+        $fournisseurs = Fournisseur::where(function ($query) use ($keywords) {
+            foreach ($keywords as $keyword) {
+                $query->where(function ($subquery) use ($keyword) {
+                    $subquery->where('nom', 'like', "%{$keyword}%")
+                        ->orWhere('prenom', 'like', "%{$keyword}%")
+                        ->orWhere('email', 'like', "%{$keyword}%")
+                        ->orWhere('telephone', 'like', "%{$keyword}%")
+                        ->orWhere('id', 'like', "%{$keyword}%")
+                        ->orWhere('mobile', 'like', "%{$keyword}%")
+                        ->orWhere('numProf', 'like', "%{$keyword}%");
+                });
+            }
+        });
+
+        $fournisseurs = $fournisseurs->orderBy('id', 'asc')->paginate(10);
+
+        return response()->json($fournisseurs);
     }
 
     public function create()
@@ -44,9 +70,9 @@ class FournisseurController extends Controller
 
         $conditionsArray = explode("\n", $conditionGenerale);
 
-        $status = 'dépôt';
+        $status = 'depot';
 
-        $pdf = PDF::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles','conditionsArray', 'status'));
+        $pdf = PDF::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles','conditionsArray', 'status', 'date_depot'));
         return $pdf->stream('fiche_fournisseur.pdf');
     }
     
@@ -57,20 +83,17 @@ class FournisseurController extends Controller
         $articles = $fournisseur->articles->where('vente.created_at', '>=', $date_debut);  
         
         // get all ventes where article_id is in the articles array
-        $ventes = Vente::whereIn('article_id', $articles->pluck('id'))->get();
-
-        //sum quantity of all ventes for each article
-        $articles->map(function ($article) use ($ventes) {
-            $article->quantite = $ventes->where('article_id', $article->id)->sum('quantite');
-            return $article;
-        });
+        $ventes = Vente::with('article')->whereIn('article_id', $articles->pluck('id'))->get();
         
         $conditionsArray = explode("\n", $conditionGenerale);
 
         $status = 'vente';
 
-        $pdf = PDF::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles',  'conditionsArray', 'status'));
-        return $pdf->stream('fiche_fournisseur.pdf');
+        $pdf = PDF::loadView('fiches.fiche_fournisseur_vente', compact('fournisseur', 'ventes',  'conditionsArray', 'status'))
+            ->setPaper('a4', 'portrait')
+            ->setOptions(['isHtml5ParserEnabled' => true, 'isPhpEnabled' => true]);
+
+        return $pdf->stream('fiche_fournisseur_vente.pdf');
     }
 
     public function generateFicheFournisseur($id, $conditionGenerale)
@@ -80,7 +103,9 @@ class FournisseurController extends Controller
 
         $conditionsArray = explode("\n", $conditionGenerale);
 
-        $pdf = PDF::loadView('fiches.fiche_fournisseur', compact('fournisseur','articles',  'conditionsArray'));
+        $status = 'fournisseur';
+
+        $pdf = PDF::loadView('fiches.fiche_fournisseur', compact('fournisseur','articles',  'conditionsArray', 'status'));
         return $pdf->stream('fiche_fournisseur.pdf');
     }
 
@@ -97,8 +122,8 @@ class FournisseurController extends Controller
     // GET: Récupérer un fournisseur spécifique
     public function show($id)
     {
-        $fournisseur = Fournisseur::with(['articles' => function ($query) {
-            $query->orderBy('created_at', 'asc'); 
+        $fournisseur = Fournisseur::with(['articles.vente' => function ($query) {
+            $query->orderBy('created_at', 'desc'); 
         }])->find($id);
 
         $conditionGenerale = config('app_settings.conditions_generales');

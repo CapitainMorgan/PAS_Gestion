@@ -69,6 +69,7 @@ import vSelect from 'vue-select';
                       <table class="table">
                       <thead>
                           <tr>
+                          <th>ID</th>
                           <th>Description</th>
                           <th>Taille</th>
                           <th>Quantité</th>
@@ -77,10 +78,12 @@ import vSelect from 'vue-select';
                           <th>Prix Client</th>
                           <th>Prix Solde</th>
                           <th>Date Dépot</th>
+                          <th>Date chagement de status</th>
                           </tr>
                       </thead>
                       <tbody>
                           <tr v-for="article in paginatedArticles" :key="article.id">
+                              <td @click="showArticle(article.id)">{{ article.id }}</td>
                               <td @click="showArticle(article.id)">{{ article.description }}</td>
                               <td @click="showArticle(article.id)">{{ article.taille ?? 'N/A' }}</td>
                               <td @click="showArticle(article.id)">{{ article.quantite ?? 'N/A' }}</td>
@@ -89,6 +92,7 @@ import vSelect from 'vue-select';
                               <td @click="showArticle(article.id)">{{ article.prixClient ?? 'N/A' }}</td>
                               <td @click="showArticle(article.id)">{{ article.prixSolde ?? 'N/A' }}</td>
                               <td @click="showArticle(article.id)">{{ formatDate(article.dateDepot) }}</td>
+                              <td @click="showArticle(article.id)">{{ formatDate(article.dateStatus) }}</td>
                           </tr>
                       </tbody>
                       </table>
@@ -108,6 +112,8 @@ import vSelect from 'vue-select';
                         </ul>
                       </nav>
                     </div>
+
+
 
                     
                     <PrimaryButton class="button" @click="showModalFiche = true; getDepotIdFromFournisseurArticles()">Générer Fiche Client</PrimaryButton>
@@ -254,7 +260,11 @@ export default {
         this.$inertia.delete(route('fournisseur.destroy', this.fournisseur.id));
       }
     },
-    generateFicheClient() {      
+    generateFicheClient() { 
+      if (this.statusDate == null || this.tempConditionGenerale == null || (this.dateDepot == null && this.statusDate == null)) {
+        return;
+      }
+      
       if (this.ficheChoice == 2) {        
         window.open(`/fiche-fournisseur-vente/${this.fournisseur.id}/${this.statusDate}/${this.tempConditionGenerale}`, '_blank');
       }

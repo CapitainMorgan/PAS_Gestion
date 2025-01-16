@@ -36,7 +36,7 @@ import { Head } from '@inertiajs/vue3';
                   <PrimaryButton @click="createFournisseur()">Créer un nouveau</PrimaryButton>
               
                   <!-- Tableau des fournisseurs -->
-                  <table v-if="filteredFournisseurs.length > 0">
+                  <table v-if="fournisseurs.length > 0">
                     <thead>
                         <tr>
                         <th>Id</th>
@@ -50,7 +50,7 @@ import { Head } from '@inertiajs/vue3';
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="fournisseur in paginatedFournisseurs" :key="fournisseur.id">
+                        <tr v-for="fournisseur in fournisseurs" :key="fournisseur.id">
                             <td @click="showFournisseur(fournisseur.id)">{{ fournisseur.id ?? 'N/A' }}</td>
                             <td @click="showFournisseur(fournisseur.id)">{{ fournisseur.nom ?? 'N/A'}}</td>
                             <td @click="showFournisseur(fournisseur.id)">{{ fournisseur.prenom ?? 'N/A'}}</td>                        
@@ -71,13 +71,13 @@ import { Head } from '@inertiajs/vue3';
                   <nav aria-label="Page navigation">
                     <ul class="pagination">
                       <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                        <SecondaryButton class="page-link" @click="changePage(currentPage - 1)">Précédent</SecondaryButton>
+                        <SecondaryButton class="page-link" @click="fetchFournisseur(currentPage - 1)">Précédent</SecondaryButton>
                       </li>
                       <li v-for="page in visiblePages" :key="page" class="page-item" :class="{ active: currentPage === page }">
-                        <SecondaryButton class="page-link" @click="changePage(page)">{{ page }}</SecondaryButton>
+                        <SecondaryButton class="page-link" @click="fetchFournisseur(page)">{{ page }}</SecondaryButton>
                       </li>
                       <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                        <SecondaryButton class="page-link" @click="changePage(currentPage + 1)">Suivant</SecondaryButton>
+                        <SecondaryButton class="page-link" @click="fetchFournisseur(currentPage + 1)">Suivant</SecondaryButton>
                       </li>
                     </ul>
                   </nav>
@@ -93,47 +93,18 @@ import { Head } from '@inertiajs/vue3';
 
   export default {
     props: {
-      fournisseurs: {
-        type: Array,
-        default: () => [], // Assurez-vous que c'est un tableau par défaut
-      },
     },
     data() {
       return {
+        fournisseurs: [],
         searchTerm: '',
         currentPage: 1,
+        totalPages: 0,
         pageSize: 10,
+        isLoading: false,
       };
     },
     computed: {
-      filteredFournisseurs() {
-        // Diviser le terme de recherche en mots clés
-      const searchTerms = this.searchTerm.toLowerCase().split(/\s+/);
-
-      return this.fournisseurs.filter(fournisseur => {
-        // Combiner les champs de l'article à rechercher dans une seule chaîne
-        const articleFields = [
-          fournisseur.nom?.toLowerCase() ?? '',
-          fournisseur.prenom?.toLowerCase() ?? '',
-          fournisseur.email?.toLowerCase() ?? '',
-          fournisseur.mobile?.toLowerCase() ?? '',
-          fournisseur.numProf?.toLowerCase() ?? '',
-          fournisseur.id?.toString().toLowerCase() ?? ''
-        ].join(' ');
-
-        // Vérifier si tous les mots clés de recherche sont présents dans les champs de l'article
-        const matchesSearch = searchTerms.every(term => articleFields.includes(term));
-
-        return matchesSearch;
-      });
-      },
-      totalPages() {
-        return Math.ceil(this.filteredFournisseurs.length / this.pageSize);
-      },
-      paginatedFournisseurs() {
-        const start = (this.currentPage - 1) * this.pageSize;
-        return this.filteredFournisseurs.slice(start, start + this.pageSize);
-      },
       visiblePages() {
         const pages = [];
         const start = Math.max(1, this.currentPage - 1);
@@ -156,10 +127,24 @@ import { Head } from '@inertiajs/vue3';
         return pages;
       },
     },
+    mounted() {
+      this.fetchFournisseur(1);
+    },
     methods: {
-      changePage(page) {
-        if (page < 1 || page > this.totalPages) return; // Limiter la page
-        this.currentPage = page;
+      fetchFournisseur(page = 1) {
+        axios
+          .get(`/fournisseurs/search`, { params: { page, search: this.searchTerm } })
+          .then((response) => {
+            this.fournisseurs = response.data.data;
+            this.currentPage = response.data.current_page;
+            this.totalPages = response.data.last_page;
+          })
+          .catch((error) => {
+            console.error("Erreur lors de la récupération des articles :", error);
+          });
+      },
+      searchFournisseurs() {
+        this.fetchFournisseur(1);
       },
       createFournisseur() {
         this.$inertia.visit(route('fournisseur.create'));

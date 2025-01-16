@@ -56,8 +56,7 @@ import vSelect from 'vue-select';
                         class="form-control"
                         id="email"
                         v-model="form.email"
-                        placeholder="Entrez l'email"
-                        required
+                        placeholder="Entrez l'email"                        
                         />
                     </div>
 
@@ -69,7 +68,8 @@ import vSelect from 'vue-select';
                         id="mobile"
                         v-model="form.mobile"
                         placeholder="Entrez le mobile"
-                        />
+                        required
+                        />                        
                     </div>
 
                     <div class="form-group">
@@ -80,7 +80,7 @@ import vSelect from 'vue-select';
                         id="telephone"
                         v-model="form.telephone"
                         placeholder="Entrez le téléphone"
-                        required
+                        
                         />
                     </div>
 

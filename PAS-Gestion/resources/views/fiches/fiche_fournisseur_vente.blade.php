@@ -25,6 +25,7 @@ use Carbon\Carbon;
     </style>
 </head>
 <body style="height: 100%; margin: 0;">
+    
     <div class="footer" style="
     position: fixed;
     bottom: 0; 
@@ -76,35 +77,47 @@ use Carbon\Carbon;
             </div>
             
 
-            @if ($articles !== NULL)
+            @if ($ventes !== NULL)
             <div class="articles">
                 <table class="articles-table">
                     <thead>
                         <tr>
                             <th></th>
                             <th>Libellé</th>
-                            <th>Part Fournisseur</th>
-                            <th>Prix Vente Solde</th>
+                            <th>Part Fournisseur prévue</th>
+                            <th>Prix Vente prévu</th>
                             <th>Prix Vente</th>
                             <th>Quantité</th>
-                            <th>Delai du Dépôt</th>
+                            <th>Total</th>
+                            <th>Date de vente</th>
                         </tr>
                     </thead>
                     <tbody>
                         @php
                             $num = 1;
+                            $total = 0;
                         @endphp
-                        @foreach ($articles as $article)
+                        @foreach ($ventes as $vente)
                             <tr>                                
                                 <td>{{ $num++ }}</td>
-                                <td>{{ $article->description }}</td>
-                                <td>{{ $article->prixClient }}</td>
-                                <td>{{ $article->prixSolde }}</td>
-                                <td>{{ $article->prixVente }}</td>
-                                <td>{{ $article->quantite }}</td>
-                                <td>{{ Carbon::parse($article->dateEcheance)->format('d.m.Y') }}</td>
+                                <td>{{ $vente->article->description }}</td>
+                                <td>{{ $vente->article->prixClient }}</td>
+                                <td>{{ $vente->article->prixVente }}</td>
+                                <td>{{ $vente->prix_unitaire }}</td>
+                                <td>{{ $vente->quantite }}</td>
+                                <td>{{ $vente->prix_unitaire * $vente->quantite }}</td>
+                                <td>{{ Carbon::parse($vente->created_at)->format('d.m.Y') }}</td>
+                                @php
+                                    $total += $vente->prix_unitaire * $vente->quantite;
+                                @endphp
                             </tr>
                         @endforeach
+
+                        <tr>
+                            <td colspan="6" style="text-align: right;"><b>Total</b></td>
+                            <td><b>{{ $total }}</b></td>
+                            <td></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -123,6 +136,8 @@ use Carbon\Carbon;
                 Signature: ________________________
             </div>
         </div>
-    </div>
+
+        
+    </div>    
 </body>
 </html>

@@ -58,6 +58,7 @@ import vSelect from 'vue-select';
                         v-model="form.prixVente"
                         required
                         step="0.01"
+                        @input="form.prixClient = form.prixVente/2"
                         />
                     </div>
                     

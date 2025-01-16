@@ -12,7 +12,9 @@ class CartController extends Controller
     public function addToCart(Request $request)
     {
         $cart = session()->get('cart', []);
-        $cart[] = $request->input('article');
+
+        array_unshift($cart, $request->input('article'));
+
         session()->put('cart', $cart);
 
         return response()->json(['success' => true, 'cart' => $cart]);
@@ -52,6 +54,21 @@ class CartController extends Controller
         }, $cart);
 
         return response()->json(['cart' => $cart]);
+    }
+
+    public function removeArticle(Request $request)
+    {
+        $cart = session()->get('cart', []);
+
+        $index = array_search($request->input('id'), array_column($cart, 'id'));
+
+        if ($index !== false) {
+            array_splice($cart, $index, 1);
+        }
+
+        session()->put('cart', $cart);
+
+        return response()->json(['success' => true, 'cart' => $cart]);
     }
 
     public function clearCart()

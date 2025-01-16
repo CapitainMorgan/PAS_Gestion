@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
+import DangerButton from '@/components/DangerButton.vue';
 import TextInput from '@/components/TextInput.vue';
 import InputLabel from '@/components/InputLabel.vue';
 import { Head } from '@inertiajs/vue3';
@@ -36,15 +37,16 @@ import { Head } from '@inertiajs/vue3';
                         <table class="table-auto">
                           <thead>
                             <tr>
-                              <th class="px-4 py-2">ID</th>
-                              <th class="px-4 py-2">Description</th>
-                              <th class="px-4 py-2">Status</th>
-                              <th class="px-4 py-2">Localisation</th>
-                              <th class="px-4 py-2">Prix Vente</th>
-                              <th class="px-4 py-2">Prix Solde</th>
-                              <th class="px-4 py-2">Quantité disponible</th>
-                              <th class="px-4 py-2">Quantité</th>
-                              <th class="px-4 py-2">Total</th>
+                              <th class="">ID</th>
+                              <th class="">Description</th>
+                              <th class="">Status</th>
+                              <th class="">Localisation</th>
+                              <th class="">Prix Vente</th>
+                              <th class="">Prix Solde</th>
+                              <th class="">Quantité disponible</th>
+                              <th class="">Quantité</th>
+                              <th class="">Total</th>
+                              <th class="">Action</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -54,15 +56,17 @@ import { Head } from '@inertiajs/vue3';
                               <td @click="showArticle(article.id)" class="border px-4 py-2">{{ article.status }}</td>
                               <td @click="showArticle(article.id)" class="border px-4 py-2">{{ article.localisation }}</td>
                               <td @click="showArticle(article.id)" class="border px-4 py-2">{{ article.prixVente }} CHF</td>
-                              <td class="border px-4 py-2"><TextInput v-model="article.prixSolde" type="number" class="form-control" placeholder="Prix Solde" @change="updateCart" /> CHF</td>
+                              <td class="border px-4 py-2"><TextInput v-model="article.prixSolde" type="number" class="form-control" style="width: 80px;" placeholder="Prix Solde" @change="updateCart" /> CHF</td>
                               <td @click="showArticle(article.id)" class="border px-4 py-2">{{ article.quantite }}</td>
-                              <td class="border px-4 py-2"><TextInput v-model="article.quantiteVente" type="number" class="form-control" placeholder="Quantité" @change="updateCart" /></td>
-                              <td v-if="article.prixSolde == null" class="border px-4 py-2">{{ article.prixVente * article.quantiteVente }} CHF</td>
-                              <td v-else class="border px-4 py-2">{{ article.prixSolde * article.quantiteVente }} CHF</td>
+                              <td class="border px-4 py-2"><TextInput v-model="article.quantiteVente" type="number" class="form-control" style="width: 80px;" placeholder="Quantité" @change="updateCart" /></td>
+                              <td v-if="article.prixSolde == null || article.prixSolde == 0" class="border px-4 py-2">{{ article.prixVente * article.quantiteVente }} CHF</td>
+                              <td v-else class="border ">{{ article.prixSolde * article.quantiteVente }} CHF</td>
+                              <td class="border "><DangerButton @click="removeFromCart(article)">Supprimer</DangerButton></td>
                             </tr>
                             <tr>
                               <td colspan="8" class="border px-4 py-2 font-bold text-right">Total :</td>
-                              <td class="border px-4 py-2 font-bold">{{ totalPrice }} CHF</td>
+                              <td class="border  font-bold">{{ totalPrice }} CHF</td>
+                              <td class="border "></td>
                             </tr>
                           </tbody>
                         </table>
@@ -104,7 +108,13 @@ import { Head } from '@inertiajs/vue3';
     computed: {
       totalPrice() {
         return this.articles.reduce((total, article) => {
-          const price = article.prixSolde ?? article.prixVente;
+          let price = 0;
+          if (article.prixSolde != null && article.prixSolde != 0) {
+            price = article.prixSolde;
+          } else {
+            price = article.prixVente;
+          }
+          
           const quantity = article.quantiteVente ?? 0;
           return total + price * quantity;
         }, 0);
@@ -173,6 +183,11 @@ import { Head } from '@inertiajs/vue3';
           const response = await axios.post('/api/cart/add', { article });
           this.articles = response.data.cart;
         }        
+      },
+      async removeFromCart(article) {
+        let id = article.id;
+        const response = await axios.post('/api/cart/remove', { id });
+        this.articles = response.data.cart;
       },
       async updateCart() {
         const response = await axios.post('/api/cart/update', { articles: this.articles });
