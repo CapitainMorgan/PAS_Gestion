@@ -2,7 +2,7 @@
 Corrections Bugs
 ---------------------
 - Erreur lors de la génération d'une fiche client à cause du caractère %
-- Client 0 = Client 4 Attention probable que les etiquettes ne fonctionne pas
+- Client 0 = Client 4 Attention probable que les etiquettes ne fonctionne pas Attention check if article fournisseur_id =0 sont dedans
 - Si le prix soldé de la caisse = "" ou 0 le prix de vente est prix en compte
 - La fiche client dépot générée affiche mtn bien la date du dépot et pas la date du jour 
 - Création d'un client ne devrai plus afficher une erreur si le numéros professionnel/telephone/email n'est pas rempli TODO DB change
@@ -13,7 +13,7 @@ Modifications
 - Carré gris en bas de la fiche client
 - Carré gris en haut de la fiche client
 - ID Article sur les etiquette 
-- Correction des numéros de téléphone dans la BDD TODO
+- Correction des numéros de téléphone dans la BDD TODO import fichier csv Attention Sauvegarde Article avant
 - Nouvelle article dans la caisse arrive maintenant en haut de la caisse
 - Le bouton "ajouter un article" est maintenant plus visible dans la création d'un dépot 
 - Ajout du numéros de l'article dans la liste d'article d'un fournisseur 
@@ -24,6 +24,7 @@ Modifications
 - Affichage du prix de vente d'un article partout TODO A discuter
 - Affichage de l'id Article avec les -
 - Carte Banquaire en priorité dans la caisse
+- Affichage de la somme des frais article
 ---------------------
 Nouvelles fonctionnalités
 ---------------------
@@ -32,8 +33,8 @@ Nouvelles fonctionnalités
 - Récapitulatif vente fournisseur via fiche de vente A discuter si suffisant
 - Récapitulatif vente du jour
 - Impression etiquette pour tout un dépot 
+- Ajout du champ date dans frais_societes TODO DB Change
 ---------------------
 A faire encore 
 ---------------------
 - Solution etiquette pliée en deux TODO
-- Trouver solution frais article TODO

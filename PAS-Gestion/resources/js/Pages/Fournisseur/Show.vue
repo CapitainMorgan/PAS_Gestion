@@ -77,6 +77,7 @@ import vSelect from 'vue-select';
                           <th>Prix Vente</th>
                           <th>Prix Client</th>
                           <th>Prix Solde</th>
+                          <th>Total des frais</th>
                           <th>Date Dépot</th>
                           <th>Date chagement de status</th>
                           </tr>
@@ -91,6 +92,7 @@ import vSelect from 'vue-select';
                               <td @click="showArticle(article.id)">{{ article.prixVente ?? 'N/A' }}</td>
                               <td @click="showArticle(article.id)">{{ article.prixClient ?? 'N/A' }}</td>
                               <td @click="showArticle(article.id)">{{ article.prixSolde ?? 'N/A' }}</td>
+                              <td @click="showArticle(article.id)">{{ article.frais }}</td>
                               <td @click="showArticle(article.id)">{{ formatDate(article.dateDepot) }}</td>
                               <td @click="showArticle(article.id)">{{ formatDate(article.dateStatus) }}</td>
                           </tr>

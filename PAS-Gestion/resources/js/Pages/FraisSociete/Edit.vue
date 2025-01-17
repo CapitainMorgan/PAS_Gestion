@@ -49,6 +49,17 @@ import vSelect from 'vue-select';
                         required
                         />
                     </div>
+
+                    <div class="form-group">
+                        <InputLabel for="date" class="form-label">Date</InputLabel>
+                        <TextInput
+                        type="date"
+                        class="form-control"
+                        id="date"
+                        v-model="form.date"
+                        required
+                        /> 
+                    </div>
                     
                     <div class="form-group full-width">
                       <SecondaryButton type="submit" class="btn btn-primary">Modifier le frais</SecondaryButton>
@@ -80,6 +91,7 @@ export default {
       form: useForm({
         description: this.frais.description || null,
         prix: this.frais.prix || null,
+        date: this.frais.date || null,
       }),
     };
   },

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Fournisseur;
 use App\Models\Article;
 use App\Models\Vente;
+use App\Models\Frais;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Barryvdh\Snappy\Facades\SnappyPdf;
@@ -125,6 +126,16 @@ class FournisseurController extends Controller
         $fournisseur = Fournisseur::with(['articles.vente' => function ($query) {
             $query->orderBy('created_at', 'desc'); 
         }])->find($id);
+
+        $articles = $fournisseur->articles;
+
+        // get all frais of the articles and sum them and add the result to the article
+        $articles->map(function ($article) {
+            $article->frais = Frais::where('article_id', $article->id)->sum('prix');
+            return $article;
+        });
+
+        $fournisseur->articles = $articles;
 
         $conditionGenerale = config('app_settings.conditions_generales');
 

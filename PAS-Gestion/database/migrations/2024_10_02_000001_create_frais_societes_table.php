@@ -12,6 +12,7 @@ class CreateFraisSocietesTable extends Migration
             $table->id();
             $table->string('description', 255)->nullable();
             $table->decimal('prix', 10, 2)->nullable();
+            $table->date('date')->nullable();
             $table->timestamps();
         });
     }

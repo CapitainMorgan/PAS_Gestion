@@ -11,6 +11,7 @@ class FraisSociete extends Model
 
     protected $fillable = [
         'description', 
-        'prix'
+        'prix',
+        'date'
     ];
 }

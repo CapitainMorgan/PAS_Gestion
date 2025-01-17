@@ -41,6 +41,7 @@ import { Head } from '@inertiajs/vue3';
                                 <th>ID</th>
                                 <th>Description</th>
                                 <th>Prix</th>    
+                                <th>Date</th>
                                 <th v-if="isAdmin">Action</th>     
                                 </tr>
                             </thead>
@@ -49,6 +50,7 @@ import { Head } from '@inertiajs/vue3';
                                   <td @click="editFrais(frais.id)">{{ frais.id }} </td>
                                   <td @click="editFrais(frais.id)">{{ frais.description }} </td>
                                   <td @click="editFrais(frais.id)">{{ frais.prix }} </td>    
+                                  <td @click="editFrais(frais.id)">{{ formatDate(frais.date) }} </td>
                                   <td @click="deleteFrais(frais.id)" v-if="isAdmin">
                                     <DangerButton>Supprimer</DangerButton>
                                   </td>                                        
@@ -143,6 +145,13 @@ import { Head } from '@inertiajs/vue3';
       },
     },
     methods: {
+      formatDate(date) {
+        return new Date(date).toLocaleDateString('fr-FR', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+      },
       changePage(page) {
         if (page < 1 || page > this.totalPages) return; // Limiter la page
         this.currentPage = page;
