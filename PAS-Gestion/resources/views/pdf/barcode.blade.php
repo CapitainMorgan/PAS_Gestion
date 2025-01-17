@@ -37,7 +37,7 @@
         }
 
         .barcode-image {
-            max-width: 100%;
+            max-width: 80%;
             height: auto;
             margin-bottom: 5px; /* Espacement entre le code-barres et le texte */
         }
