@@ -96,12 +96,14 @@ import { Head } from '@inertiajs/vue3';
 </template>
   
   <script>
+  import { useToast } from 'vue-toastification'
+
   export default {
     data() {
       return {
         scannedBarcode: '',
         articles: [], // Détails de l'article scanné
-        vente_status: 'Cash',
+        vente_status: 'CB',
         scanTimeout: null,
       };
     },
@@ -241,11 +243,13 @@ import { Head } from '@inertiajs/vue3';
         console.log(this.articles);
         const response = await axios.post(route('article.updateStatus') , { articles: this.articles, status: status, vente_status: this.vente_status });
 
+        const toast = useToast();
+
         if (response.data.message) {
           this.clearCart();
-          this.$toast.success(response.data.message);
+          toast.success(response.data.message);
         } else {
-          this.$toast.error('Erreur lors de la vente');
+          toast.error('Erreur lors de la vente');
         }
 
       },

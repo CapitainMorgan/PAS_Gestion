@@ -42,7 +42,7 @@ import axios from 'axios';
                         </thead>
                         <tbody>
                             <tr v-for="vente in ventes" :key="vente.id">
-                                <td>{{ vente.article.id }}</td>
+                                <td>{{ formatIdArticle(vente.article) }}</td>
                                 <td @click="showArticle(vente.article.id)">{{ vente.article.description }}</td>
                                 <td @click="showFournisseur(vente.article.fournisseur.id)">{{ vente.article.fournisseur.nom + " " + vente.article.fournisseur.prenom }}</td>
                                 <td>{{ vente.quantite }}</td>
@@ -114,6 +114,23 @@ export default {
       },
     },
     methods: {
+      formatIdArticle(article) {
+        const createdAt = new Date(article.created_at);
+
+        // Format en "dmy" (jour-mois-année)
+        const date = `${String(createdAt.getDate()).padStart(2, '0')}${String(createdAt.getMonth() + 1).padStart(2, '0')}${String(createdAt.getFullYear()).slice(2)}`;
+
+        const id = article.id.toString();
+        let fournisseurId = article.fournisseur_id.toString();
+
+        if (
+          id.startsWith(fournisseurId) && 
+          id.endsWith(date)
+        ) {
+          return `${fournisseurId}-${id.slice(fournisseurId.length, -date.length)}-${date}`;
+        }
+        return id;
+      },
         formatDate(date) {
             return new Date(date).toLocaleDateString('fr-FR', {
                 year: 'numeric',

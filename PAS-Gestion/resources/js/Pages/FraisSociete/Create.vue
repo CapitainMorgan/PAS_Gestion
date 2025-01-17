@@ -66,6 +66,8 @@ import vSelect from 'vue-select';
 </template>
 
 <script>
+import { useToast } from 'vue-toastification';
+
 export default {
   props: {
     frais: Array,
@@ -84,12 +86,13 @@ export default {
   },
   methods: {
     async createFrais() {
+      const toast = useToast();
       try {
         await this.$inertia.post(route('frais.store'), this.form);
-        this.$toast.success('Frais créé avec succès');
+        toast.success('Frais créé avec succès');
       } catch (error) {
         console.error(error);
-        this.$toast.error('Une erreur est survenue lors de la création du frais');
+        toast.error('Une erreur est survenue lors de la création du frais');
       }
     },
     indexFrais() {

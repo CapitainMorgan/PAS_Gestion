@@ -1,7 +1,7 @@
 ---------------------
 Corrections Bugs
 ---------------------
-- Erreur lors de la génération d'une fiche client à cause du caractère % TODO
+- Erreur lors de la génération d'une fiche client à cause du caractère %
 - Client 0 = Client 4 Attention probable que les etiquettes ne fonctionne pas
 - Si le prix soldé de la caisse = "" ou 0 le prix de vente est prix en compte
 - La fiche client dépot générée affiche mtn bien la date du dépot et pas la date du jour 
@@ -23,11 +23,12 @@ Modifications
 - Optimisation du chargement de la page fournisseur
 - Affichage du prix de vente d'un article partout TODO A discuter
 - Affichage de l'id Article avec les -
+- Carte Banquaire en priorité dans la caisse
 ---------------------
 Nouvelles fonctionnalités
 ---------------------
 - Bouton supprimer article de la caisse (individuel) 
-- Alerte de confirmation de la "vente" TODO
+- Alerte de confirmation de la "vente"
 - Récapitulatif vente fournisseur via fiche de vente A discuter si suffisant
 - Récapitulatif vente du jour
 - Impression etiquette pour tout un dépot 

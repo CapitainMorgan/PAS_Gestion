@@ -10,6 +10,8 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
+import Toast, { POSITION } from 'vue-toastification'
+import 'vue-toastification/dist/index.css';
 
 import axios from 'axios';
 window.axios = axios;
@@ -27,6 +29,10 @@ createInertiaApp({
         return createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
+            .use(Toast, {
+                position: POSITION.TOP_RIGHT,
+                timeout: 5000,
+            })
             .mount(el);
     },
     progress: {

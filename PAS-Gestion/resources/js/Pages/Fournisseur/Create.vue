@@ -173,6 +173,8 @@ import vSelect from 'vue-select';
 </template>
 
 <script>
+import { useToast } from 'vue-toastification';
+
 export default {
   props: {
     fournisseurs: Array,
@@ -196,12 +198,13 @@ export default {
   },
   methods: {
     async createFournisseur() {
+      const toast = useToast();
       try {
         await this.$inertia.post(route('fournisseur.store'), this.form);
-        this.$toast.success('Fournisseur créé avec succès');
+        toast.success('Fournisseur créé avec succès');
       } catch (error) {
         console.error(error);
-        this.$toast.error('Une erreur est survenue lors de la création du fournisseur');
+        toast.error('Une erreur est survenue lors de la création du fournisseur');
       }
     },
     indexFournisseur() {

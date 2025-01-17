@@ -134,6 +134,8 @@ import { Head } from '@inertiajs/vue3';
 </template>
 
 <script>
+import { useToast } from 'vue-toastification';
+
 export default {
   props: {
     article: {
@@ -184,14 +186,15 @@ export default {
       });
     },
     async addFrais() {
+      const toast = useToast();
       try {
         await this.$inertia.post(route('fraisArticle.store', this.article.id), this.newFrais);
-        this.$toast.success('Frais ajouté avec succès');
+        toast.success('Frais ajouté avec succès');
         this.newFrais.description = '';
         this.newFrais.prix = null;
       } catch (error) {
         console.error(error);
-        this.$toast.error("Une erreur est survenue lors de l'ajout du frais.");
+        toast.error("Une erreur est survenue lors de l'ajout du frais.");
       }
     },    
     update() {

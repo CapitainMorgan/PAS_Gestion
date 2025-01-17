@@ -6,6 +6,7 @@ import TextInput from '@/components/TextInput.vue';
 import InputLabel from '@/components/InputLabel.vue';
 import { Head } from '@inertiajs/vue3';
 import vSelect from 'vue-select';
+import { i } from 'vite/dist/node/types.d-aGj9QkWt';
 </script>
 
 
@@ -147,6 +148,8 @@ import vSelect from 'vue-select';
 </template>
 
 <script>
+import { useToast } from 'vue-toastification';
+
 export default {
   props: {
     fournisseurs: Array,
@@ -186,12 +189,13 @@ export default {
         alert('Veuillez sélectionner un fournisseur');
         return;
       }
+      const toast = useToast();
       try {
         await this.$inertia.post(route('article.store', this.EchanceDays), this.form);
-        this.$toast.success('Article créé avec succès');
+        toast.success('Article créé avec succès');
       } catch (error) {
         console.error(error);
-        this.$toast.error('Une erreur est survenue lors de la création de l\'article');
+        toast.error('Une erreur est survenue lors de la création de l\'article');
       }
     },
     indexArticle() {

@@ -121,7 +121,7 @@ import vSelect from 'vue-select';
 </template>
   
   <script>
-  
+  import { useToast } from 'vue-toastification';
   export default {
     name: 'CreateMultipleArticles',
     props: {
@@ -187,8 +187,9 @@ import vSelect from 'vue-select';
           }
         })
         .catch(error => {
+          const toast = useToast();
           console.error('Erreur lors de la création des articles', error);
-          this.$toast.error('Erreur lors de la création des articles.');
+          toast.error('Erreur lors de la création des articles.');
         });
       },
     },

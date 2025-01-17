@@ -37,7 +37,7 @@ import vSelect from 'vue-select';
                         <p><strong>Adresse:</strong> 
                           <p v-if="fournisseur.rue || fournisseur.ville || fournisseur.npa || fournisseur.pays">{{ fournisseur.rue }}, {{ fournisseur.ville }}, {{ fournisseur.npa }}, {{ fournisseur.pays }}</p>
                           <p v-else>N/A</p>
-                      </p>                        
+                        </p>                        
                         <p><strong>Remarque:</strong> {{ fournisseur.remarque ?? 'N/A' }}</p>
                         <p><strong>Date de Création:</strong> {{ formatDate(fournisseur.created_at) }}</p>
                     </div>
@@ -291,13 +291,13 @@ export default {
       }
       
       if (this.ficheChoice == 2) {        
-        window.open(`/fiche-fournisseur-vente/${this.fournisseur.id}/${this.statusDate}/${this.tempConditionGenerale}`, '_blank');
+        window.open(`/fiche-fournisseur-vente/${this.fournisseur.id}/${this.statusDate}/${encodeURIComponent(this.tempConditionGenerale)}`, '_blank');
       }
       if (this.ficheChoice == 1) {
-        window.open(`/fiche-fournisseur-depot/${this.fournisseur.id}/${this.dateDepot}/${this.tempConditionGenerale}`, '_blank');
+        window.open(`/fiche-fournisseur-depot/${this.fournisseur.id}/${this.dateDepot}/${encodeURIComponent(this.tempConditionGenerale)}`, '_blank');
       }
       else {
-        window.open(`/fiche-fournisseur/${this.fournisseur.id}/${this.tempConditionGenerale}`, '_blank');
+        window.open(`/fiche-fournisseur/${this.fournisseur.id}/${encodeURIComponent(this.tempConditionGenerale)}`, '_blank');
       }
     },
     changePage(page) {
