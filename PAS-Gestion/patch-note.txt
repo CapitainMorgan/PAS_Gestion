@@ -12,7 +12,7 @@ Modifications
 ---------------------
 - Carré gris en bas de la fiche client
 - Carré gris en haut de la fiche client
-- ID Article sur les etiquette et page article TODO
+- ID Article sur les etiquette 
 - Correction des numéros de téléphone dans la BDD TODO
 - Nouvelle article dans la caisse arrive maintenant en haut de la caisse
 - Le bouton "ajouter un article" est maintenant plus visible dans la création d'un dépot 
@@ -21,7 +21,8 @@ Modifications
 - Affiche si elle existe la date de changement de status dans la liste des articles/d'un fournisseur
 - Affichage de la date sur toutes les pages d'une fiche client
 - Optimisation du chargement de la page fournisseur
-- Affichage du prix de vente d'un article partout TODO
+- Affichage du prix de vente d'un article partout TODO A discuter
+- Affichage de l'id Article avec les -
 ---------------------
 Nouvelles fonctionnalités
 ---------------------
@@ -29,7 +30,9 @@ Nouvelles fonctionnalités
 - Alerte de confirmation de la "vente" TODO
 - Récapitulatif vente fournisseur via fiche de vente A discuter si suffisant
 - Récapitulatif vente du jour
+- Impression etiquette pour tout un dépot 
 ---------------------
 A faire encore 
 ---------------------
 - Solution etiquette pliée en deux TODO
+- Trouver solution frais article TODO

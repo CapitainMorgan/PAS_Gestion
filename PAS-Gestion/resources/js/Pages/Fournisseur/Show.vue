@@ -83,7 +83,7 @@ import vSelect from 'vue-select';
                       </thead>
                       <tbody>
                           <tr v-for="article in paginatedArticles" :key="article.id">
-                              <td @click="showArticle(article.id)">{{ article.id }}</td>
+                              <td @click="showArticle(article.id)">{{ formatIdArticle(article) }}</td>
                               <td @click="showArticle(article.id)">{{ article.description }}</td>
                               <td @click="showArticle(article.id)">{{ article.taille ?? 'N/A' }}</td>
                               <td @click="showArticle(article.id)">{{ article.quantite ?? 'N/A' }}</td>
@@ -115,6 +115,8 @@ import vSelect from 'vue-select';
 
 
 
+                    <TextInput style="margin-right:100%; margin-bottom: 5px;" type="date" v-model="printDate" required />
+                    <PrimaryButton style="margin-bottom: 5px;" class="button" @click="print()">Imprimer Code Barre</PrimaryButton>
                     
                     <PrimaryButton class="button" @click="showModalFiche = true; getDepotIdFromFournisseurArticles()">Générer Fiche Client</PrimaryButton>
 
@@ -148,6 +150,8 @@ import vSelect from 'vue-select';
                         <PrimaryButton type="submit" class="btn btn-primary" @click="generateFicheClient">Générer</PrimaryButton>
                       </template>
                     </Modal>
+
+                    
 
                     <PrimaryButton class="button" @click="editFournisseur(fournisseur.id)">Modifier le Fournisseur</PrimaryButton>
                     <PrimaryButton class="button" @click="createDepot(fournisseur.id)">Faire un nouveau dépot</PrimaryButton>
@@ -188,6 +192,7 @@ export default {
       isAdmin: false,
       searchTerm: '',
       status: 'En Stock',
+      printDate: new Date().toISOString().substr(0, 10),
     };
   },
   mounted() {
@@ -247,12 +252,32 @@ export default {
     },
   },
   methods: {
+    formatIdArticle(article) {
+      const createdAt = new Date(article.created_at);
+
+      // Format en "dmy" (jour-mois-année)
+      const date = `${String(createdAt.getDate()).padStart(2, '0')}${String(createdAt.getMonth() + 1).padStart(2, '0')}${String(createdAt.getFullYear()).slice(2)}`;
+
+      const id = article.id.toString();
+      let fournisseurId = this.fournisseur.id.toString();
+
+      if (
+        id.startsWith(fournisseurId) && 
+        id.endsWith(date)
+      ) {
+        return `${fournisseurId}-${id.slice(fournisseurId.length, -date.length)}-${date}`;
+      }
+      return id;
+    },
     formatDate(date) {
       return new Date(date).toLocaleDateString('fr-FR', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
       });
+    },
+    print(){
+      window.open(`/generate-barcode/${this.fournisseur.id}/${this.printDate}`, '_blank');
     },
     deleteFournisseur() {
       if (confirm('Êtes-vous sûr de vouloir supprimer ce fournisseur ?')) {
@@ -261,7 +286,7 @@ export default {
       }
     },
     generateFicheClient() { 
-      if (this.statusDate == null || this.tempConditionGenerale == null || (this.dateDepot == null && this.statusDate == null)) {
+      if (this.tempConditionGenerale == null || (this.dateDepot == null && this.statusDate == null)) {
         return;
       }
       

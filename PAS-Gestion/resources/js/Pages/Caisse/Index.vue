@@ -51,7 +51,7 @@ import { Head } from '@inertiajs/vue3';
                           </thead>
                           <tbody>
                             <tr v-for="article in articles" :key="article.id">
-                              <td @click="showArticle(article.id)" class="border px-4 py-2">{{ article.id }}</td>
+                              <td @click="showArticle(article.id)" class="border px-4 py-2">{{ formatIdArticle(article) }}</td>
                               <td @click="showArticle(article.id)" class="border px-4 py-2">{{ article.description }}</td>
                               <td @click="showArticle(article.id)" class="border px-4 py-2">{{ article.status }}</td>
                               <td @click="showArticle(article.id)" class="border px-4 py-2">{{ article.localisation }}</td>
@@ -132,6 +132,23 @@ import { Head } from '@inertiajs/vue3';
       window.removeEventListener('keydown', this.handleBarcodeScan);
     },
     methods: {
+      formatIdArticle(article) {
+        const createdAt = new Date(article.created_at);
+
+        // Format en "dmy" (jour-mois-année)
+        const date = `${String(createdAt.getDate()).padStart(2, '0')}${String(createdAt.getMonth() + 1).padStart(2, '0')}${String(createdAt.getFullYear()).slice(2)}`;
+
+        const id = article.id.toString();
+        let fournisseurId = article.fournisseur_id.toString();
+
+        if (
+          id.startsWith(fournisseurId) && 
+          id.endsWith(date)
+        ) {
+          return `${fournisseurId}-${id.slice(fournisseurId.length, -date.length)}-${date}`;
+        }
+        return id;
+      },
       handleBarcodeScan(event) {
         // Vérifie si c'est une touche de caractère valide
 

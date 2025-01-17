@@ -59,6 +59,7 @@ Route::get('/article/{id}/edit', [ArticleController::class, 'edit'])->middleware
 Route::put('/article/{id}', [ArticleController::class, 'update'])->middleware(['auth', 'verified'])->name('article.update');
 Route::post('/articles/updateStatus', [ArticleController::class, 'changeStatusArticles'])->middleware(['auth', 'verified'])->name('article.updateStatus');
 Route::get('/generate-barcode/{id}', [ArticleController::class, 'generateBarcode'])->middleware(['auth', 'verified']);
+Route::get('/generate-barcode/{id}/{date}', [ArticleController::class, 'generateBarcodesForArticles'])->middleware(['auth', 'verified']);
 Route::post('/article/barcode/{barcode}', [ArticleController::class, 'getArticleByBarcode'])
     ->middleware(['auth', 'verified'])
     ->name('article.barcode');

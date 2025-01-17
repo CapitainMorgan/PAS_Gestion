@@ -56,18 +56,20 @@ class ArticleController extends Controller
     }
 
     public function getArticleByBarcode($barcode)
-    {   
-        
+    {           
         //check if there is ' in the barcode
 
-        if (strpos($barcode, '\'') === false) {
+        if (strpos($barcode, '\'') === false && strpos($barcode, '-') === false) {
             $id = $barcode;
-        } else {            
-            
+        } else {     
             // idbarcode = barcode without '
             $idbarcode = str_replace("'", "", $barcode);
+            $idbarcode = str_replace("-", "", $idbarcode);
             //parse the barcode 
             $barcode = explode('\'', $barcode);
+            if (count($barcode) == 1) {
+                $barcode = explode('-', $barcode[0]);
+            }
             $id = $barcode[1];
         }
         
@@ -176,14 +178,14 @@ class ArticleController extends Controller
         $id = $article->id;
 
         //test si l'id de l'article commence par l'id du fournisseur et fini par la date de creation "Ymd"
-        if (str_starts_with($id, $article->fournisseur->id) && str_ends_with($id, $article->created_at->format('ymd'))) {
+        if (str_starts_with($id, $article->fournisseur->id) && str_ends_with($id, $article->created_at->format('dmy'))) {
             //id = id de l'article sans le fournisseur et la date de creation
             $id = str_replace($article->fournisseur->id, "", $id);
-            $id = str_replace($article->created_at->format('ymd'), "", $id);            
+            $id = str_replace($article->created_at->format('dmy'), "", $id);            
         }
 
         // Générer le code-barres
-        $code = $article->fournisseur->id . '-' . $id . '-' . $article->created_at->format('Ymd');
+        $code = $article->fournisseur->id . '-' . $id . '-' . $article->created_at->format('dmy');
         $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
         $barcode = $generator->getBarcode($code, $generator::TYPE_CODE_128);
         
@@ -191,7 +193,43 @@ class ArticleController extends Controller
         $barcodeBase64 = base64_encode($barcode);
         $barcodeImage = 'data:image/png;base64,' . $barcodeBase64;
 
-        return view('pdf.barcode', compact('barcodeImage', 'code', 'article'));
+        $barcodes[] = [
+            'barcodeImage' => 'data:image/png;base64,' . $barcodeBase64,
+            'code' => $code,
+            'article' => $article
+        ];
+
+        return view('pdf.barcode', compact('barcodes'));
+    }
+
+
+    public function generateBarcodesForArticles($id, $date)
+    {
+        // Get all articles of a fournisseur generated at the date
+        $articles = Article::with('fournisseur')->where('fournisseur_id', $id)->whereDate('created_at', $date)->get();
+        $barcodes = [];
+
+        foreach ($articles as $article) {
+            $id = $article->id;
+
+            if (str_starts_with($id, $article->fournisseur->id) && str_ends_with($id, $article->created_at->format('dmy'))) {
+                $id = str_replace($article->fournisseur->id, "", $id);
+                $id = str_replace($article->created_at->format('dmy'), "", $id);
+            }
+
+            $code = $article->fournisseur->id . '-' . $id . '-' . $article->created_at->format('dmy');
+            $generator = new \Picqer\Barcode\BarcodeGeneratorPNG();
+            $barcode = $generator->getBarcode($code, $generator::TYPE_CODE_128);
+            $barcodeBase64 = base64_encode($barcode);
+
+            $barcodes[] = [
+                'barcodeImage' => 'data:image/png;base64,' . $barcodeBase64,
+                'code' => $code,
+                'article' => $article
+            ];
+        }
+
+        return view('pdf.barcode', compact('barcodes'));
     }
 
     public function create()
@@ -235,14 +273,22 @@ class ArticleController extends Controller
     // POST: Créer un nouvel article
     public function store(Request $request, $EchanceDays = 30)
     {
+        //get number of articles created today of the same fournisseur
+        $index = Article::where('fournisseur_id', $request->fournisseur_id)->whereDate('created_at', now())->count();
+
+        //build id of the article with fournisseur_id + index + date
+        $id = $request->fournisseur_id . $index + 1 . now()->format('dmy');
+
+        //put the id in the request
+        $request->merge(['id' => $id]);
+
         //add dateDepot to request
         $request->merge(['dateDepot' => now()]);
 
         //if $EchanceDays is not int convert it to int
         if (!is_int($EchanceDays)) {
             $EchanceDays = (int) $EchanceDays;
-        }
-        
+        }        
 
         $request->merge(['dateEcheance' => now()->addDays($EchanceDays)]);
 
@@ -262,6 +308,7 @@ class ArticleController extends Controller
 
     public function storeGroupedArticles(Request $request, $EchanceDays = 30)
     {        
+        
 
         //get array of articles from request
         $articles = $request->articles;
@@ -274,7 +321,12 @@ class ArticleController extends Controller
         //get fournisseur_id from request
         $fournisseur_id = $request->articles[0]['fournisseur_id'];
 
+        //get number of articles created today of the same fournisseur
+        $index = Article::where('fournisseur_id', $fournisseur_id)->whereDate('created_at', now())->count();
+
         foreach ($articles as $article) {
+            $index++;
+            $article['id'] = $fournisseur_id . $index . now()->format('dmy');
             $article['status'] = 'En Stock';
             $article['vente_id'] = null;
             $article['fournisseur_id'] = $fournisseur_id;

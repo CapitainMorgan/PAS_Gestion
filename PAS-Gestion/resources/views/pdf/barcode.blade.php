@@ -21,6 +21,16 @@
             padding: 0;
         }
 
+        .page {
+            page-break-after: always;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 20px;
+        }
+
         .barcode {
             text-align: center;
             width: 100%;
@@ -57,12 +67,16 @@
 </head>
 <body>
     <div class="barcode">
-        <div class="text" style="margin-bottom:5px;float:left;margin-left:10%;">Art : {{ $code }} </div><div class="text-prix" style="float:right;margin-right:10%;"> Frs: {{ $article['prixVente'] }}</div>
-        <!-- Affiche le code-barres -->
-        <img class="barcode-image" src="{{ $barcodeImage }}" alt="Code-barres">
-        <!-- Affiche le texte du code-barres en dessous -->
-        <div class="barcode-text">{{ $code }}</div>
-        <div class="text">{{ $article['description'] }} <br> Taille : {{ $article['taille'] }}</div>
+        @foreach ($barcodes as $barcode)
+        <div class="page">
+            <div class="text" style="margin-bottom:5px;float:left;margin-left:10%;">Art : {{ $barcode['code'] }} </div><div class="text-prix" style="float:right;margin-right:10%;"> Frs: {{ $barcode['article']['prixVente'] }}</div>
+            <!-- Affiche le code-barres -->
+            <img class="barcode-image" src="{{ $barcode['barcodeImage'] }}" alt="Code-barres">
+            <!-- Affiche le texte du code-barres en dessous -->
+            <div class="barcode-text">{{ $barcode['code'] }}</div>
+            <div class="text">{{ $barcode['article']['description'] }} <br> Taille : {{ $barcode['article']['taille'] }}</div>
+        </div>
+        @endforeach
     </div>
 
     <!-- JavaScript pour lancer l'impression automatiquement -->

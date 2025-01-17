@@ -66,7 +66,7 @@ import { Head } from '@inertiajs/vue3';
                     </thead>
                     <tbody>
                         <tr v-for="article in articles" :key="article.id">    
-                            <td @click="showArticle(article.id)">{{ article.id }}</td>    
+                            <td @click="showArticle(article.id)">{{ formatIdArticle(article) }}</td>    
                             <td @click="showArticle(article.id)">{{ article.description }}</td>
                             <td @click="showArticle(article.id)">{{ article.taille ?? 'N/A' }}</td>
                             <td @click="showArticle(article.id)">{{ article.quantite ?? 'N/A' }}</td>
@@ -152,6 +152,23 @@ import { Head } from '@inertiajs/vue3';
       this.fetchArticles(); // Charger les articles à l'initialisation
     },
     methods: {
+      formatIdArticle(article) {
+        const createdAt = new Date(article.created_at);
+
+        // Format en "dmy" (jour-mois-année)
+        const date = `${String(createdAt.getDate()).padStart(2, '0')}${String(createdAt.getMonth() + 1).padStart(2, '0')}${String(createdAt.getFullYear()).slice(2)}`;
+
+        const id = article.id.toString();
+        let fournisseurId = article.fournisseur_id.toString();
+
+        if (
+          id.startsWith(fournisseurId) && 
+          id.endsWith(date)
+        ) {
+          return `${fournisseurId}-${id.slice(fournisseurId.length, -date.length)}-${date}`;
+        }
+        return id;
+      },
       formatDate(date) {
         return new Date(date).toLocaleDateString('fr-FR', {
           year: 'numeric',

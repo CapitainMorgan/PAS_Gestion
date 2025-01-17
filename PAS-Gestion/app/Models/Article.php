@@ -14,6 +14,7 @@ class Article extends Model
     use HasFactory;
 
     protected $fillable = [
+        'id',
         'description', 
         'taille',
         'quantite',
