@@ -23,12 +23,8 @@
 
         .page {
             page-break-after: always;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            padding-top: 20px;
             height: 100%;
-            padding: 20px;
         }
 
         .barcode {
@@ -69,7 +65,7 @@
     <div class="barcode">
         @foreach ($barcodes as $barcode)
         <div class="page">
-            <div class="text" style="margin-bottom:5px;float:left;margin-left:10%;">Art : {{ $barcode['code'] }} </div><div class="text-prix" style="float:right;margin-right:10%;"> Frs: {{ $barcode['article']['prixVente'] }}</div>
+            <div class="text" style="margin-bottom:15px;float:left;margin-left:10%;">Art : {{ $barcode['code'] }} </div><div class="text-prix" style="float:right;margin-right:10%;"> Frs: {{ $barcode['article']['prixVente'] }}</div>
             <!-- Affiche le code-barres -->
             <img class="barcode-image" src="{{ $barcode['barcodeImage'] }}" alt="Code-barres">
             <!-- Affiche le texte du code-barres en dessous -->
