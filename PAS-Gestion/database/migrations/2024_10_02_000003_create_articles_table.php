@@ -20,11 +20,13 @@ class CreateArticlesTable extends Migration
             $table->string('status', 255);   
             $table->date('dateDepot');
             $table->date('dateEcheance');
-            $table->date('dateStatus');
+            $table->date('dateStatus');            
+            $table->string('color', 7)->nullable();
+            $table->boolean('isPaid')->default(false);
             $table->integer('statusMail', 10, 2)->default(0);
-            $table->foreignId('utilisateur_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('fournisseur_id')->constrained('fournisseurs')->onDelete('cascade');
-            $table->foreignId('vente_id')->constrained('ventes')->onDelete('cascade')->nullable();
+            $table->foreignId('utilisateur_id')->constrained('users');
+            $table->foreignId('fournisseur_id')->constrained('fournisseurs');
+            $table->foreignId('vente_id')->constrained('ventes')->nullable();
             $table->timestamps();
         });
     }

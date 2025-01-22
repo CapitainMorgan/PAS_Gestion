@@ -66,7 +66,18 @@ import vSelect from 'vue-select';
                             <div class="form-group">
                                 <InputLabel for="localisation" class="form-label">Localisation</InputLabel>
                                 <TextInput v-model="newArticle.localisation" type="text" class="form-control" placeholder="Localisation" />
-                            </div>      
+                            </div>   
+                            
+                            <!-- Color -->
+                            <div class="form-group">
+                                <InputLabel for="color" class="form-label">Couleur</InputLabel>
+                                <select v-model="newArticle.color" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <option style="color: #000000;" value="#000000">Noir</option>
+                                    <option style="color: #ff0000;" value="#ff0000">Rouge</option>
+                                    <option style="color: #00ff2a;" value="#00ff2a">Vert</option>
+                                    <option style="color: #0027ff;" value="#0027ff">Bleu</option>
+                                </select>                 
+                            </div>
                             
 
                             <div class="form-group full-width">
@@ -80,8 +91,8 @@ import vSelect from 'vue-select';
                           <TextInput v-model="EcheanceDays" type="number" class="form-control" placeholder="Date d'échéance" />
                         </div>
 
-                        <h2 v-if="articles.length > 0" >Articles Ajoutés</h2>
-                        <table v-if="articles.length > 0">
+                        <h2 >Articles Ajoutés</h2>
+                        <table>
                           <thead>
                             <tr>
                               <th>Description</th>
@@ -104,7 +115,7 @@ import vSelect from 'vue-select';
                               <td>{{ article.quantite }}</td>
                               <td>{{ article.localisation }}</td>                              
                               <td>
-                                <DangerButton @click="removeArticle(index)">Supprimer</DangerButton>
+                                <DangerButton @click="removeArticle(article)">Supprimer</DangerButton>
                               </td>
                             </tr>
                           </tbody>
@@ -139,6 +150,7 @@ import vSelect from 'vue-select';
         prixClient: null,
         prixSolde: null,
         quantite: null,
+        color: '#000000',
         localisation: '',
         fournisseur_id: this.fournisseur_id
       },
@@ -146,11 +158,16 @@ import vSelect from 'vue-select';
       articles: [],
     };
   },
+  mounted() {
+    this.loadDepot();
+  },
   methods: {  
-      addArticle () {      
+      async addArticle () {      
 
-        this.articles.push({ ...this.newArticle });
-        console.log(this.articles);
+        const response = await axios.post('/api/depot/add', { article: this.newArticle });
+
+        this.articles = response.data.depot;
+        
         // Réinitialisation du formulaire
         this.newArticle = { 
           description: '',
@@ -160,28 +177,33 @@ import vSelect from 'vue-select';
           prixSolde: null,
           quantite: null,
           localisation: '',
+          color: '#000000',
           fournisseur_id: this.fournisseur_id,
        };
       },
-  
-      removeArticle (index) {
-        this.articles.splice(index, 1);
+
+      async loadDepot() {
+        const response = await axios.get('/api/depot');
+        this.articles = response.data.depot;
       },
+  
+      async removeArticle (article) {
+        const response = await axios.post('/api/depot/remove', { description: article.description });
+        this.articles = response.data.depot;
+      },
+
+      async clearDepot() {
+        const response = await axios.post('/api/depot/clear');
+        this.articles = response.data.depot;
+      },
+
   
       async submitArticles() {
         // Utiliser une requête pour envoyer les données au backend
         axios.post(route('depot.store', this.EcheanceDays), { articles: this.articles })
         .then(response => {
           if (response.data.success) {
-            const barcodeUrls = response.data.barcodeUrls;
-
-            // Ouvrir chaque URL dans un nouvel onglet
-            /*barcodeUrls.forEach((url, index) => {
-              setTimeout(() => {
-                window.open('/generate-barcode/' + url, '_blank');
-              }, index * 300); 
-            });*/
-
+            this.clearDepot();
             // Rediriger vers la page des fournisseurs details
             this.$inertia.visit(route('fournisseur.show', this.fournisseur_id));
           }

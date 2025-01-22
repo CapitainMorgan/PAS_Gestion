@@ -65,7 +65,7 @@ import { Head } from '@inertiajs/vue3';
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="article in articles" :key="article.id">    
+                        <tr v-for="article in articles" :key="article.id" :style="{color:  article.color }">    
                             <td @click="showArticle(article.id)">{{ formatIdArticle(article) }}</td>    
                             <td @click="showArticle(article.id)">{{ article.description }}</td>
                             <td @click="showArticle(article.id)">{{ article.taille ?? 'N/A' }}</td>

@@ -16,6 +16,7 @@ import vSelect from 'vue-select';
       <template #header>
               <h2
                   class="text-xl font-semibold leading-tight text-gray-800"
+                  :style="{color:  fournisseur.color }"
               >
                   {{fournisseur.nom}}  {{fournisseur.prenom}}
               </h2>
@@ -71,30 +72,31 @@ import vSelect from 'vue-select';
                           <tr>
                           <th>ID</th>
                           <th>Description</th>
-                          <th>Taille</th>
-                          <th>Quantité</th>
                           <th>Localisation</th>                        
                           <th>Prix Vente</th>
                           <th>Prix Client</th>
                           <th>Prix Solde</th>
                           <th>Total des frais</th>
+                          <th>Total des ventes</th>
                           <th>Date Dépot</th>
                           <th>Date chagement de status</th>
+                          <th>Est payé</th>
+
                           </tr>
                       </thead>
                       <tbody>
-                          <tr v-for="article in paginatedArticles" :key="article.id">
+                          <tr v-for="article in searchArticles" :key="article.id" :style="{color:  article.color }">
                               <td @click="showArticle(article.id)">{{ formatIdArticle(article) }}</td>
                               <td @click="showArticle(article.id)">{{ article.description }}</td>
-                              <td @click="showArticle(article.id)">{{ article.taille ?? 'N/A' }}</td>
-                              <td @click="showArticle(article.id)">{{ article.quantite ?? 'N/A' }}</td>
                               <td @click="showArticle(article.id)">{{ article.localisation ?? 'N/A' }}</td>
                               <td @click="showArticle(article.id)">{{ article.prixVente ?? 'N/A' }}</td>
                               <td @click="showArticle(article.id)">{{ article.prixClient ?? 'N/A' }}</td>
                               <td @click="showArticle(article.id)">{{ article.prixSolde ?? 'N/A' }}</td>
                               <td @click="showArticle(article.id)">{{ article.frais }}</td>
+                              <td @click="showArticle(article.id)">{{ article.vente_total }}</td>
                               <td @click="showArticle(article.id)">{{ formatDate(article.dateDepot) }}</td>
                               <td @click="showArticle(article.id)">{{ formatDate(article.dateStatus) }}</td>
+                              <td><input type="checkbox" @change="updateIsPaid(article)" v-model="article.isPaid" :modelValue="String(article.isPaid)"></input></td>
                           </tr>
                       </tbody>
                       </table>
@@ -114,7 +116,6 @@ import vSelect from 'vue-select';
                         </ul>
                       </nav>
                     </div>
-
 
 
                     <TextInput style="margin-right:100%; margin-bottom: 5px;" type="date" v-model="printDate" required />
@@ -170,6 +171,8 @@ import vSelect from 'vue-select';
 
 
 <script>
+  import { useToast } from 'vue-toastification';
+
 export default {
   props: {
     fournisseur: {
@@ -195,19 +198,17 @@ export default {
       searchTerm: '',
       status: 'En Stock',
       printDate: new Date().toISOString().substr(0, 10),
+      searchArticles: [],
     };
   },
   mounted() {
     // Vérifier si l'utilisateur est un administrateur
     this.isAdmin = this.$page.props.auth.user.role  === 'admin';
+    this.paginatedArticles();
   },
   computed: {
     totalPages() {
         return Math.ceil(this.filteredArticles.length / this.pageSize);
-    },
-    paginatedArticles() {
-      const start = (this.currentPage - 1) * this.pageSize;
-      return this.filteredArticles.slice(start, start + this.pageSize);
     },
     visiblePages() {
       const pages = [];
@@ -243,17 +244,25 @@ export default {
           article.id?.toString().toLowerCase() ?? ''
         ].join(' ');
 
+        //change all Article isPaid to true false if 0 or 1
+        article.isPaid = article.isPaid == 1 ? true : false;
+
         // Vérifier si tous les mots clés de recherche sont présents dans les champs de l'article
         const matchesSearch = searchTerms.every(term => articleFields.includes(term));
 
         // Appliquer également le filtre par statut
-        const matchesStatus = article.status.includes(this.status);
+        const matchesStatus = article.status.includes(this.status);        
 
         return matchesSearch && matchesStatus;
       });
     },
   },
   methods: {
+    
+    paginatedArticles() {
+      const start = (this.currentPage - 1) * this.pageSize;
+      this.searchArticles = this.filteredArticles.slice(start, start + this.pageSize);
+    },
     formatIdArticle(article) {
       const createdAt = new Date(article.created_at);
 
@@ -281,6 +290,17 @@ export default {
     print(){
       window.open(`/generate-barcode/${this.fournisseur.id}/${this.printDate}`, '_blank');
     },
+    async updateIsPaid(article) {
+      //change article.isPaid to 0 or 1
+      article.isPaid = article.isPaid ? 1 : 0;
+      console.log(article.isPaid);
+      const response = await axios.put(route('article.updateIsPaid', article.id), {
+        article
+      });
+      if (response.data.success) {
+        useToast().success('Le statut de paiement a été mis à jour.');
+      }
+    },
     deleteFournisseur() {
       if (confirm('Êtes-vous sûr de vouloir supprimer ce fournisseur ?')) {
         // Si l'utilisateur confirme, envoyer la requête DELETE avec Inertia
@@ -290,8 +310,7 @@ export default {
     generateFicheClient() { 
       if (this.tempConditionGenerale == null || (this.dateDepot == null && this.statusDate == null)) {
         return;
-      }
-      
+      }      
       if (this.ficheChoice == 2) {        
         window.open(`/fiche-fournisseur-vente/${this.fournisseur.id}/${this.statusDate}/${encodeURIComponent(this.tempConditionGenerale)}`, '_blank');
       }
@@ -305,6 +324,7 @@ export default {
     changePage(page) {
         if (page < 1 || page > this.totalPages) return; // Limiter la page
         this.currentPage = page;
+        this.paginatedArticles();
     },
     closeModal() {
       this.showModalFiche = false;

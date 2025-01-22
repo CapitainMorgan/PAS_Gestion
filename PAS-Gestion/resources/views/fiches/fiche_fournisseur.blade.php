@@ -16,7 +16,7 @@ use Carbon\Carbon;
         .articles-table th { text-align: left; background-color: #f2f2f2; }
         .signature { margin-top: 20px; text-align: right; }
         .main {
-            margin-bottom: 90px;
+            margin-bottom: 200px;
         }
         .conditions,
         .signature {
@@ -30,17 +30,19 @@ use Carbon\Carbon;
     bottom: 0; 
     left: 0; 
     width: 100%; 
-    padding: 10px; 
-    background-color: #7d7d7d;
+    margin-bottom: 80px;
     page">
-    <h1 style="display: inline-block; margin-right: 10px;">Fiche client</h1> 
-    <h1 style="float: right;">{{ $fournisseur->id }}- @if ($status === "depot") {{ Carbon::parse($date_depot)->format('d.m.Y') }} @else {{ date('d.m.Y') }} @endif</h1>
-    <div style="clear: both;"></div>
-    <div><b>Le @if ($status === "depot") {{ Carbon::parse($date_depot)->format('d.m.Y') }} @else {{ date('d.m.Y') }} @endif </b></div>
+    <div class="gray" style="background-color: #e9e9e9; padding: 10px;">
+        <h1 style="display: inline-block; margin-right: 10px;">Fiche client</h1> 
+        <h1 style="float: right;">{{ $fournisseur->id }}- @if ($status === "depot") {{ Carbon::parse($date_depot)->format('d.m.Y') }} @else {{ date('d.m.Y') }} @endif</h1>
+        <div style="clear: both;"></div>
+        <div><b>Le @if ($status === "depot") {{ Carbon::parse($date_depot)->format('d.m.Y') }} @else {{ date('d.m.Y') }} @endif </b></div>
+    </div>
+    <p>HORAIRES : Du lundi au samedi 10h00 - 18h00 non stop DIMANCHE : FERME</p>
 </div>
     <div class="content" style="min-height: calc(100vh - 60px); display: flex; flex-direction: column;">
         <div class="main" style="flex=1">
-            <div class="header" style="padding:10px;background-color: #7d7d7d;">
+            <div class="header" style="padding:10px;background-color: #e9e9e9;">
                 Fiche fournisseur de @if ($status === "vente") vente @else dépôt @endif<br>
                 Prêt à Séduire<br>
                 Rue du Liseron 9, 1006 Lausanne-Ouchy Tél: 021 601 32 29
@@ -87,7 +89,6 @@ use Carbon\Carbon;
                             <th>Prix Vente Solde</th>
                             <th>Prix Vente</th>
                             <th>Quantité</th>
-                            <th>Delai du Dépôt</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -102,7 +103,6 @@ use Carbon\Carbon;
                                 <td>{{ $article->prixSolde }}</td>
                                 <td>{{ $article->prixVente }}</td>
                                 <td>{{ $article->quantite }}</td>
-                                <td>{{ Carbon::parse($article->dateEcheance)->format('d.m.Y') }}</td>
                             </tr>
                         @endforeach
                     </tbody>

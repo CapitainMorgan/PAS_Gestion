@@ -7,6 +7,7 @@ use App\Models\Article;
 use App\Models\Vente;
 use App\Models\Frais;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Barryvdh\Snappy\Facades\SnappyPdf;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
@@ -123,7 +124,7 @@ class FournisseurController extends Controller
     // GET: Récupérer un fournisseur spécifique
     public function show($id)
     {
-        $fournisseur = Fournisseur::with(['articles.vente' => function ($query) {
+        $fournisseur = Fournisseur::with(['articles' => function ($query) {
             $query->orderBy('created_at', 'desc'); 
         }])->find($id);
 
@@ -134,6 +135,20 @@ class FournisseurController extends Controller
             $article->frais = Frais::where('article_id', $article->id)->sum('prix');
             return $article;
         });
+
+        // get all vente of the articles and sum all prix_unitaire * quantite them and add the result to the article
+        $articles->map(function ($article) {
+            $article->vente_total = Vente::where('article_id', $article->id)
+                ->select(DB::raw('SUM(prix_unitaire * quantite) as total'))
+                ->value('total');
+            if ($article->vente_total == null) {
+                $article->vente_total = 0;
+            }
+            return $article;
+        });
+
+        //sort article by created_at
+        $articles = $articles->sortByDesc('created_at');
 
         $fournisseur->articles = $articles;
 

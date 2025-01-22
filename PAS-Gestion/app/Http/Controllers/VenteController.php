@@ -21,7 +21,7 @@ class VenteController extends Controller
         $ventes = Vente::with('article.fournisseur')
             ->where('created_at', 'like', '%' . $request->date . '%');
 
-        $ventes = $ventes->orderBy('created_at', 'asc')->paginate(15);
+        $ventes = $ventes->orderBy('created_at', 'desc')->paginate(15);
 
         return response()->json($ventes);
     }
@@ -59,12 +59,7 @@ class VenteController extends Controller
         if (!$vente) {
             return response()->json(['error' => 'Vente not found'], 404);
         }
-
-        $request->validate([
-            'article_id' => 'required|exists:articles,id', // Valide que l'article existe
-            'utilisateur_id' => 'required|exists:utilisateurs,id', // Valide que l'utilisateur existe
-        ]);
-
+        
         $vente->update($request->all());
 
         return response()->json($vente);

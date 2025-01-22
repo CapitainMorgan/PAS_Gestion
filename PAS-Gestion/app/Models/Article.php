@@ -27,6 +27,8 @@ class Article extends Model
         'dateEcheance',
         'dateStatus',
         'statusMail',
+        'color',
+        'isPaid',
         'fournisseur_id',
         'utilisateur_id',
         'vente_id',

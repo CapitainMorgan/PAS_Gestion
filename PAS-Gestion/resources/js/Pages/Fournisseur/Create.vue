@@ -154,6 +154,18 @@ import vSelect from 'vue-select';
                         placeholder="Entrez la remarque (facultatif)"
                         />
                     </div>
+
+                    <div class="form-group">
+                        <InputLabel for="color" class="form-label">Couleur</InputLabel>
+                        <select v-model="form.color" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <option style="color: #000000;" value="#000000">Noir</option>
+                            <option style="color: #6600cc;" value="#6600cc">Violet</option>
+                            <option style="color: #ff9900;" value="#ff9900">Orange</option>
+                            <option style="color: #ffff00;" value="#ffff00">Jaune</option>
+                            <option style="color: #ff0000;" value="#ff0000">Rouge</option>
+                        </select>                 
+                    </div>    
+                    
                     <div class="form-group full-width">
                       <PrimaryButton type="submit" class="btn btn-primary">Créer le fournisseur</PrimaryButton>
                     </div>
@@ -188,6 +200,7 @@ export default {
         prixClient: null,
         prixSolde: null,
         quantite: null,
+        color: '#000000',
         localisation: '',
       },
     };

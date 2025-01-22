@@ -46,7 +46,7 @@ import { Head } from '@inertiajs/vue3';
                     </div>
                     <div class="form-group">
                         <InputLabel for="email" class="form-label">Email</InputLabel>
-                        <TextInput v-model="form.email" type="email" class="form-control" placeholder="Email" required />
+                        <TextInput v-model="form.email" type="email" class="form-control" placeholder="Email" />
                     </div>
                     <div class="form-group">
                         <InputLabel for="mobile" class="form-label">Mobile</InputLabel>
@@ -54,11 +54,11 @@ import { Head } from '@inertiajs/vue3';
                     </div>
                     <div class="form-group">
                         <InputLabel for="telephone" class="form-label">Téléphone</InputLabel>
-                        <TextInput v-model="form.telephone" type="text" class="form-control" placeholder="Téléphone" required />
+                        <TextInput v-model="form.telephone" type="text" class="form-control" placeholder="Téléphone" />
                     </div>
                     <div class="form-group">
                         <InputLabel for="numProf" class="form-label">Numéro Professionnel</InputLabel>
-                        <TextInput v-model="form.numProf" type="text" class="form-control" placeholder="Numéro Professionnel" required />
+                        <TextInput v-model="form.numProf" type="text" class="form-control" placeholder="Numéro Professionnel" />
                     </div>
                     <div class="form-group">
                         <InputLabel for="rue" class="form-label">Rue</InputLabel>
@@ -79,7 +79,17 @@ import { Head } from '@inertiajs/vue3';
                     <div class="form-group full-width">
                         <InputLabel for="remarque" class="form-label">Remarque</InputLabel>
                         <TextInput v-model="form.remarque" type="text" class="form-control" placeholder="Remarque"  />
-                    </div>                  
+                    </div>                     
+                    <div class="form-group">
+                        <InputLabel for="color" class="form-label">Couleur</InputLabel>
+                        <select v-model="form.color" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <option style="color: #000000;" value="#000000">Noir</option>
+                            <option style="color: #6600cc;" value="#6600cc">Violet</option>
+                            <option style="color: #ff9900;" value="#ff9900">Orange</option>
+                            <option style="color: #ffff00;" value="#ffff00">Jaune</option>
+                            <option style="color: #ff0000;" value="#ff0000">Rouge</option>
+                        </select>                 
+                    </div>                 
                     <div class="form-group full-width">
                       <SecondaryButton type="submit" class="btn btn-primary">Modifier le fournisseur</SecondaryButton>
                     </div>
@@ -115,6 +125,7 @@ export default {
         ville: this.fournisseur.ville,
         npa: this.fournisseur.npa,
         pays: this.fournisseur.pays,
+        color: this.fournisseur.color,
         remarque: this.fournisseur.remarque,
       }),
     };

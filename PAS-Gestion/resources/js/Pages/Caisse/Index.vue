@@ -84,6 +84,7 @@ import { Head } from '@inertiajs/vue3';
                           <PrimaryButton style="margin-right: 10px;" @click="changeStatus('Rendu')">Rendre</PrimaryButton>
                           <PrimaryButton style="margin-right: 10px;" @click="changeStatus('Rendu défectueux')">Rendre défectueux</PrimaryButton>
                           <PrimaryButton style="margin-right: 10px;" @click="changeStatus('Donné')">Donné</PrimaryButton>
+                          <PrimaryButton style="margin-right: 10px;" @click="exportExcel()">Exporter</PrimaryButton>
                           <PrimaryButton style="margin-right: 10px;" @click="clearCart()">Annuler</PrimaryButton>
                         </div>
                       </div>
@@ -202,6 +203,9 @@ import { Head } from '@inertiajs/vue3';
           const response = await axios.post('/api/cart/add', { article });
           this.articles = response.data.cart;
         }        
+      },
+      exportExcel(){
+        window.open('/api/cart/export', '_blank');
       },
       async removeFromCart(article) {
         let id = article.id;

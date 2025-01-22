@@ -127,6 +127,11 @@ class ArticleController extends Controller
                 $articleItem->status = $status;
             }
 
+            if ($status == 'Rendu' && $status_vente == 'Cash')
+            {
+                $articleItem->color = "#00ff2a";
+            }
+
             $articleItem->dateStatus = now();
 
             $articleItem->save();
@@ -418,8 +423,23 @@ class ArticleController extends Controller
         }
 
         $article->update($request->all());
-
+        
         return redirect()->route('article.show', $id)->with('message', 'Article modifié avec succès.');
+    }
+
+    // PUT/PATCH: Mettre à jour un article
+    public function updateIsPaid(Request $request, $id)
+    {
+
+        $article = Article::with('vente')->find($id);
+
+        if (!$article) {
+            return response()->json(['error' => 'Article not found'], 404);
+        }
+
+        $article->update($request->article);
+        
+        return response()->json(['success' => true,'message' => 'Article modifié avec succès']);
     }
 
     // DELETE: Supprimer un article
@@ -512,6 +532,7 @@ class ArticleController extends Controller
         $sheet2->setCellValue('H1', 'Prix Client');
         $sheet2->setCellValue('I1', 'Prix Solde');
         $sheet2->setCellValue('J1', 'Status');
+        $sheet2->setCellValue('K1', 'Est payé');
         $row = 2;
         foreach ($articles as $article) {
             $sheet2->setCellValue('A' . $row, $article->id);
@@ -524,6 +545,7 @@ class ArticleController extends Controller
             $sheet2->setCellValue('H' . $row, $article->prixClient);
             $sheet2->setCellValue('I' . $row, $article->prixSolde);
             $sheet2->setCellValue('J' . $row, $article->status);
+            $sheet2->setCellValue('K' . $row, $article->isPaid ? 'Oui' : 'Non');
             $row++;
         }
 

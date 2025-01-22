@@ -6,7 +6,6 @@ import TextInput from '@/components/TextInput.vue';
 import InputLabel from '@/components/InputLabel.vue';
 import { Head } from '@inertiajs/vue3';
 import vSelect from 'vue-select';
-import { i } from 'vite/dist/node/types.d-aGj9QkWt';
 </script>
 
 
@@ -109,6 +108,17 @@ import { i } from 'vite/dist/node/types.d-aGj9QkWt';
                         />
                     </div>
 
+                    <!-- Color -->
+                    <div class="form-group">
+                        <InputLabel for="color" class="form-label">Couleur</InputLabel>
+                        <select v-model="form.color" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <option style="color: #000000;" value="#000000">Noir</option>
+                            <option style="color: #ff0000;" value="#ff0000">Rouge</option>
+                            <option style="color: #00ff2a;" value="#00ff2a">Vert</option>
+                            <option style="color: #0027ff;" value="#0027ff">Bleu</option>
+                        </select>                 
+                    </div>
+
                     <div class="form-group">
                         <InputLabel for="EchanceDays" class="form-label">Nombre de jours avant la fin du dépôt</InputLabel>
                         <TextInput
@@ -165,6 +175,7 @@ export default {
         quantite: null,
         localisation: '',
         fournisseur_id: '',
+        color: '#000000',
       },
       EchanceDays: 30,
       selectedFournisseur: null,

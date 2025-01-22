@@ -82,6 +82,17 @@ import vSelect from 'vue-select';
                         <TextInput v-model="form.dateStatus" type="date" class="form-control" placeholder="Localisation" />
                     </div>
 
+                    <!-- Color -->
+                    <div class="form-group">
+                        <InputLabel for="color" class="form-label">Couleur</InputLabel>
+                        <select v-model="form.color" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <option style="color: #000000;" value="#000000">Noir</option>
+                            <option style="color: #ff0000;" value="#ff0000">Rouge</option>
+                            <option style="color: #00ff2a;" value="#00ff2a">Vert</option>
+                            <option style="color: #0027ff;" value="#0027ff">Bleu</option>
+                        </select>                 
+                    </div>
+
                     <!-- Status -->
                     <div class="form-group">
                         <InputLabel for="status" class="form-label">Status</InputLabel>
@@ -137,6 +148,7 @@ export default {
         status: this.article.status,
         dateStatus: this.article.dateStatus,
         vente_status: this.article.vente_status,
+        color: this.article.color,
       }),
     };
   },

@@ -21,6 +21,7 @@ class Fournisseur extends Model
         'numProf', 
         'remarque', 
         'email', 
+        'color',
         'telephone'
     ];
 

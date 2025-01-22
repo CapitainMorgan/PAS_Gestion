@@ -46,8 +46,6 @@ Route::get('/fiche-fournisseur/{id}/{conditionGenerale}', [FournisseurController
 Route::get('/depot/{id}', [DepotController::class, 'create'])->middleware(['auth', 'verified'])->name('depot.create');
 Route::post('/depot/{EcheanceDays}', [ArticleController::class, 'storeGroupedArticles'])->middleware(['auth', 'verified'])->name('depot.store');
 
-
-
 Route::get('/article.index', [ArticleController::class, 'index'])->middleware(['auth', 'verified'])->name('article.index');
 Route::get('/articles/search', [ArticleController::class, 'search'])->middleware(['auth', 'verified'])->name('article.search');
 Route::get('/article.show/{id}', [ArticleController::class, 'show'])->middleware(['auth', 'verified'])->name('article.show');
@@ -57,6 +55,7 @@ Route::post('/article/{id}/frais', [ArticleController::class, 'storeFrais'])->mi
 Route::put('/article/{id}/frais', [ArticleController::class, 'updateFrais'])->middleware(['auth', 'verified'])->name('fraisArticle.update');
 Route::get('/article/{id}/edit', [ArticleController::class, 'edit'])->middleware(['auth', 'verified'])->name('article.edit');
 Route::put('/article/{id}', [ArticleController::class, 'update'])->middleware(['auth', 'verified'])->name('article.update');
+Route::put('/article/isPaid/{id}', [ArticleController::class, 'updateIsPaid'])->middleware(['auth', 'verified'])->name('article.updateIsPaid');
 Route::post('/articles/updateStatus', [ArticleController::class, 'changeStatusArticles'])->middleware(['auth', 'verified'])->name('article.updateStatus');
 Route::get('/generate-barcode/{id}', [ArticleController::class, 'generateBarcode'])->middleware(['auth', 'verified']);
 Route::get('/generate-barcode/{id}/{date}', [ArticleController::class, 'generateBarcodesForArticles'])->middleware(['auth', 'verified']);
@@ -112,9 +111,16 @@ Route::get('/api/cart', [CartController::class, 'getCart'])->middleware(['auth',
 Route::post('/api/cart/clear', [CartController::class, 'clearCart'])->middleware(['auth', 'verified']);
 Route::post('/api/cart/update', [CartController::class, 'updateArticle'])->middleware(['auth', 'verified']);
 Route::post('/api/cart/remove', [CartController::class, 'removeArticle'])->middleware(['auth', 'verified']);
+Route::get('/api/cart/export', [CartController::class, 'exportCart'])->middleware(['auth', 'verified']);
+
+Route::post('/api/depot/add', [DepotController::class, 'addToDepot'])->middleware(['auth', 'verified']);
+Route::get('/api/depot', [DepotController::class, 'getDepot'])->middleware(['auth', 'verified']);
+Route::post('/api/depot/remove', [DepotController::class, 'removeArticle'])->middleware(['auth', 'verified']);
+Route::post('/api/depot/clear', [DepotController::class, 'clearDepot'])->middleware(['auth', 'verified']);
 
 Route::get('/vente.index', [VenteController::class, 'index'])->middleware(['auth', 'verified'])->name('vente.index');
 Route::get('/ventes/search', [VenteController::class, 'search'])->middleware(['auth', 'verified'])->name('vente.search');
+Route::put('/vente/update/{id}', [VenteController::class, 'update'])->middleware(['auth', 'verified'])->name('vente.update');
 
 Route::get('/export-articles', [ArticleController::class, 'exportArticles'])
     ->middleware('auth')

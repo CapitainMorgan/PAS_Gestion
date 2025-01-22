@@ -50,7 +50,7 @@ import { Head } from '@inertiajs/vue3';
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="fournisseur in fournisseurs" :key="fournisseur.id">
+                        <tr v-for="fournisseur in fournisseurs" :key="fournisseur.id" :style="{color:  fournisseur.color }">
                             <td @click="showFournisseur(fournisseur.id)">{{ fournisseur.id ?? 'N/A' }}</td>
                             <td @click="showFournisseur(fournisseur.id)">{{ fournisseur.nom ?? 'N/A'}}</td>
                             <td @click="showFournisseur(fournisseur.id)">{{ fournisseur.prenom ?? 'N/A'}}</td>                        

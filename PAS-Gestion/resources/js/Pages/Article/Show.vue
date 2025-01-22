@@ -29,7 +29,7 @@ import { Head } from '@inertiajs/vue3';
 
                     <div class="card mb-4">
                         <div class="card-body">
-                            <h1 style="font-size: 30px">{{ article.description }}</h1>
+                            <h1 style="font-size: 30px" :style="{color:  article.color }">{{ article.description }}</h1>
                             <p @click="showFournisseur(article.fournisseur.id)"><strong>ID Fournisseur:</strong> {{ article.fournisseur.id ?? 'N/A' }}</p>
                             <p @click="showFournisseur(article.fournisseur.id)"><strong>Appartient à:</strong> {{ article.fournisseur.nom }} {{ article.fournisseur.prenom }}</p>
                             <p @click="showFournisseur(article.fournisseur.id)"><strong>Email du Fournisseur:</strong> {{ article.fournisseur.email }}</p>
@@ -43,6 +43,7 @@ import { Head } from '@inertiajs/vue3';
                             <p><strong>Localisation:</strong> {{ article.localisation ?? 'N/A' }}</p>
                             <p><strong>Status</strong> {{ article.status }}</p>
                             <p><strong>Créé le:</strong> {{ formatDate(article.created_at) }}</p>
+                            <p><strong>Est payé</strong> {{ article.isPaid ? "Oui" : "Non" }}</p>
                             <p><strong>Date d'échéance:</strong> {{ formatDate(article.dateEcheance) }}</p> 
                             <div v-if="new Date(article.dateEcheance) < new Date()">
                               <p v-if="article.statusMail == 0" style="color: red;"> Article en fin d'écheance</p> 

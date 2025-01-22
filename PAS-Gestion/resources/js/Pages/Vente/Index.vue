@@ -5,6 +5,7 @@ import SecondaryButton from '@/components/SecondaryButton.vue';
 import DangerButton from '@/components/DangerButton.vue';
 import TextInput from '@/components/TextInput.vue';
 import InputLabel from '@/components/InputLabel.vue';
+import Modal from '@/components/Modal.vue';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 </script>
@@ -38,6 +39,8 @@ import axios from 'axios';
                                 <th>Quantité</th>
                                 <th>Prix Vente Unitaire</th>
                                 <th>Total</th>
+                                <th>Status</th>
+                                <th v-if="isAdmin">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -48,6 +51,11 @@ import axios from 'axios';
                                 <td>{{ vente.quantite }}</td>
                                 <td>{{ vente.prix_unitaire }}</td>
                                 <td>{{ vente.prix_unitaire * vente.quantite }}</td>
+                                <td>{{ vente.status }}</td>
+                                <td v-if="isAdmin">
+                                    <PrimaryButton @click="showModal(vente)" style="margin-right: 10px;">Modifier</PrimaryButton>
+                                    <DangerButton @click="deleteVente(vente.id)">Supprimer</DangerButton>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -67,6 +75,33 @@ import axios from 'axios';
                     </ul>
                   </nav>
 
+                  <!-- Modal update vente -->
+                  <Modal v-show="showModalUpdate" @close="closeModal">
+                    <template #header>
+                      <h2 class="text-xl font-semibold leading-tight text-gray-800">Modifier la vente</h2>
+                    </template>
+                    <template #body>
+                      <div class="grid grid-cols-1 gap-6">
+                        <InputLabel for="currentVente.quantite">Quantité</InputLabel>
+                        <TextInput type="number" v-model="currentVente.quantite" id="quantite" />
+                        <InputLabel for="currentVente.prix_unitaire">Prix unitaire</InputLabel>
+                        <TextInput type="number" v-model="currentVente.prix_unitaire" id="prix_unitaire" />
+                        <InputLabel for="currentVente.status">Status</InputLabel>
+                        <select v-model="currentVente.status" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <option value="Cash">Cash</option>
+                            <option value="CB">Carte bancaire</option>
+                        </select>
+
+                      </div>
+                    </template>
+                    <template #footer>
+                      <div class="flex justify-end">
+                        <SecondaryButton @click="closeModal" style="margin-right: 5px;">Annuler</SecondaryButton>
+                        <PrimaryButton @click="updateVente">Modifier</PrimaryButton>
+                      </div>
+                    </template>
+                  </Modal>
+
                 </div>
             </div>
             </div>
@@ -75,6 +110,7 @@ import axios from 'axios';
 </template>
 
 <script>
+  import { useToast } from 'vue-toastification'
 export default {
     props: {
     },
@@ -84,11 +120,15 @@ export default {
             currentPage: 1,
             totalPages: 0,
             pageSize: 10,
-            ventes: []
+            isAdmin: false,
+            ventes: [],
+            showModalUpdate: false,
+            currentVente: {},
         }
     },
     mounted() {
         this.fetchVentes(1);
+        this.isAdmin = this.$page.props.auth.user.role  === 'admin';
     },
     computed: {
       visiblePages() {
@@ -131,7 +171,14 @@ export default {
         }
         return id;
       },
-        formatDate(date) {
+      showModal(vente) {
+        if(this.isAdmin)
+        {
+          this.showModalUpdate = true;
+          this.currentVente = vente;
+        }
+      },
+       formatDate(date) {
             return new Date(date).toLocaleDateString('fr-FR', {
                 year: 'numeric',
                 month: 'long',
@@ -155,6 +202,40 @@ export default {
         },
         showArticle(id){
             this.$inertia.visit(route('article.show', id));
+        },
+        closeModal() {
+            this.showModalUpdate = false;
+        },
+        updateVente() {
+            axios.put('/vente/update/' + this.currentVente.id, {
+                status: this.currentVente.status,
+                quantite: this.currentVente.quantite,
+                prix_unitaire: this.currentVente.prix_unitaire,
+                utilisateur_id: this.currentVente.utilisateur_id,
+                article_id: this.currentVente.article_id
+            })
+                .then(response => {
+                    this.fetchVentes();
+                    this.closeModal();
+                    useToast().success('Vente modifiée avec succès');
+                })
+                .catch(error => {
+                    console.log(error);
+                    useToast().error('Erreur lors de la modification de la vente');
+                });
+        },
+        deleteVente(id){
+            if(confirm('Voulez-vous vraiment supprimer cette vente ?')){
+                axios.delete('/vente/' + id)
+                    .then(response => {
+                        this.fetchVentes();
+                        useToast().success('Vente supprimée avec succès');
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        useToast().error('Erreur lors de la suppression de la vente');
+                    });
+            }
         }
     }
 };

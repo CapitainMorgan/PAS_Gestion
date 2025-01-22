@@ -21,6 +21,7 @@ class CreateFournisseursTable extends Migration
             $table->string('remarque', 255)->nullable();
             $table->string('email', 50);
             $table->string('telephone', 15);
+            $table->string('color', 7)->nullable();
             $table->timestamps();
         });
     }
