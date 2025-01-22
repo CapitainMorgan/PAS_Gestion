@@ -206,8 +206,8 @@ export default {
         closeModal() {
             this.showModalUpdate = false;
         },
-        updateVente() {
-            axios.put('/vente/update/' + this.currentVente.id, {
+        async updateVente() {
+            await axios.put('/vente/update/' + this.currentVente.id, {
                 status: this.currentVente.status,
                 quantite: this.currentVente.quantite,
                 prix_unitaire: this.currentVente.prix_unitaire,
@@ -224,9 +224,9 @@ export default {
                     useToast().error('Erreur lors de la modification de la vente');
                 });
         },
-        deleteVente(id){
+        async deleteVente(id){
             if(confirm('Voulez-vous vraiment supprimer cette vente ?')){
-                axios.delete('/vente/' + id)
+                await axios.delete('/vente/' + id)
                     .then(response => {
                         this.fetchVentes();
                         useToast().success('Vente supprimée avec succès');

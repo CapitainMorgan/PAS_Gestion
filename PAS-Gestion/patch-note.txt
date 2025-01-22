@@ -4,7 +4,7 @@ Corr bug
 - La première etiquette devrai bien s'afficher lors de l'Impression
 - Ordre desc fournisseur
 - Null autorisé email TODO DB
-- enlever le ondelete cascade TODO DB
+- enlever le ondelete cascade de articles sur vente id TODO DB
 --------------
 Modifications
 --------------

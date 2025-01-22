@@ -80,6 +80,6 @@ class VenteController extends Controller
 
         $vente->delete();
 
-        return redirect()->route('vente.index')->with('message', 'Vente supprimer avec succès.');
+        return response()->json(['message' => 'Vente deleted'], 200);
     }
 }
