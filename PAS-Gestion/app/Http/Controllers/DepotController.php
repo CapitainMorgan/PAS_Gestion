@@ -38,12 +38,11 @@ class DepotController extends Controller
         $depot = session()->get('depot', []);
 
         $description = $request->input('description');
-        $index = array_search($description, array_column($depot, 'description'));
-
-        
+        $index = array_search($description, array_column($depot, 'description'));        
 
         if ($index !== false) {
             unset($depot[$index]);
+            $depot = array_values($depot);
         }
 
         session()->put('depot', $depot);

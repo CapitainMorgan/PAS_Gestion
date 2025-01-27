@@ -23,7 +23,7 @@
 
         .page {
             page-break-after: always;
-            padding-top: 20px;
+            padding-top: 10px;
             height: 100%;
         }
 

@@ -95,6 +95,7 @@ import { start } from '@popperjs/core';
 
 
 <script>
+  import { useToast } from 'vue-toastification'
 
 
   export default {
@@ -155,40 +156,43 @@ import { start } from '@popperjs/core';
         if (articles.length > 1) {
           if(confirm('D\'autres articles de se fournissuer ont été trouvé en fin d\'écheance. Voulez-vous envoyer un mail à ' + fournisseur.prenom + ' ' + fournisseur.nom + ' avec tous les articles ?'))
           {
+            const toast = useToast();
             // Envoyer un mail avec tout les articles
             this.$inertia.post('/send-reminder/articles', {
               article_ids: articles.map((a) => a.id), 
             }).then(() => {
-              this.$toast.success('Email de rappel envoyé avec succès');
+              toast.success('Email de rappel envoyé avec succès');
             }).catch((error) => {
               console.error(error);
-              this.$toast.error('Erreur lors de l\'envoi du rappel');
+              toast.error('Erreur lors de l\'envoi du rappel');
             });
           }
           else if (confirm('Voulez-vous envoyer un mail à ' + fournisseur.prenom + ' ' + fournisseur.nom + ' avec cet article uniquement ?'))
           {
+            const toast = useToast();
             // Envoyer un mail avec l'article
             this.$inertia.post('/send-reminder/articles', {
               article_ids: [article.id], 
             }).then(() => {
-              this.$toast.success('Email de rappel envoyé avec succès');
+              toast.success('Email de rappel envoyé avec succès');
             }).catch((error) => {
               console.error(error);
-              this.$toast.error('Erreur lors de l\'envoi du rappel');
+              toast.error('Erreur lors de l\'envoi du rappel');
             });
           }
           
         } else {
           if(confirm('Voulez-vous envoyer un mail à ' + fournisseur.prenom + ' ' + fournisseur.nom + ' ?'))
           {
+            const toast = useToast();
             // Envoyer un mail avec l'article
             this.$inertia.post('/send-reminder/articles', {
               article_ids: [article.id], 
             }).then(() => {
-              this.$toast.success('Email de rappel envoyé avec succès');
+              toast.success('Email de rappel envoyé avec succès');
             }).catch((error) => {
               console.error(error);
-              this.$toast.error('Erreur lors de l\'envoi du rappel');
+              toast.error('Erreur lors de l\'envoi du rappel');
             });
           }
         }
@@ -198,7 +202,8 @@ import { start } from '@popperjs/core';
       },
       excelExport() {
         if(this.start_date == '' || this.end_date == '') {
-          alert('Veuillez renseigner les dates de début et de fin');
+          const toast = useToast();
+          toast.error('Veuillez renseigner les dates de début et de fin');
           return;
         }
 

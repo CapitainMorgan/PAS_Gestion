@@ -47,12 +47,12 @@ import vSelect from 'vue-select';
                       type="text"
                       class="form-control search-input"
                       v-model="searchTerm"
-                      @input="searchArticles"
+                      @input="paginatedArticles"
                       placeholder="Rechercher par nom..."
                     />                 
 
                     <div style="margin-top: 10px;">
-                        <select v-model="status" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <select @change="paginatedArticles" v-model="status" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="En Stock">En Stock</option>
                             <option value="Vendu">Vendu</option>
                             <option value="Rendu">Rendu</option>

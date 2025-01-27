@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Barryvdh\Snappy\Facades\SnappyPdf;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
+use DateTime;
 
 class FournisseurController extends Controller
 {
@@ -81,11 +82,16 @@ class FournisseurController extends Controller
     public function generateFicheVenteFournisseur($id, $date_debut, $conditionGenerale)
     {        
         # get all articles of the fournisseur with vente table
-        $fournisseur = Fournisseur::with('articles.vente')->find($id);        
-        $articles = $fournisseur->articles->where('vente.created_at', '>=', $date_debut);  
+        $fournisseur = Fournisseur::with('articles')->find($id);        
+        $articles = $fournisseur->articles;  
         
         // get all ventes where article_id is in the articles array
-        $ventes = Vente::with('article')->whereIn('article_id', $articles->pluck('id'))->get();
+        $ventes = Vente::with('article')->whereIn('article_id', $articles->pluck('id'))->get();        
+
+        // remove ventes that are not in the date range
+        $ventes = $ventes->filter(function ($vente) use ($date_debut) {
+            return new DateTime($vente->created_at) >= new DateTime($date_debut);
+        });
         
         $conditionsArray = explode("\n", $conditionGenerale);
 

@@ -51,7 +51,7 @@ import { Head } from '@inertiajs/vue3';
                           </thead>
                           <tbody>
                             <tr v-for="article in articles" :key="article.id">
-                              <td @click="showArticle(article.id)" class="border px-4 py-2">{{ formatIdArticle(article) }}</td>
+                              <td @click="showArticle(article.id)" class="border px-4 py-2" :style="{color:  article.color }">{{ formatIdArticle(article) }}</td>
                               <td @click="showArticle(article.id)" class="border px-4 py-2">{{ article.description }}</td>
                               <td @click="showArticle(article.id)" class="border px-4 py-2">{{ article.status }}</td>
                               <td @click="showArticle(article.id)" class="border px-4 py-2">{{ article.localisation }}</td>
@@ -180,9 +180,9 @@ import { Head } from '@inertiajs/vue3';
         this.scannedBarcode = '';
       }
       catch (error) {
-        console.error(error);
         this.scannedBarcode = '';
-        alert('Article non trouvé');        
+        const toast = useToast();
+        toast.error('Article non trouvé');        
       }
         
       },
@@ -195,7 +195,8 @@ import { Head } from '@inertiajs/vue3';
         if (existingArticle) {
           //check if we have enough quantity
           if (existingArticle.quantiteVente >= existingArticle.quantite) {
-            alert('Pas assez de stock');
+            const toast = useToast();
+            toast.error('Pas assez de stock');
             return;
           }
           existingArticle.quantiteVente++;
@@ -226,21 +227,25 @@ import { Head } from '@inertiajs/vue3';
       },
       async changeStatus(status) {
         //check if we have enough quantity
-        for (const article of this.articles) {
-          //convert to integer
-          article.quantiteVente = parseInt(article.quantiteVente);
-          article.quantite = parseInt(article.quantite);
-          if (article.quantiteVente > article.quantite) {
-            alert('Pas assez de stock');
-            return;
-          }
-        }
+        if (status === 'Vendu') {
+          for (const article of this.articles) {
+            //convert to integer
+            article.quantiteVente = parseInt(article.quantiteVente);
+            article.quantite = parseInt(article.quantite);
+            if (article.quantiteVente > article.quantite) {
+              const toast = useToast();
+              toast.error('Pas assez de stock');
+              return;
+            }
+          }       
 
-        //check status is "En Stock"
-        for (const article of this.articles) {
-          if (article.status !== 'En Stock') {
-            alert('Article pas en stock');
-            return;
+          //check status is "En Stock"
+          for (const article of this.articles) {
+            if (article.status !== 'En Stock') {
+              const toast = useToast();
+              toast.error('Article pas en stock');
+              return;
+            }
           }
         }
 
