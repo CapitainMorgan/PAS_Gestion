@@ -78,6 +78,13 @@ class VenteController extends Controller
             return response()->json(['error' => 'Vente not found'], 404);
         }
 
+        // Modifier le statut de l'article à 'En Stock'
+        $article = Article::find($vente->article_id);
+        $article->status = 'En Stock';
+        $article->dateStatus = now();
+        $article->quantite = $article->quantite + $vente->quantite;
+        $article->save();
+
         $vente->delete();
 
         return response()->json(['message' => 'Vente deleted'], 200);

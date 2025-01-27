@@ -115,11 +115,14 @@ class ArticleController extends Controller
                 $articleItem->vente_id = $vente->id;
             }        
             
-            if ($article['quantiteVente'] > $article['quantite']) {
-                return response()->json(['error' => 'La quantité vendue ne peut pas être supérieure à la quantité en stock'], 400);
+            if( $status == 'Vendu'){
+                if ($article['quantiteVente'] > $article['quantite']) {
+                    return response()->json(['error' => 'La quantité vendue ne peut pas être supérieure à la quantité en stock'], 400);
+                }
+                
+                // met a jour la quantite
+                $articleItem->quantite = $article['quantite'] - $article['quantiteVente'] ;
             }
-            // met a jour la quantite
-            $articleItem->quantite = $article['quantite'] - $article['quantiteVente'] ;
 
             if ($status == 'Vendu' && $articleItem->quantite != 0) {
                 $articleItem->status = 'En Stock';
@@ -401,7 +404,7 @@ class ArticleController extends Controller
     public function update(Request $request, $id)
     {
 
-        $article = Article::with('vente')->find($id);
+        $article = Article::find($id);
 
         if (!$article) {
             return response()->json(['error' => 'Article not found'], 404);
@@ -431,7 +434,7 @@ class ArticleController extends Controller
     public function updateIsPaid(Request $request, $id)
     {
 
-        $article = Article::with('vente')->find($id);
+        $article = Article::find($id);
 
         if (!$article) {
             return response()->json(['error' => 'Article not found'], 404);

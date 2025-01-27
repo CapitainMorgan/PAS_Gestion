@@ -1,23 +1,14 @@
 --------------
 Corr bug
 --------------
-- La première etiquette devrai bien s'afficher lors de l'Impression
-- Ordre desc fournisseur
-- Null autorisé email TODO DB
-- enlever le ondelete cascade de articles sur vente id TODO DB
+- La marge des etiquette TODO verifier que c'est bon
+- Suppression Vente
+- Article Id TODO ce soir
+- Depot
+- Caisse alert
+- Caisse 
+- Color change jaune en rose
 --------------
 Modifications
 --------------
-- Suppression vente/update vente TODO Check si supprime aussi article
-- Ajouter payer pour article 
-- Depot persitant
-- Rendu Cash automatiquement en vert
-- Somme des ventes dans fournisseur
-- Id article a modifier TODO DB
-- Extraction Excel de la caisse
-- Fiche Client ajout du "Horaires : ..." 
-- Fiche Client ajout d'une marge en bas
-- Fiche depot Enlever la colonne délai de dépot 
-- Ajout d'un code couleur pour un fournisseur
-- Ajout d'un code couleur pour les articles
-- Modification de la durée d'une session à 8h
+- Ajout dans le mail TODO ce soir avec eux 

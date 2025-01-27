@@ -39,11 +39,6 @@ class Article extends Model
         return $this->belongsTo(User::class, 'utilisateur_id');
     }
 
-    public function vente()
-    {
-        return $this->belongsTo(Vente::class, 'vente_id');
-    }
-
     public function fournisseur()
     {
         return $this->belongsTo(Fournisseur::class, 'fournisseur_id');

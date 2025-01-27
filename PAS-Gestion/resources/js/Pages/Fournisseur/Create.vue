@@ -161,7 +161,7 @@ import vSelect from 'vue-select';
                             <option style="color: #000000;" value="#000000">Noir</option>
                             <option style="color: #6600cc;" value="#6600cc">Violet</option>
                             <option style="color: #ff9900;" value="#ff9900">Orange</option>
-                            <option style="color: #ffff00;" value="#ffff00">Jaune</option>
+                            <option style="color: #ff00ff;" value="#ff00ff">Rose</option>
                             <option style="color: #ff0000;" value="#ff0000">Rouge</option>
                         </select>                 
                     </div>    

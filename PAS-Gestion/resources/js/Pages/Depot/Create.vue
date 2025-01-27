@@ -200,11 +200,11 @@ import vSelect from 'vue-select';
   
       async submitArticles() {
         // Utiliser une requête pour envoyer les données au backend
-        axios.post(route('depot.store', this.EcheanceDays), { articles: this.articles })
-        .then(response => {
+        await axios.post(route('depot.store', this.EcheanceDays), { articles: this.articles })
+        .then(async (response) => {
           if (response.data.success) {
-            this.clearDepot();
-            // Rediriger vers la page des fournisseurs details
+            await this.clearDepot();
+            
             this.$inertia.visit(route('fournisseur.show', this.fournisseur_id));
           }
         })
@@ -213,6 +213,8 @@ import vSelect from 'vue-select';
           console.error('Erreur lors de la création des articles', error);
           toast.error('Erreur lors de la création des articles.');
         });
+          
+
       },
     },
   };
