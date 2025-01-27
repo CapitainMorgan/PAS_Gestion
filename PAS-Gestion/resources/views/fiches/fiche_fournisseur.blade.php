@@ -74,6 +74,12 @@ use Carbon\Carbon;
                         <td>No. Fournisseur</td>
                         <td><b>{{ $fournisseur->id }}</b></td>
                     </tr>
+					<tr>
+						<td>Email</td>
+						<td>{{$fournisseur->email}}</td>
+						<td></td>
+						<td></td>
+					</tr>
                 </table>
             </div>
             

@@ -73,7 +73,13 @@ use Carbon\Carbon;
                         <td>{{$fournisseur->npa}} / {{ $fournisseur->ville }}</td>
                         <td>No. Fournisseur</td>
                         <td><b>{{ $fournisseur->id }}</b></td>
-                    </tr>
+                    </tr>					
+					<tr>
+						<td>Email</td>
+						<td>{{$fournisseur->email}}</td>
+						<td></td>
+						<td></td>
+					</tr>
                 </table>
             </div>
             
