@@ -185,6 +185,60 @@ class FournisseurController extends Controller
         return redirect()->route('fournisseur.show', $id)->with('message', 'Fournisseur modifié avec succès.');
     }
 
+    public function exportAllFournisseurs(Request $request)
+    {
+        $fournisseurs = Fournisseur::all();
+        
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+
+        
+        $sheet->setTitle('Fournisseurs');
+        $sheet->setCellValue('A1', 'ID');
+        $sheet->setCellValue('B1', 'Nom');
+        $sheet->setCellValue('C1', 'Prénom');        
+        $sheet->setCellValue('D1', 'Date Création');
+        $sheet->setCellValue('E1', 'rue');
+        $sheet->setCellValue('F1', 'ville');
+        $sheet->setCellValue('G1', 'code postal');
+        $sheet->setCellValue('H1', 'pays');
+        $sheet->setCellValue('I1', 'email');
+        $sheet->setCellValue('J1', 'mobile');
+        $sheet->setCellValue('K1', 'telephone');
+        $sheet->setCellValue('L1', 'numPro');
+        $sheet->setCellValue('M1', 'Remarque');
+
+        $i = 2;
+        foreach ($fournisseurs as $fournisseur) {
+            $sheet->setCellValue('A' . $i, $fournisseur->id);
+            $sheet->setCellValue('B' . $i, $fournisseur->nom);
+            $sheet->setCellValue('C' . $i, $fournisseur->prenom);
+            $sheet->setCellValue('D' . $i, $fournisseur->created_at);
+            $sheet->setCellValue('E' . $i, $fournisseur->rue);
+            $sheet->setCellValue('F' . $i, $fournisseur->ville);
+            $sheet->setCellValue('G' . $i, $fournisseur->code_postal);
+            $sheet->setCellValue('H' . $i, $fournisseur->pays);
+            $sheet->setCellValue('I' . $i, $fournisseur->email);
+            $sheet->setCellValue('J' . $i, $fournisseur->mobile);
+            $sheet->setCellValue('K' . $i, $fournisseur->telephone);
+            $sheet->setCellValue('L' . $i, $fournisseur->numPro);
+            $sheet->setCellValue('M' . $i, $fournisseur->remarque);
+            $i++;
+        }
+
+        
+        $fileName = 'Export_Fournisseurs_' . date('Y-m-d_H-i-s') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment; filename=\"$fileName\"");
+        header('Cache-Control: max-age=0');
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer->save('php://output');
+
+        exit;
+    }
+
     // DELETE: Supprimer un fournisseur
     public function destroy($id)
     {
