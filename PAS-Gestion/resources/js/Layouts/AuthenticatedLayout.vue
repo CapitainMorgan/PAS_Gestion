@@ -52,28 +52,28 @@ const showingNavigationDropdown = ref(false);
                                     :href="route('vente.index')"
                                     :active="route().current('vente.index')"
                                 >
-                                    Vente
+                                    Ventes
                                 </NavLink>
 
                                 <NavLink
                                     :href="route('fournisseur.index')"
                                     :active="route().current('fournisseur.index')"
                                 >
-                                    Fournisseur
+                                    Fournisseurs
                                 </NavLink>
 
                                 <NavLink
                                     :href="route('article.index')"
                                     :active="route().current('article.index')"
                                 >
-                                    Article
+                                    Articles
                                 </NavLink>
 
                                 <NavLink
                                     :href="route('frais.index')"
                                     :active="route().current('frais.index')"
                                 >
-                                    Frais Sociéte
+                                    Frais Sociétés
                                 </NavLink>
 
                             </div>
