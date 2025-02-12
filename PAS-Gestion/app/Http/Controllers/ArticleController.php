@@ -284,7 +284,7 @@ class ArticleController extends Controller
         $index = Article::where('fournisseur_id', $request->fournisseur_id)->whereDate('created_at', now())->count();
 
         //build id of the article with fournisseur_id + index + date
-        $id = $request->fournisseur_id . $index + 1 . now()->format('dmy');
+        $id = $request->fournisseur_id . 0 . $index + 1 . now()->format('dmy');
 
         //put the id in the request
         $request->merge(['id' => $id]);
@@ -333,7 +333,7 @@ class ArticleController extends Controller
 
         foreach ($articles as $article) {
             $index++;
-            $article['id'] = $fournisseur_id . $index . now()->format('dmy');
+            $article['id'] = $fournisseur_id . 0 . $index . now()->format('dmy');
             $article['status'] = 'En Stock';
             $article['vente_id'] = null;
             $article['fournisseur_id'] = $fournisseur_id;
