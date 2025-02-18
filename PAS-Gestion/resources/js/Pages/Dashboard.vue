@@ -86,6 +86,8 @@ import { start } from '@popperjs/core';
                       </div>
                     </form>                    
                     <PrimaryButton style="margin: 10px;" @click="excelExport">Exporter en Excel</PrimaryButton>
+                    <PrimaryButton style="margin: 10px;" @click="excelFournisseur">Exporter les fournisseurs</PrimaryButton>
+                    <PrimaryButton style="margin: 10px;" @click="excelArticle">Exporter les articles</PrimaryButton>
                     
                 </div>
             </div>
@@ -216,7 +218,17 @@ import { start } from '@popperjs/core';
 
         // Ouvre la route dans une nouvelle fenêtre
         window.open(url, '_blank');
-      }
+      },
+      excelFournisseur() {
+        const url = route('export.all.fournisseurs');
+
+        window.open(url, '_blank');
+      },
+      excelArticle() {
+        const url = route('export.all.articles');
+
+        window.open(url, '_blank');
+      },
     },
 };
 

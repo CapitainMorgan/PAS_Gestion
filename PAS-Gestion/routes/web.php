@@ -129,4 +129,12 @@ Route::get('/export-articles', [ArticleController::class, 'exportArticles'])
     ->middleware('auth')
     ->name('export.articles');
 
+Route::get('/export-all-articles', [ArticleController::class, 'exportAllArticles'])
+    ->middleware('auth')
+    ->name('export.all.articles');
+
+Route::get('export-all-fournisseurs', [FournisseurController::class, 'exportAllFournisseurs'])
+    ->middleware('auth')
+    ->name('export.all.fournisseurs');
+
 require __DIR__.'/auth.php';

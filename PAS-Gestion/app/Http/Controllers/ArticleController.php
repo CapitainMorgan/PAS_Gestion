@@ -191,8 +191,7 @@ class ArticleController extends Controller
         //test si l'id de l'article commence par l'id du fournisseur et fini par la date de creation "Ymd"
         if (str_starts_with($id, $article->fournisseur->id) && str_ends_with($id, $article->created_at->format('dmy'))) {
             //id = id de l'article sans le fournisseur et la date de creation
-            $id = str_replace($article->fournisseur->id, "", $id);
-            $id = str_replace($article->created_at->format('dmy'), "", $id);            
+            $id = substr($id, strlen($article->fournisseur->id), -strlen($article->created_at->format('dmy')));         
         }
 
         // Générer le code-barres
@@ -288,7 +287,7 @@ class ArticleController extends Controller
         $index = Article::where('fournisseur_id', $request->fournisseur_id)->whereDate('created_at', now())->count();
 
         //build id of the article with fournisseur_id + index + date
-        $id = $request->fournisseur_id . $index + 1 . now()->format('dmy');
+        $id = $request->fournisseur_id . 0 . $index + 1 . now()->format('dmy');
 
         //put the id in the request
         $request->merge(['id' => $id]);
@@ -337,7 +336,7 @@ class ArticleController extends Controller
 
         foreach ($articles as $article) {
             $index++;
-            $article['id'] = $fournisseur_id . $index . now()->format('dmy');
+            $article['id'] = $fournisseur_id . 0 . $index . now()->format('dmy');
             $article['status'] = 'En Stock';
             $article['vente_id'] = null;
             $article['fournisseur_id'] = $fournisseur_id;
@@ -467,13 +466,63 @@ class ArticleController extends Controller
         return redirect()->route('article.index')->with('message', 'Article supprimer avec succès.');
     }
 
+    public function exportAllArticles(Request $request)
+    {
+        $articles = Article::with('user')->get();
+    
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        
+        $sheet->setTitle('Articles');
+        $sheet->setCellValue('A1', 'ID');
+        $sheet->setCellValue('B1', 'Description');
+        $sheet->setCellValue('C1', 'Date Création');
+        $sheet->setCellValue('D1', 'Localisation');
+        $sheet->setCellValue('E1', 'Créateur');
+        $sheet->setCellValue('F1', 'Quantité');
+        $sheet->setCellValue('G1', 'Prix Vente');
+        $sheet->setCellValue('H1', 'Prix Client');
+        $sheet->setCellValue('I1', 'Prix Solde');
+        $sheet->setCellValue('J1', 'Status');
+        $sheet->setCellValue('K1', 'Est payé');
+        $sheet->setCellValue('L1', 'Taille');
+        $row = 2;
+        foreach ($articles as $article) {
+            $sheet->setCellValue('A' . $row, $article->id);
+            $sheet->setCellValue('B' . $row, $article->description);
+            $sheet->setCellValue('C' . $row, $article->created_at);
+            $sheet->setCellValue('D' . $row, $article->localisation);
+            $sheet->setCellValue('E' . $row, $article->user->name);
+            $sheet->setCellValue('F' . $row, $article->quantite);
+            $sheet->setCellValue('G' . $row, $article->prixVente);
+            $sheet->setCellValue('H' . $row, $article->prixClient);
+            $sheet->setCellValue('I' . $row, $article->prixSolde);
+            $sheet->setCellValue('J' . $row, $article->status);
+            $sheet->setCellValue('K' . $row, $article->isPaid ? 'Oui' : 'Non');
+            $sheet->setCellValue('L' . $row, $article->taille);
+            $row++;
+        }
+
+        $fileName = 'Export_Articles_' . date('Y-m-d_H-i-s') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment; filename=\"$fileName\"");
+        header('Cache-Control: max-age=0');
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer->save('php://output');
+
+        exit();
+    }
+
+        
+
     public function exportArticles(Request $request)
     {
         // Récupérer les données depuis la vue
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
-        $articles = Article::with('vente', 'user')
+        $articles = Article::with( 'user')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get();
 
@@ -539,6 +588,7 @@ class ArticleController extends Controller
         $sheet2->setCellValue('I1', 'Prix Solde');
         $sheet2->setCellValue('J1', 'Status');
         $sheet2->setCellValue('K1', 'Est payé');
+        $sheet2->setCellValue('L1', 'Taille');
         $row = 2;
         foreach ($articles as $article) {
             $sheet2->setCellValue('A' . $row, $article->id);
@@ -552,6 +602,7 @@ class ArticleController extends Controller
             $sheet2->setCellValue('I' . $row, $article->prixSolde);
             $sheet2->setCellValue('J' . $row, $article->status);
             $sheet2->setCellValue('K' . $row, $article->isPaid ? 'Oui' : 'Non');
+            $sheet2->setCellValue('L' . $row, $article->taille);
             $row++;
         }
 
@@ -569,6 +620,7 @@ class ArticleController extends Controller
         $sheet3->setCellValue('I1', 'mobile');
         $sheet3->setCellValue('J1', 'telephone');
         $sheet3->setCellValue('K1', 'numPro');
+        $sheet3->setCellValue('L1', 'Remarque');
         $row = 2;
         foreach ($fournisseurs as $fournisseur) {
             $sheet3->setCellValue('A' . $row, $fournisseur->id);
@@ -582,6 +634,7 @@ class ArticleController extends Controller
             $sheet3->setCellValue('I' . $row, $fournisseur->mobile);
             $sheet3->setCellValue('J' . $row, $fournisseur->telephone);
             $sheet3->setCellValue('K' . $row, $fournisseur->numProf);
+            $sheet3->setCellValue('L' . $row, $fournisseur->remarque);
             $row++;
         }
 
