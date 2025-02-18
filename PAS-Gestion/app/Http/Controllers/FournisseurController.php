@@ -154,7 +154,7 @@ class FournisseurController extends Controller
         });
 
         //sort article by created_at
-        $articles = $articles->sortByDesc('created_at');
+        $articles = $articles->sortByDesc(['created_at','id']);
 
         $fournisseur->articles = $articles;
 

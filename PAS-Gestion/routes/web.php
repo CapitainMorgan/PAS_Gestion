@@ -106,6 +106,9 @@ Route::post('/send-reminder/articles', [ArticleController::class, 'sendReminderF
     ->middleware(['auth', 'verified'])
     ->name('send-reminder');
 
+Route::get('/send-reminder/articles', [ArticleController::class, 'getArticlesByEndDate'])
+    ->middleware(['auth', 'verified']);
+
 Route::post('/api/cart/add', [CartController::class, 'addToCart'])->middleware(['auth', 'verified']);
 Route::get('/api/cart', [CartController::class, 'getCart'])->middleware(['auth', 'verified']);
 Route::post('/api/cart/clear', [CartController::class, 'clearCart'])->middleware(['auth', 'verified']);
