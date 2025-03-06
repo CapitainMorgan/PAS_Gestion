@@ -2,6 +2,8 @@
 Corr bug
 --------------
 - Frais de société recherche (A voir)
+- Suppression vente
+- Article Incohérant TODO
 --------------
 Modifications
 --------------

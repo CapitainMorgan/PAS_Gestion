@@ -167,24 +167,23 @@ import { Head } from '@inertiajs/vue3';
       },
       async processBarcode() {
         try {
-        const response = await axios.post(route('article.barcode', this.scannedBarcode));
-        
-        if (response.data && response.data.article) {
+          const response = await axios.post(route('article.barcode', this.scannedBarcode));
+          
+          if (response.data && response.data.article) {
 
-          // Ajout de la quantité de vente
-          response.data.article.quantiteVente = 1;
+            // Ajout de la quantité de vente
+            response.data.article.quantiteVente = 1;
 
-          this.addToCart(response.data.article);
+            this.addToCart(response.data.article);
 
-        } 
-        this.scannedBarcode = '';
-      }
-      catch (error) {
-        this.scannedBarcode = '';
-        const toast = useToast();
-        toast.error('Article non trouvé');        
-      }
-        
+          } 
+          this.scannedBarcode = '';
+        }
+        catch (error) {
+          this.scannedBarcode = '';
+          const toast = useToast();
+          toast.error('Article non trouvé');        
+        }        
       },
       showArticle(id) {
         this.$inertia.visit(route('article.show', id));
