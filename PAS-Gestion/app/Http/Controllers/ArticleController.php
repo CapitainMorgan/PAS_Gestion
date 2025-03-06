@@ -163,8 +163,8 @@ class ArticleController extends Controller
             return response()->json(['error' => 'Aucun article trouvé'], 404);
         }
 
-        // Trouver les utilisateurs liés à ces articles
-        $user = $articles->first()->user;
+        // Trouver le fournisseur de l'article
+        $user = Fournisseur::find($articles[0]->fournisseur_id);
 
         if (!$user || !$user->email) {
             return response()->json(['error' => 'Aucun utilisateur ou email trouvé pour ces articles'], 404);
@@ -176,7 +176,10 @@ class ArticleController extends Controller
         // Mettre à jour le statut des articles
         Article::whereIn('id', $articleIds)->update(['statusMail' => 1]);
 
-        return response()->route('dashboard')->with('success', 'Email envoyé avec succès');
+        $articles = Article::where('dateEcheance', '<', now())->where('statusMail', 0)->where('status', 'En Stock')->with('fournisseur')->orderBy('dateEcheance', 'asc')->get();
+        return Inertia::render('Dashboard', [
+            'articles' => $articles,
+        ]);
     }
 
     public function generateBarcode($id)
