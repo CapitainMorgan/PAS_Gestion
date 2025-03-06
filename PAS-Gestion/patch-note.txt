@@ -1,14 +1,11 @@
 --------------
 Corr bug
 --------------
-- La marge des etiquette TODO verifier que c'est bon
-- Suppression Vente
-- Article Id TODO ce soir
-- Depot
-- Caisse alert
-- Caisse 
-- Color change jaune en rose
+- Frais de société recherche (A voir)
 --------------
 Modifications
 --------------
-- Ajout dans le mail TODO ce soir avec eux 
+- Sauvegarde du dépot par client
+- Frais de société par date
+- Dashboard (grouper par client séléctionner ceux a envoyer) TODO
+- Dashboard changer date echeance TODO

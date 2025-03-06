@@ -11,7 +11,7 @@ class FraisSocieteController extends Controller
     // GET: Récupérer tous les frais de la société
     public function index()
     {
-        $fraisSocietes = FraisSociete::all();
+        $fraisSocietes = FraisSociete::orderBy('date', 'desc')->get();
         
         return Inertia::render('FraisSociete/Index', [
             'frais' => $fraisSocietes,

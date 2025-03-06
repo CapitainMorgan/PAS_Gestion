@@ -114,7 +114,7 @@ Route::post('/api/cart/remove', [CartController::class, 'removeArticle'])->middl
 Route::get('/api/cart/export', [CartController::class, 'exportCart'])->middleware(['auth', 'verified']);
 
 Route::post('/api/depot/add', [DepotController::class, 'addToDepot'])->middleware(['auth', 'verified']);
-Route::get('/api/depot', [DepotController::class, 'getDepot'])->middleware(['auth', 'verified']);
+Route::post('/api/depot', [DepotController::class, 'getDepot'])->middleware(['auth', 'verified']);
 Route::post('/api/depot/remove', [DepotController::class, 'removeArticle'])->middleware(['auth', 'verified']);
 Route::post('/api/depot/clear', [DepotController::class, 'clearDepot'])->middleware(['auth', 'verified']);
 

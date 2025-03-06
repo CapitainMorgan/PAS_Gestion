@@ -164,7 +164,7 @@ import vSelect from 'vue-select';
   methods: {  
       async addArticle () {      
 
-        const response = await axios.post('/api/depot/add', { article: this.newArticle });
+        const response = await axios.post('/api/depot/add', { article: this.newArticle, fournisseur_id: this.fournisseur_id });
 
         this.articles = response.data.depot;
         
@@ -183,17 +183,17 @@ import vSelect from 'vue-select';
       },
 
       async loadDepot() {
-        const response = await axios.get('/api/depot');
+        const response = await axios.post('/api/depot', { fournisseur_id :this.fournisseur_id});
         this.articles = response.data.depot;
       },
   
       async removeArticle (article) {
-        const response = await axios.post('/api/depot/remove', { description: article.description });
+        const response = await axios.post('/api/depot/remove', { description: article.description, fournisseur_id: this.fournisseur_id });
         this.articles = response.data.depot;
       },
 
       async clearDepot() {
-        const response = await axios.post('/api/depot/clear');
+        const response = await axios.post('/api/depot/clear' , { fournisseur_id: this.fournisseur_id });
         this.articles = response.data.depot;
       },
 
