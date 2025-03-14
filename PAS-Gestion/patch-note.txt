@@ -3,11 +3,11 @@ Corr bug
 --------------
 - Frais de société recherche (A voir)
 - Suppression vente
-- Article Incohérant TODO
+- Article Incohérant 
 --------------
 Modifications
 --------------
 - Sauvegarde du dépot par client
 - Frais de société par date
-- Dashboard (grouper par client séléctionner ceux a envoyer) TODO
-- Dashboard changer date echeance TODO
+- Dashboard (grouper par client séléctionner ceux a envoyer) 
+- Dashboard changer date echeance 
