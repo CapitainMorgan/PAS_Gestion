@@ -36,7 +36,7 @@ import { start } from '@popperjs/core';
 
                             <div v-if="expanded[group.fournisseurId]" class="p-4 border">
                               <span style="margin-right: 10px;">Tout sélectionner</span>
-                              <input type="checkbox" :checked="selectedArticles[fournisseurId].length === groupedArticles[fournisseurId].articles.length" @change="selectAllArticles(group.fournisseurId)" />
+                              <input type="checkbox" :checked="selectedArticles[group.fournisseurId].length === groupedArticles[group.fournisseurId].articles.length" @change="selectAllArticles(group.fournisseurId)" />
                               <PrimaryButton style="float: right;" @click="updateEcheanceOfSelectedArticles(group.fournisseurId)">
                                 Mettre à jour les articles sélectionnés
                               </PrimaryButton>
