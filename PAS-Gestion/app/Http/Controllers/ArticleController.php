@@ -50,8 +50,11 @@ class ArticleController extends Controller
                 $articles->where('status', '=', $status);
             }
         }
-
-        $articles = $articles->orderBy('created_at', 'desc')->paginate(10); // 10 articles par page
+        if ($status == 'Rendu') {
+            $articles = $articles->orderBy('dateStatus', 'desc')->paginate(10); // 10 articles par page
+        } else {
+            $articles = $articles->orderBy('created_at', 'desc')->paginate(10); // 10 articles par page
+        }
         return response()->json($articles);
     }
 

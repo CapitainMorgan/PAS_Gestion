@@ -69,7 +69,7 @@ class FournisseurController extends Controller
     {
         $fournisseur = Fournisseur::findOrFail($id);
         
-        $articles = $fournisseur->articles->where('dateDepot', '==', $date_depot);
+        $articles = $fournisseur->articles->where('dateDepot', '==', $date_depot)->sortBy('id');
 
         $conditionsArray = explode("\n", $conditionGenerale);
 
@@ -86,7 +86,7 @@ class FournisseurController extends Controller
         $articles = $fournisseur->articles;  
         
         // get all ventes where article_id is in the articles array
-        $ventes = Vente::with('article')->whereIn('article_id', $articles->pluck('id'))->get();        
+        $ventes = Vente::with('article')->whereIn('article_id', $articles->pluck('id'))->sortBy('id')->get();        
 
         // remove ventes that are not in the date range
         $ventes = $ventes->filter(function ($vente) use ($date_debut) {

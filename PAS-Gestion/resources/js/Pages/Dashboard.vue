@@ -26,16 +26,24 @@ import { start } from '@popperjs/core';
                     class="overflow-hidden bg-white shadow-sm sm:rounded-lg"
                 >
                     <div class="p-6 text-gray-900">
-                      <div v-if="Object.keys(groupedArticles).length > 0">
-                        <div v-for="(group, fournisseurId) in groupedArticles" :key="fournisseurId" class="mb-4">
-                            <div class="bg-gray-200 p-4 cursor-pointer" @click="toggleDropdown(fournisseurId)">
-                                <span @click="showFournisseur(fournisseurId)" class="font-bold">{{ fournisseurId }} {{ group.fournisseur }}</span>
-                                <PrimaryButton style="float: right;" @click="sendAllMail(fournisseurId)">Envoyer tous les mails de rappel</PrimaryButton>
-                                <PrimaryButton style="float: right;margin-right: 10px;" @click="sendSelectedMails(fournisseurId)">Envoyer les mails sélectionnés</PrimaryButton>
-      
+                      <div v-if="Object.keys(paginatedArticles).length > 0">
+                        <div v-for="(group, fournisseurId) in paginatedArticles" :key="fournisseurId" class="mb-4">
+                            <div class="bg-gray-200 p-4 cursor-pointer" style="border-radius: 5px; height: 100%;" @click="toggleDropdown(group.fournisseurId)">
+                                <span :style="{color:  group.color }" @click="showFournisseur(group.fournisseurId)" class="font-bold">{{ group.fournisseurId }} {{ group.fournisseur }} <br v-if="group.remarque != '' & group.remarque != null"> {{ group.remarque }}</span>
+                                <PrimaryButton style="float: right;" @click="sendAllMail(group.fournisseurId)">Envoyer tous les mails de rappel</PrimaryButton>
+                                <PrimaryButton style="float: right;margin-right: 10px;" @click="sendSelectedMails(group.fournisseurId)">Envoyer les mails sélectionnés</PrimaryButton>
                             </div>
-                            <div v-if="expanded[fournisseurId]" class="p-4 border">
-                                <table class="w-full text-left border-collapse">
+
+                            <div v-if="expanded[group.fournisseurId]" class="p-4 border">
+                              <span style="margin-right: 10px;">Tout sélectionner</span>
+                              <input type="checkbox" :checked="selectedArticles[fournisseurId].length === groupedArticles[fournisseurId].articles.length" @change="selectAllArticles(group.fournisseurId)" />
+                              <PrimaryButton style="float: right;" @click="updateEcheanceOfSelectedArticles(group.fournisseurId)">
+                                Mettre à jour les articles sélectionnés
+                              </PrimaryButton>
+                              <TextInput style="float: right;margin-right: 10px; margin-bottom: 10px;" type="date" v-model="dateEcheance" class="p-2 border rounded" />
+                              
+
+                              <table class="w-full text-left border-collapse">
                                     <thead>
                                         <tr>
                                             <th></th>
@@ -46,18 +54,18 @@ import { start } from '@popperjs/core';
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="article in getPaginatedArticles(fournisseurId).paginatedItems" :key="article.id">
+                                        <tr v-for="article in getPaginatedArticles(group.fournisseurId).paginatedItems" :key="article.id">
                                           <td>
                                             <input 
                                               type="checkbox" 
-                                              v-model="selectedArticles[fournisseurId]" 
+                                              v-model="selectedArticles[group.fournisseurId]" 
                                               :value="article.id"
                                             />
                                           </td>
                                             <td @click="showArticle(article.id)" class="border p-2">{{ formatIdArticle(article) }}</td>
                                             <td @click="showArticle(article.id)" class="border p-2">{{ article.description }}</td>
                                             <td class="border p-2">
-                                                <input type="date" v-model="article.dateEcheance" class="p-2 border rounded" />
+                                                <TextInput type="date" v-model="article.dateEcheance" class="p-2 border rounded" />
                                             </td>
                                             <td class="border p-2">
                                                 <PrimaryButton @click="updateEcheance(article )">
@@ -72,11 +80,11 @@ import { start } from '@popperjs/core';
                                 </table>
                                 <nav aria-label="Page navigation">
                                   <ul class="pagination">
-                                    <li class="page-item" :class="{ disabled: getPaginatedArticles(fournisseurId).currentPage === 1 }">
-                                      <SecondaryButton class="page-link" @click="getPaginatedArticles(fournisseurId).prevPage">Précédent</SecondaryButton>
+                                    <li class="page-item" :class="{ disabled: getPaginatedArticles(group.fournisseurId).currentPage === 1 }">
+                                      <SecondaryButton class="page-link" @click="getPaginatedArticles(group.fournisseurId).prevPage">Précédent</SecondaryButton>
                                     </li>
-                                    <li class="page-item" :class="{ disabled: getPaginatedArticles(fournisseurId).currentPage === getPaginatedArticles(fournisseurId).totalPages }">
-                                      <SecondaryButton class="page-link" @click="getPaginatedArticles(fournisseurId).nextPage">Suivant</SecondaryButton>
+                                    <li class="page-item" :class="{ disabled: getPaginatedArticles(group.fournisseurId).currentPage === getPaginatedArticles(group.fournisseurId).totalPages }">
+                                      <SecondaryButton class="page-link" @click="getPaginatedArticles(group.fournisseurId).nextPage">Suivant</SecondaryButton>
                                     </li>
                                   </ul>
                                 </nav>
@@ -140,7 +148,8 @@ import { start } from '@popperjs/core';
         end_date: '',
         expanded: {},
         articlesPagination: {},
-        selectedArticles: {},        
+        selectedArticles: {}, 
+        dateEcheance: '',       
       };
     },
     computed: {
@@ -148,8 +157,12 @@ import { start } from '@popperjs/core';
         return Math.ceil(Object.keys(this.groupedArticles).length / this.pageSize);
       },
       paginatedArticles() {
+        const articlesArray = Object.entries(this.groupedArticles).map(([fournisseurId, data]) => ({
+            fournisseurId,
+            ...data
+        }));
         const start = (this.currentPage - 1) * this.pageSize;
-        return this.groupedArticles.slice(start, start + this.pageSize);
+        return articlesArray.slice(start, start + this.pageSize);
       },
       visiblePages() {
         const pages = [];
@@ -178,6 +191,8 @@ import { start } from '@popperjs/core';
             if (!grouped[article.fournisseur_id]) {
                 grouped[article.fournisseur_id] = { 
                     fournisseur: article.fournisseur.prenom + ' ' + article.fournisseur.nom, 
+                    color: article.fournisseur.color,
+                    remarque: article.fournisseur.remarque,
                     articles: [] 
                 };
                 this.expanded[article.fournisseur_id] = false;
@@ -236,6 +251,39 @@ import { start } from '@popperjs/core';
         }
         else {
           useToast().error('Erreur lors de la mise à jour de la date d\'échéance.');
+        }
+      },
+      async updateEcheanceOfSelectedArticles(fournisseurId) {
+        const toast = useToast();
+        const selectedArticleIds = this.selectedArticles[fournisseurId];
+
+        if (selectedArticleIds.length === 0) {
+          toast.error('Aucun article sélectionné.');
+          return;
+        }
+
+        try {          
+          for (const articleId of selectedArticleIds) {
+            let article = this.groupedArticles[fournisseurId].articles.find((a) => a.id === articleId);
+            article.dateEcheance = this.dateEcheance;
+            const response = await axios.put(route('article.updateIsPaid', articleId), {
+              article
+            });
+          }
+                    
+
+          toast.success('Date d\'échéance mise à jour avec succès.');
+          this.$inertia.reload();
+        } catch (error) {
+          console.error(error);
+          toast.error('Erreur lors de la mise à jour de la date d\'échéance.');
+        }
+      },
+      selectAllArticles(fournisseurId) {
+        if (this.selectedArticles[fournisseurId].length === this.groupedArticles[fournisseurId].articles.length) {
+          this.selectedArticles[fournisseurId] = [];
+        } else {
+          this.selectedArticles[fournisseurId] = this.groupedArticles[fournisseurId].articles.map((a) => a.id);
         }
       },
       async sendSelectedMails(fournisseurId) {

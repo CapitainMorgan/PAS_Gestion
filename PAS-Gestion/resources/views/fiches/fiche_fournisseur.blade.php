@@ -45,7 +45,7 @@ use Carbon\Carbon;
             <div class="header" style="padding:10px;background-color: #e9e9e9;">
                 Fiche fournisseur de @if ($status === "vente") vente @else dépôt @endif<br>
                 Prêt à Séduire<br>
-                Rue du Liseron 9, 1006 Lausanne-Ouchy Tél: 021 601 32 29
+                Rue du Liseron 9, 1006 Lausanne-Ouchy Tél: 021 601 39 29
             </div>
 
             <div class="info">
@@ -54,19 +54,19 @@ use Carbon\Carbon;
                         <td>Prénom</td>
                         <td>{{ $fournisseur->prenom }}</td>
                         <td>N° téléphone</td>
-                        <td>{{ $fournisseur->telephone }}</td>
+                        <td>{{ preg_replace('/(\d{3})(\d{3})(\d{2})(\d{2})/', '$1 $2 $3 $4', $fournisseur->telephone) }}</td>
                     </tr>
                     <tr>
                         <td>Nom</td>
                         <td>{{ $fournisseur->nom }}</td>
                         <td>N° Mobile</td>
-                        <td>{{ $fournisseur->mobile }}</td>
+                        <td>{{ preg_replace('/(\d{3})(\d{3})(\d{2})(\d{2})/', '$1 $2 $3 $4', $fournisseur->mobile) }}</td>
                     </tr>
                     <tr>
                         <td>Adresse 1</td>
                         <td>{{ $fournisseur->rue }}</td>
                         <td>N° Tél Prof.</td>
-                        <td>{{ $fournisseur->numProf }}</td>
+                        <td>{{ preg_replace('/(\d{3})(\d{3})(\d{2})(\d{2})/', '$1 $2 $3 $4', $fournisseur->numProf) }}</td>
                     </tr>
                     <tr>
                         <td>NP / Ville</td>
@@ -98,12 +98,9 @@ use Carbon\Carbon;
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                            $num = 1;
-                        @endphp
                         @foreach ($articles as $article)
                             <tr>                                
-                                <td>{{ $num++ }}</td>
+                                <td>{{ substr($article->id, strlen($article->fournisseur->id), -strlen($article->created_at->format('dmy'))); }}</td>
                                 <td>{{ $article->description }}</td>
                                 <td>{{ $article->prixClient }}</td>
                                 <td>{{ $article->prixSolde }}</td>

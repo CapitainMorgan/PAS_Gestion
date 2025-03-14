@@ -199,6 +199,9 @@ import vSelect from 'vue-select';
 
   
       async submitArticles() {
+        // Inverser la liste des articles pour les envoyer dans l'ordre
+        this.articles = this.articles.reverse();
+
         // Utiliser une requête pour envoyer les données au backend
         await axios.post(route('depot.store', this.EcheanceDays), { articles: this.articles })
         .then(async (response) => {
@@ -212,8 +215,7 @@ import vSelect from 'vue-select';
           const toast = useToast();
           console.error('Erreur lors de la création des articles', error);
           toast.error('Erreur lors de la création des articles.');
-        });
-          
+        });         
 
       },
     },

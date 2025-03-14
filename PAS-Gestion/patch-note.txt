@@ -1,13 +1,14 @@
 --------------
 Corr bug
 --------------
-- Frais de société recherche (A voir)
-- Suppression vente
-- Article Incohérant TODO
+BUg d'affichage Dashboard 
+Numéro de telephone Fiche client 
+Numéro dans la fiche = Numéro id
 --------------
 Modifications
 --------------
-- Sauvegarde du dépot par client
-- Frais de société par date
-- Dashboard (grouper par client séléctionner ceux a envoyer) TODO
-- Dashboard changer date echeance TODO
+Invertion de la liste lors de la création d'un dépot
+Changer date article selectionner (Dashboard) + bouton tous selectionner TODO
+liste d'article trié par date status pour Rendu
+Couleur associé Dashboard + remarque
+Fiche client numéro telephone avec espace 
