@@ -287,42 +287,49 @@ import { start } from '@popperjs/core';
         }
       },
       async sendSelectedMails(fournisseurId) {
-        const toast = useToast();
-        const selectedArticleIds = this.selectedArticles[fournisseurId];
+        if(confirm('Envoyer les mails de rappel pour les articles sélectionnés ?'))
+        {
+          const toast = useToast();
+          const selectedArticleIds = this.selectedArticles[fournisseurId];
 
-        if (selectedArticleIds.length === 0) {
-          toast.error('Aucun article sélectionné.');
-          return;
-        }
+          if (selectedArticleIds.length === 0) {
+            toast.error('Aucun article sélectionné.');
+            return;
+          }
 
-        try {
-          // Envoi des emails pour les articles sélectionnés
-          const response = await axios.post('/send-reminder/articles', {
-            article_ids: selectedArticleIds, 
-          });
-          toast.success('Mails de rappel envoyés avec succès.');
-          this.$inertia.reload();
-        } catch (error) {
-          toast.error('Erreur lors de l\'envoi des mails de rappel.');
+          try {
+            // Envoi des emails pour les articles sélectionnés
+            const response = await axios.post('/send-reminder/articles', {
+              article_ids: selectedArticleIds, 
+            });
+            toast.success('Mails de rappel envoyés avec succès.');
+            this.$inertia.reload();
+          } catch (error) {
+            toast.error('Erreur lors de l\'envoi des mails de rappel.');
+          }
         }
       },
       async sendAllMail(fournisseur_id){
-        const toast = useToast();
-        let articles = this.groupedArticles[fournisseur_id].articles;
-        try {
-          // Envoyer un mail avec l'article
-          const response = await axios.post('/send-reminder/articles', {
-            article_ids: articles.map((a) => a.id), 
-          })
-          console.log(response);
-          toast.success('Email de rappel envoyé avec succès');          
-          this.$inertia.reload();          
-        } catch (error) {
-          console.error(error);
-          toast.error('Erreur lors de l\'envoi du rappel (pas d\'email touvé pour ce fournisseur)');
+        if(confirm('Envoyer les mails de rappel pour tous les articles de ce fournisseur ?'))
+        {
+          const toast = useToast();
+          let articles = this.groupedArticles[fournisseur_id].articles;
+          try {
+            // Envoyer un mail avec l'article
+            const response = await axios.post('/send-reminder/articles', {
+              article_ids: articles.map((a) => a.id), 
+            })
+            console.log(response);
+            toast.success('Email de rappel envoyé avec succès');          
+            this.$inertia.reload();          
+          } catch (error) {
+            console.error(error);
+            toast.error('Erreur lors de l\'envoi du rappel (pas d\'email touvé pour ce fournisseur)');
+          }
         }
       },
-      async sendMail(article) {        
+      async sendMail(article) {
+        if (!confirm('Envoyer un mail de rappel pour cet article ?')) return;        
         const toast = useToast();
         try {
           // Envoyer un mail avec l'article
