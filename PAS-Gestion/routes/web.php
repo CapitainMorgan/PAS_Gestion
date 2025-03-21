@@ -10,6 +10,7 @@ use App\Http\Controllers\ParametreController;
 use App\Http\Controllers\VenteController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CaisseController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -62,7 +63,7 @@ Route::get('/generate-barcode/{id}/{date}', [ArticleController::class, 'generate
 Route::post('/article/barcode/{barcode}', [ArticleController::class, 'getArticleByBarcode'])
     ->middleware(['auth', 'verified'])
     ->name('article.barcode');
-
+Route::post('/articles/paid', [ArticleController::class, 'changeTransitToPaid'])->middleware(['auth', 'verified'])->name('article.paid');
 
 Route::get('/frais.index', [FraisSocieteController::Class, 'index'])->middleware(['auth', 'verified'])->name('frais.index');
 Route::get('/frais.create', [FraisSocieteController::Class, 'create'])->middleware(['auth', 'verified'])->name('frais.create');
@@ -80,9 +81,7 @@ Route::get('/newUser', function () {
     return Inertia::render('Auth/Register');
 })->middleware(['auth', 'verified'])->name('newUser');
 
-Route::get('/caisse.index', function () {
-    return Inertia::render('Caisse/Index');
-})->middleware(['auth', 'verified'])->name('caisse.index');
+Route::get('/caisse.index', [CaisseController::class, 'index'])->middleware(['auth', 'verified'])->name('caisse.index');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [ArticleController::class, 'getArticlesByEndDate'])->name('dashboard');
@@ -133,8 +132,13 @@ Route::get('/export-all-articles', [ArticleController::class, 'exportAllArticles
     ->middleware('auth')
     ->name('export.all.articles');
 
+Route::get('export-all-articles-transit', [ArticleController::class, 'exportAllArticlesTransit'])
+        ->middleware('auth')
+        ->name('export.all.articles.transit');
+
 Route::get('export-all-fournisseurs', [FournisseurController::class, 'exportAllFournisseurs'])
     ->middleware('auth')
     ->name('export.all.fournisseurs');
+
 
 require __DIR__.'/auth.php';

@@ -41,51 +41,117 @@ import vSelect from 'vue-select';
                         </p>                        
                         <p><strong>Remarque:</strong> {{ fournisseur.remarque ?? 'N/A' }}</p>
                         <p><strong>Date de Création:</strong> {{ formatDate(fournisseur.created_at) }}</p>
+                        <p><strong>Solde:</strong> {{ fournisseurSolde }} CHF</p>
                     </div>
                     </div>
-                    <TextInput
-                      type="text"
-                      class="form-control search-input"
-                      v-model="searchTerm"
-                      @input="paginatedArticles"
-                      placeholder="Rechercher par nom..."
-                    />                 
-
-                    <div style="margin-top: 10px;">
-                        <select @change="paginatedArticles" v-model="status" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                            <option value="En Stock">En Stock</option>
-                            <option value="Vendu">Vendu</option>
-                            <option value="Rendu">Rendu</option>
-                            <option value="Rendu défectueux">Rendu défectueux</option>
-                            <option value="Donné">Donné</option>
-                            <option value="">Tout</option>
-                        </select>                 
-                    </div> 
-
-                    <div v-if="!filteredArticles.length" class="alert alert-info">
-                    Aucun article trouvé pour ce fournisseur.
+                    <div class="tabs">
+                      <SecondaryButton @click="selectedTab = 'articles'" :class="{ 'active': selectedTab === 'articles' }">
+                        Articles Normaux
+                      </SecondaryButton>
+                      <SecondaryButton @click="selectedTab = 'articles_transit'" :class="{ 'active': selectedTab === 'articles_transit' }">
+                        Articles en Transit
+                      </SecondaryButton>
                     </div>
-                    <div v-else style="margin-top: 10px;">
-                      <h1>Articles du Fournisseur</h1>
-                      <table class="table">
-                      <thead>
-                          <tr>
-                          <th>ID</th>
-                          <th>Description</th>
-                          <th>Localisation</th>                        
-                          <th>Prix Vente</th>
-                          <th>Prix Client</th>
-                          <th>Prix Solde</th>
-                          <th>Total des frais</th>
-                          <th>Total des ventes</th>
-                          <th>Date Dépot</th>
-                          <th>Date chagement de status</th>
-                          <th>Est payé</th>
 
-                          </tr>
-                      </thead>
-                      <tbody>
-                          <tr v-for="article in searchArticles" :key="article.id" :style="{color:  article.color }">
+                    <div v-if="selectedTab === 'articles'">
+
+
+                      <TextInput
+                        type="text"
+                        class="form-control search-input"
+                        v-model="searchTerm"
+                        @input="paginatedArticles"
+                        placeholder="Rechercher par nom..."
+                      />                 
+
+                      <div style="margin-top: 10px;">
+                          <select @change="paginatedArticles" v-model="status" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                              <option value="En Stock">En Stock</option>
+                              <option value="Vendu">Vendu</option>
+                              <option value="Rendu">Rendu</option>
+                              <option value="En transit">En transit</option>                            
+                              <option value="Rendu défectueux">Rendu défectueux</option>
+                              <option value="Donné">Donné</option>
+                              <option value="">Tout</option>
+                          </select>                 
+                      </div> 
+
+                      <div v-if="!filteredArticles.length" class="alert alert-info">
+                      Aucun article trouvé pour ce fournisseur.
+                      </div>
+                      <div v-else style="margin-top: 10px;">
+                        <h1>Articles du Fournisseur</h1>
+                        <table class="table">
+                        <thead>
+                            <tr>
+                            <th>ID</th>
+                            <th>Description</th>
+                            <th>Localisation</th>                        
+                            <th>Prix Vente</th>
+                            <th>Prix Client</th>
+                            <th>Prix Solde</th>
+                            <th>Total des frais</th>
+                            <th>Total des ventes</th>
+                            <th>Date Dépot</th>
+                            <th>Date chagement de status</th>
+                            <th>Est payé</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="article in searchArticles" :key="article.id" :style="{color:  article.color }">
+                                <td @click="showArticle(article.id)">{{ formatIdArticle(article) }}</td>
+                                <td @click="showArticle(article.id)">{{ article.description }}</td>
+                                <td @click="showArticle(article.id)">{{ article.localisation ?? 'N/A' }}</td>
+                                <td @click="showArticle(article.id)">{{ article.prixVente ?? 'N/A' }}</td>
+                                <td @click="showArticle(article.id)">{{ article.prixClient ?? 'N/A' }}</td>
+                                <td @click="showArticle(article.id)">{{ article.prixSolde ?? 'N/A' }}</td>
+                                <td @click="showArticle(article.id)">{{ article.frais }}</td>
+                                <td @click="showArticle(article.id)">{{ article.vente_total }}</td>
+                                <td @click="showArticle(article.id)">{{ formatDate(article.dateDepot) }}</td>
+                                <td @click="showArticle(article.id)">{{ formatDate(article.dateStatus) }}</td>
+                                <td><input type="checkbox" @change="updateIsPaid(article)" v-model="article.isPaid" :modelValue="String(article.isPaid)"></input></td>
+                            </tr>
+                        </tbody>
+                        </table>
+
+                        <!-- Pagination -->
+                        <nav aria-label="Page navigation">
+                          <ul class="pagination">
+                            <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                              <SecondaryButton class="page-link" @click="changePage(currentPage - 1)">Précédent</SecondaryButton>
+                            </li>
+                            <li v-for="page in visiblePages" :key="page" class="page-item" :class="{ active: currentPage === page }">
+                              <SecondaryButton class="page-link" @click="changePage(page)">{{ page }}</SecondaryButton>
+                            </li>
+                            <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                              <SecondaryButton class="page-link" @click="changePage(currentPage + 1)">Suivant</SecondaryButton>
+                            </li>
+                          </ul>
+                        </nav>
+                      </div>
+                    </div>
+                    <div v-else>
+                      <PrimaryButton class="button" @click="paid('Cash')">Payé Cash</PrimaryButton>
+                      <PrimaryButton class="button" @click="paid('CB')">Payé Carte banquaire</PrimaryButton>
+                      <h1>Articles en Transit</h1>
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th>ID</th>
+                              <th>Description</th>
+                              <th>Localisation</th>                        
+                              <th>Prix Vente</th>
+                              <th>Prix Client</th>
+                              <th>Prix Solde</th>
+                              <th>Total des frais</th>
+                              <th>Total des ventes</th>
+                              <th>Date Dépôt</th>
+                              <th>Date changement de statut</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr v-for="article in fournisseur.articles_transit" :key="article.id">
                               <td @click="showArticle(article.id)">{{ formatIdArticle(article) }}</td>
                               <td @click="showArticle(article.id)">{{ article.description }}</td>
                               <td @click="showArticle(article.id)">{{ article.localisation ?? 'N/A' }}</td>
@@ -96,25 +162,9 @@ import vSelect from 'vue-select';
                               <td @click="showArticle(article.id)">{{ article.vente_total }}</td>
                               <td @click="showArticle(article.id)">{{ formatDate(article.dateDepot) }}</td>
                               <td @click="showArticle(article.id)">{{ formatDate(article.dateStatus) }}</td>
-                              <td><input type="checkbox" @change="updateIsPaid(article)" v-model="article.isPaid" :modelValue="String(article.isPaid)"></input></td>
-                          </tr>
-                      </tbody>
-                      </table>
-
-                      <!-- Pagination -->
-                      <nav aria-label="Page navigation">
-                        <ul class="pagination">
-                          <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                            <SecondaryButton class="page-link" @click="changePage(currentPage - 1)">Précédent</SecondaryButton>
-                          </li>
-                          <li v-for="page in visiblePages" :key="page" class="page-item" :class="{ active: currentPage === page }">
-                            <SecondaryButton class="page-link" @click="changePage(page)">{{ page }}</SecondaryButton>
-                          </li>
-                          <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                            <SecondaryButton class="page-link" @click="changePage(currentPage + 1)">Suivant</SecondaryButton>
-                          </li>
-                        </ul>
-                      </nav>
+                            </tr>
+                          </tbody>
+                        </table>
                     </div>
 
 
@@ -199,6 +249,7 @@ export default {
       status: 'En Stock',
       printDate: new Date().toISOString().substr(0, 10),
       searchArticles: [],
+      selectedTab: 'articles',
     };
   },
   mounted() {
@@ -256,9 +307,29 @@ export default {
         return matchesSearch && matchesStatus;
       });
     },
+    totalPriceTransit(){
+      return this.fournisseur.articles_transit.reduce((acc, article) => acc + Number(article.vente_total), 0);
+    },
+    totalPriceArticlesNotPaid(){
+      //sum vente_total of all articles that are not paid
+      return this.fournisseur.articles.reduce((acc, article) => article.isPaid ? acc : acc + Number(article.vente_total), 0);
+    },
+    fournisseurSolde(){
+      return this.totalPriceArticlesNotPaid - this.totalPriceTransit;
+    },
   },
   methods: {
-    
+    paid(type) {
+      if (confirm('Êtes-vous sûr de vouloir marquer tous les articles comme payés ?')) {
+        // Si l'utilisateur confirme, envoyer la requête POST avec Inertia pour changer le statut de toutes les ventes
+        const response = axios.post(route('article.paid'), {
+          fournisseurId: this.fournisseur.id,
+          status: type,
+        });
+        const toast = useToast();
+        toast.success('Tous les articles ont été marqués comme payés.');
+      }
+    },
     paginatedArticles() {
       const start = (this.currentPage - 1) * this.pageSize;
       this.searchArticles = this.filteredArticles.slice(start, start + this.pageSize);
@@ -355,5 +426,20 @@ export default {
 .label {
   margin-top: 10px ;
   margin-bottom: 5px ;
+}
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.tabs button {
+  padding: 10px;
+  border: none;
+  background: lightgray;
+  cursor: pointer;
+}
+.tabs button.active {
+  background: #007bff;
+  color: white;
 }
 </style>

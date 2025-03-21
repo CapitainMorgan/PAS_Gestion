@@ -132,7 +132,7 @@ import vSelect from 'vue-select';
                     </div>
 
                     <div class="form-group full-width">
-                        <label for="fournisseur" class="form-label">Fournisseur</label>
+                        <InputLabel for="fournisseur" class="form-label">Fournisseur</InputLabel>
                         <v-select
                         :options="fullNameFournisseurs"
                         v-model="selectedFournisseur"

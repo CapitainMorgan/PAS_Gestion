@@ -1,11 +1,11 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
-import SecondaryButton from '@/components/SecondaryButton.vue';
 import DangerButton from '@/components/DangerButton.vue';
 import TextInput from '@/components/TextInput.vue';
 import InputLabel from '@/components/InputLabel.vue';
 import { Head } from '@inertiajs/vue3';
+import vSelect from 'vue-select';
 </script>
 
 
@@ -26,7 +26,7 @@ import { Head } from '@inertiajs/vue3';
                 >
                 <div class="p-6 text-gray-900">
                   <div>
-                    <TextInput 
+                    <TextInput  
                       ref="barcodeInput" 
                       v-model="scannedBarcode" 
                       placeholder="Scannez un article..." 
@@ -79,11 +79,25 @@ import { Head } from '@inertiajs/vue3';
                             </select>
                         </div>
 
+                        <div class="form-group full-width" style="margin-top: 20px;">
+                            <InputLabel for="fournisseur" class="form-label">Fournisseur</InputLabel>
+                            <v-select
+                            :options="fullNameFournisseurs"
+                            v-model="selectedFournisseur"
+                            :reduce="fournisseur => fournisseur.id"
+                            label="fullName"
+                            placeholder="Sélectionner un fournisseur"
+                            search-placeholder="Rechercher un fournisseur..."
+                            required
+                            />
+                        </div>
+
                         <div class="mt-4">
                           <PrimaryButton style="margin-right: 10px;" @click="changeStatus('Vendu')">Vendre</PrimaryButton>
                           <PrimaryButton style="margin-right: 10px;" @click="changeStatus('Rendu')">Rendre</PrimaryButton>
                           <PrimaryButton style="margin-right: 10px;" @click="changeStatus('Rendu défectueux')">Rendre défectueux</PrimaryButton>
                           <PrimaryButton style="margin-right: 10px;" @click="changeStatus('Donné')">Donné</PrimaryButton>
+                          <PrimaryButton style="margin-right: 10px;" @click="changeStatus('En transit')">En transit</PrimaryButton>
                           <PrimaryButton style="margin-right: 10px;" @click="exportExcel()">Exporter</PrimaryButton>
                           <PrimaryButton style="margin-right: 10px;" @click="clearCart()">Annuler</PrimaryButton>
                         </div>
@@ -99,13 +113,17 @@ import { Head } from '@inertiajs/vue3';
   <script>
   import { useToast } from 'vue-toastification'
 
-  export default {
+  export default {  
+    props: {
+      fournisseurs: Array,
+    },
     data() {
       return {
         scannedBarcode: '',
         articles: [], // Détails de l'article scanné
         vente_status: 'CB',
         scanTimeout: null,
+        selectedFournisseur: null,
       };
     },
     computed: {
@@ -121,6 +139,12 @@ import { Head } from '@inertiajs/vue3';
           const quantity = article.quantiteVente ?? 0;
           return total + price * quantity;
         }, 0);
+      },
+      fullNameFournisseurs() {
+        return this.fournisseurs.map(fournisseur => ({
+          ...fournisseur,
+          fullName: `${fournisseur.id} ${fournisseur.nom} ${fournisseur.prenom}`,
+        }));
       }
     },
     mounted() {
@@ -226,7 +250,7 @@ import { Head } from '@inertiajs/vue3';
       },
       async changeStatus(status) {
         //check if we have enough quantity
-        if (status === 'Vendu') {
+        if (status === 'Vendu' && status === 'En transit') {
           for (const article of this.articles) {
             //convert to integer
             article.quantiteVente = parseInt(article.quantiteVente);
@@ -248,6 +272,19 @@ import { Head } from '@inertiajs/vue3';
           }
         }
 
+        if (status === "En transit")
+        {
+          if (!this.selectedFournisseur) {
+            const toast = useToast();
+            toast.error('Sélectionner un fournisseur');
+            return;
+          }
+
+          this.articles.forEach(article => {
+            article.fournisseur_id_transit = this.selectedFournisseur;
+          });
+        }
+
         console.log(this.articles);
         const response = await axios.post(route('article.updateStatus') , { articles: this.articles, status: status, vente_status: this.vente_status });
 
@@ -259,13 +296,13 @@ import { Head } from '@inertiajs/vue3';
         } else {
           toast.error('Erreur lors de la vente');
         }
-
-      },
+      },      
     },
   };
   </script>
   
   <style>
+  @import "vue-select/dist/vue-select.css";
   .barcode-input {
     width: 100%;
     padding: 10px;
@@ -273,4 +310,3 @@ import { Head } from '@inertiajs/vue3';
     margin-bottom: 20px;
   }
   </style>
-  

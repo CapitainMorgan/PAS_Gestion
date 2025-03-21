@@ -30,6 +30,7 @@ class Article extends Model
         'color',
         'isPaid',
         'fournisseur_id',
+        'fournisseur_id_transit',
         'utilisateur_id',
         'vente_id',
     ];

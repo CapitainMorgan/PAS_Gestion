@@ -86,7 +86,7 @@ class FournisseurController extends Controller
         $articles = $fournisseur->articles;  
         
         // get all ventes where article_id is in the articles array
-        $ventes = Vente::with('article')->whereIn('article_id', $articles->pluck('id'))->sortBy('id')->get();        
+        $ventes = Vente::with('article')->whereIn('article_id', $articles->pluck('id'))->get();        
 
         // remove ventes that are not in the date range
         $ventes = $ventes->filter(function ($vente) use ($date_debut) {
@@ -140,7 +140,7 @@ class FournisseurController extends Controller
         $articles->map(function ($article) {
             $article->frais = Frais::where('article_id', $article->id)->sum('prix');
             return $article;
-        });
+        });        
 
         // get all vente of the articles and sum all prix_unitaire * quantite them and add the result to the article
         $articles->map(function ($article) {
@@ -156,7 +156,29 @@ class FournisseurController extends Controller
         //sort article by created_at
         $articles = $articles->sortByDesc(['created_at','id']);
 
-        $fournisseur->articles = $articles;
+        $fournisseur->articles = $articles;        
+
+        $articles_transit = Article::where('fournisseur_id_transit', $fournisseur->id)
+            ->where('status', 'En transit')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $articles_transit->map(function ($article) {
+            $article->vente_total = Vente::where('article_id', $article->id)
+                ->select(DB::raw('SUM(prix_unitaire * quantite) as total'))
+                ->value('total');
+            if ($article->vente_total == null) {
+                $article->vente_total = 0;
+            }
+            return $article;
+        });
+
+        $articles_transit->map(function ($article) {
+            $article->frais = Frais::where('article_id', $article->id)->sum('prix');
+            return $article;
+        });
+
+        $fournisseur->articles_transit = $articles_transit;
 
         $conditionGenerale = config('app_settings.conditions_generales');
 

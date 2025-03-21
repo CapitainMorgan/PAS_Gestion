@@ -52,6 +52,7 @@ import { Head } from '@inertiajs/vue3';
                             </div>
                             <p><strong>Modifié le:</strong> {{ formatDate(article.dateStatus) }}</p>                          
                             <p><strong>Crée par :</strong> {{ article.user.name }} {{ article.user.email }}</p>
+                            <p @click="showFournisseur(article.fournisseur_id_transit)"><strong>En transit chez : </strong> {{ article.fournisseur_id_transit }}</p>
 
                         </div>
                     </div>

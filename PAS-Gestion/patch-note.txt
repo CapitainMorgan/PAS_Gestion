@@ -1,14 +1,16 @@
 --------------
 Corr bug
 --------------
-BUg d'affichage Dashboard 
-Numéro de telephone Fiche client 
-Numéro dans la fiche = Numéro id
+- Erreur lors de la generation d'une fiche de vente
 --------------
 Modifications
 --------------
-Invertion de la liste lors de la création d'un dépot
-Changer date article selectionner (Dashboard) + bouton tous selectionner TODO
-liste d'article trié par date status pour Rendu
-Couleur associé Dashboard + remarque
-Fiche client numéro telephone avec espace 
+- Permettre un tri par couleur dans les articles
+- Ajout du status "En transit"
+- Ajout du lien entre un fournisseur et un article "En transit" 
+- Création d'une vente lors de la mise "En transit" avec l'infomation du transit dans status de la vente 
+- Possibilité de mettre "En transit" via la caisse et indiquer le fournisseur 
+- Affichage dans le fournisseur les articles "En transit" "Acheté" 
+- Affichage du solde du client
+- Possibilité de valider la reception du paiment 
+- Extraction des articles en transit TODO

@@ -105,7 +105,7 @@ use Carbon\Carbon;
                         @endphp
                         @foreach ($ventes as $vente)
                             <tr>                                
-                                <td>{{ substr($article->id, strlen($article->fournisseur->id), -strlen($article->created_at->format('dmy'))) }}</td>
+                                <td>{{ substr($vente->article->id, strlen($vente->article->fournisseur->id), -strlen($vente->article->created_at->format('dmy'))) }}</td>
                                 <td>{{ $vente->article->description }}</td>
                                 <td>{{ $vente->article->prixClient }}</td>
                                 <td>{{ $vente->article->prixVente }}</td>

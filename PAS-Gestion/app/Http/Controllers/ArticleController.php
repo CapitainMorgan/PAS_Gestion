@@ -51,7 +51,7 @@ class ArticleController extends Controller
             }
         }
         if ($status == 'Rendu') {
-            $articles = $articles->orderBy('dateStatus', 'desc')->paginate(10); // 10 articles par page
+            $articles = $articles->orderBy('dateStatus', 'desc')->orderBy('color', 'desc')->paginate(10); // 10 articles par page
         } else {
             $articles = $articles->orderBy('created_at', 'desc')->paginate(10); // 10 articles par page
         }
@@ -112,12 +112,7 @@ class ArticleController extends Controller
             }else{
                 $prix = $article['prixVente'];
             }
-            $vente = $this->createVenteIfStatusIsVendu($article['id'], $status, $status_vente, $prix ,$article['quantiteVente']);
 
-            if ($vente) {
-                $articleItem->vente_id = $vente->id;
-            }        
-            
             if( $status == 'Vendu'){
                 if ($article['quantiteVente'] > $article['quantite']) {
                     return response()->json(['error' => 'La quantité vendue ne peut pas être supérieure à la quantité en stock'], 400);
@@ -126,6 +121,17 @@ class ArticleController extends Controller
                 // met a jour la quantite
                 $articleItem->quantite = $article['quantite'] - $article['quantiteVente'] ;
             }
+
+            $vente = $this->createVenteIfStatusIsVendu($article['id'], $status, $status_vente, $prix ,$article['quantiteVente']);
+
+            if ($vente) {
+                $articleItem->vente_id = $vente->id;
+            }        
+            
+            if ($status == 'En transit')
+            {
+                $articleItem->fournisseur_id_transit = $article['fournisseur_id_transit'];
+            }            
 
             if ($status == 'Vendu' && $articleItem->quantite != 0) {
                 $articleItem->status = 'En Stock';
@@ -146,6 +152,38 @@ class ArticleController extends Controller
 
         return response()->json(['message' => 'Articles mis à jour avec succès']);
     }    
+
+    public function changeTransitToPaid(Request $request)
+    {
+        $fournisseur_id = $request->input('fournisseurId');
+
+        $articles = Article::where('fournisseur_id_transit', $fournisseur_id)->where('status', 'En transit')->get();
+
+        foreach ($articles as $article) {
+
+            $articleItem = Article::find($article['id']);
+
+            if (!$articleItem) {
+                return response()->json(['error' => 'Article not found'], 404);
+            }
+
+            //changer le status de la vente de l'article
+            $vente = Vente::find($articleItem->vente_id);
+
+            if (!$vente) {
+                return response()->json(['error' => 'Vente not found'], 404);
+            }
+
+            $vente->status = $request->input('status');
+            $vente->save();
+
+            $articleItem->status = 'Vendu';
+            $articleItem->dateStatus = now();
+            $articleItem->save();
+        }
+
+        return response()->json(['message' => 'Articles mis à jour avec succès']);
+    }
 
 
     public function getArticlesByEndDate()
@@ -256,7 +294,7 @@ class ArticleController extends Controller
     private function createVenteIfStatusIsVendu($articleId, $status, $status_vente, $prix, $quantite = 1)
     {
         if ($status_vente == NULL) {
-            $status_vente = 'Cash';
+            $status_vente = 'CB';
         }
 
         if ($status == 'Vendu') {
@@ -265,6 +303,18 @@ class ArticleController extends Controller
             $vente->prix_unitaire = $prix;
             $vente->article_id = $articleId;
             $vente->status = $status_vente;
+            $vente->utilisateur_id = auth()->user()->id;
+            $vente->save();
+
+            return $vente;
+        }
+
+        if ($status === 'En transit') {
+            $vente = new Vente();
+            $vente->quantite = $quantite;
+            $vente->prix_unitaire = $prix;
+            $vente->article_id = $articleId;
+            $vente->status = $status;
             $vente->utilisateur_id = auth()->user()->id;
             $vente->save();
 
@@ -321,8 +371,6 @@ class ArticleController extends Controller
 
     public function storeGroupedArticles(Request $request, $EchanceDays = 30)
     {        
-        
-
         //get array of articles from request
         $articles = $request->articles;
 
@@ -503,6 +551,58 @@ class ArticleController extends Controller
             $sheet->setCellValue('J' . $row, $article->status);
             $sheet->setCellValue('K' . $row, $article->isPaid ? 'Oui' : 'Non');
             $sheet->setCellValue('L' . $row, $article->taille);
+            $row++;
+        }
+
+        $fileName = 'Export_Articles_' . date('Y-m-d_H-i-s') . '.xlsx';
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment; filename=\"$fileName\"");
+        header('Cache-Control: max-age=0');
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer->save('php://output');
+
+        exit();
+    }
+
+    public function exportAllArticlesTransit(Request $request)
+    {
+        $articles = Article::with('user')
+            ->where('status', 'En transit')
+            ->get();
+    
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        
+        $sheet->setTitle('Articles');
+        $sheet->setCellValue('A1', 'ID');
+        $sheet->setCellValue('B1', 'Description');
+        $sheet->setCellValue('C1', 'Date Création');
+        $sheet->setCellValue('D1', 'Localisation');
+        $sheet->setCellValue('E1', 'Créateur');
+        $sheet->setCellValue('F1', 'Quantité');
+        $sheet->setCellValue('G1', 'Prix Vente');
+        $sheet->setCellValue('H1', 'Prix Client');
+        $sheet->setCellValue('I1', 'Prix Solde');
+        $sheet->setCellValue('J1', 'Status');
+        $sheet->setCellValue('K1', 'Est payé');
+        $sheet->setCellValue('L1', 'Taille');
+        $sheet->setCellValue('M1', 'Fournisseur Transit');
+        $row = 2;
+        foreach ($articles as $article) {
+            $sheet->setCellValue('A' . $row, $article->id);
+            $sheet->setCellValue('B' . $row, $article->description);
+            $sheet->setCellValue('C' . $row, $article->created_at);
+            $sheet->setCellValue('D' . $row, $article->localisation);
+            $sheet->setCellValue('E' . $row, $article->user->name);
+            $sheet->setCellValue('F' . $row, $article->quantite);
+            $sheet->setCellValue('G' . $row, $article->prixVente);
+            $sheet->setCellValue('H' . $row, $article->prixClient);
+            $sheet->setCellValue('I' . $row, $article->prixSolde);
+            $sheet->setCellValue('J' . $row, $article->status);
+            $sheet->setCellValue('K' . $row, $article->isPaid ? 'Oui' : 'Non');
+            $sheet->setCellValue('L' . $row, $article->taille);
+            $sheet->setCellValue('M' . $row, $article->fournisseur_id_transit);
             $row++;
         }
 

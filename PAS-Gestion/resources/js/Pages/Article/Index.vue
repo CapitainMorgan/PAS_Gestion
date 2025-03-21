@@ -40,6 +40,7 @@ import { Head } from '@inertiajs/vue3';
                           <option value="En Stock">En Stock</option>
                           <option value="Vendu">Vendu</option>
                           <option value="Rendu">Rendu</option>
+                          <option value="En transit">En transit</option>
                           <option value="Rendu défectueux">Rendu défectueux</option>
                           <option value="Donné">Donné</option>
                           <option value="">Tout</option>

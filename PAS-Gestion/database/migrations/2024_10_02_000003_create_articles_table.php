@@ -26,6 +26,7 @@ class CreateArticlesTable extends Migration
             $table->integer('statusMail', 10, 2)->default(0);
             $table->foreignId('utilisateur_id')->constrained('users');
             $table->foreignId('fournisseur_id')->constrained('fournisseurs');
+            $table->foreignId('fournisseur_id_transit')->constrained('fournisseurs')->nullable();
             $table->foreignId('vente_id')->constrained('ventes')->nullable();
             $table->timestamps();
         });
