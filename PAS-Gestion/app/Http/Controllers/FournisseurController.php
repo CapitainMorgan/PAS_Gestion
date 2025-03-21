@@ -165,6 +165,7 @@ class FournisseurController extends Controller
 
         $articles_transit->map(function ($article) {
             $article->vente_total = Vente::where('article_id', $article->id)
+                ->where('status', 'En transit')
                 ->select(DB::raw('SUM(prix_unitaire * quantite) as total'))
                 ->value('total');
             if ($article->vente_total == null) {

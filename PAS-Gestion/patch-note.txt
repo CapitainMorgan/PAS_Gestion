@@ -13,4 +13,4 @@ Modifications
 - Affichage dans le fournisseur les articles "En transit" "Acheté" 
 - Affichage du solde du client
 - Possibilité de valider la reception du paiment 
-- Extraction des articles en transit TODO
+- Extraction des articles en transit 
