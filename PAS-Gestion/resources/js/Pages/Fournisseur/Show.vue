@@ -134,6 +134,7 @@ import vSelect from 'vue-select';
                     <div v-else>
                       <PrimaryButton class="button" @click="paid('Cash')">Payé Cash</PrimaryButton>
                       <PrimaryButton class="button" @click="paid('CB')">Payé Carte banquaire</PrimaryButton>
+                      <PrimaryButton class="button" @click="paid('Rendu')">Rendu</PrimaryButton>
                       <h1>Articles en Transit</h1>
                         <table class="table">
                           <thead>
@@ -148,6 +149,7 @@ import vSelect from 'vue-select';
                               <th>Total des ventes</th>
                               <th>Date Dépôt</th>
                               <th>Date changement de statut</th>
+                              <th>Actions</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -162,6 +164,11 @@ import vSelect from 'vue-select';
                               <td @click="showArticle(article.id)">{{ article.vente_total }}</td>
                               <td @click="showArticle(article.id)">{{ formatDate(article.dateDepot) }}</td>
                               <td @click="showArticle(article.id)">{{ formatDate(article.dateStatus) }}</td>
+                              <td>
+                                <PrimaryButton class="button" style="margin-bottom: 5px;" @click="paidOne('Cash', article)">Payé Cash</PrimaryButton>
+                                <PrimaryButton class="button" style="margin-bottom: 5px;" @click="paidOne('CB', article)">Payé CB</PrimaryButton>
+                                <PrimaryButton class="button" style="margin-bottom: 5px;" @click="paidOne('Rendu', article)">Rendu</PrimaryButton>
+                              </td>
                             </tr>
                           </tbody>
                         </table>
@@ -292,7 +299,9 @@ export default {
           article.description?.toLowerCase() ?? '',
           article.localisation?.toLowerCase() ?? '',
           article.taille?.toLowerCase() ?? '',
-          article.id?.toString().toLowerCase() ?? ''
+          article.id?.toString().toLowerCase() ?? '',
+          article.dateStatus?.toString().toLowerCase() ?? '',
+          article.created_at?.toString().toLowerCase() ?? '',
         ].join(' ');
 
         //change all Article isPaid to true false if 0 or 1
@@ -328,6 +337,20 @@ export default {
         });
         const toast = useToast();
         toast.success('Tous les articles ont été marqués comme payés.');
+        this.fournisseur.articles_transit = [];
+      }
+    },
+    paidOne(type, article) {
+      if (confirm('Êtes-vous sûr de vouloir marquer cet article comme payé ?')) {
+        // Si l'utilisateur confirme, envoyer la requête POST avec Inertia pour changer le statut de toutes les ventes
+        const response = axios.post(route('article.paid.transit'), {
+          articleId: article.id,
+          status: type,
+        });
+        const toast = useToast();
+        toast.success('L\'article a été marqué comme payé.');
+        //remove article from articles_transit
+        this.fournisseur.articles_transit = this.fournisseur.articles_transit.filter((item) => item.id !== article.id);
       }
     },
     paginatedArticles() {

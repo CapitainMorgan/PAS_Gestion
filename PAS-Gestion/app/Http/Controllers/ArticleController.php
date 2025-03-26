@@ -41,7 +41,9 @@ class ArticleController extends Controller
                         $subQuery->where('description', 'like', "%{$keyword}%")
                                  ->orWhere('localisation', 'like', "%{$keyword}%")
                                  ->orWhere('taille', 'like', "%{$keyword}%")
-                                 ->orWhere('id', 'like', "%{$keyword}%");
+                                 ->orWhere('id', 'like', "%{$keyword}%")
+                                 ->orWhere('created_at', 'like', "%{$keyword}%")
+                                 ->orWhere('dateStatus', 'like', "%{$keyword}%");
                     });
                 }
             });
@@ -145,6 +147,7 @@ class ArticleController extends Controller
             }
 
             $articleItem->dateStatus = now();
+            $articleItem->prixSolde = $article['prixSolde'];
 
             $articleItem->save();
 
@@ -165,24 +168,76 @@ class ArticleController extends Controller
 
             if (!$articleItem) {
                 return response()->json(['error' => 'Article not found'], 404);
+            }            
+            
+            $prix = $article->prixVente;
+
+            if ($article->prixSolde != NULL && $article->prixSolde != 0) {
+                $prix = $article->prixSolde;
             }
+            
+            if ($request->input('status') == "Rendu")
+            {
+                $articleItem->color = "#00ff2a";
+                $articleItem->dateStatus = now();
+                $articleItem->save();
+            }else{
+                $vente = new Vente();
+                $vente->quantite = $article->quantite;
+                $vente->prix_unitaire = $prix;
+                $vente->article_id = $article->id;
+                $vente->status = $request->input('status');
+                $vente->utilisateur_id = auth()->user()->id;
+                $vente->save();
 
-            //changer le status de la vente de l'article
-            $vente = Vente::find($articleItem->vente_id);
-
-            if (!$vente) {
-                return response()->json(['error' => 'Vente not found'], 404);
+                $articleItem->vente_id = $vente->id;
+                $articleItem->quantite = 0;
+                $articleItem->status = 'Vendu';
+                $articleItem->dateStatus = now();
+                $articleItem->save();
             }
-
-            $vente->status = $request->input('status');
-            $vente->save();
-
-            $articleItem->status = 'Vendu';
-            $articleItem->dateStatus = now();
-            $articleItem->save();
         }
 
         return response()->json(['message' => 'Articles mis à jour avec succès']);
+    }
+
+    public function changeOneTransitToPaid(Request $request)
+    {
+        $article = Article::find($request->input('articleId'));
+
+        if (!$article) {
+            return response()->json(['error' => 'Article not found'], 404);
+        }
+
+        $prix = $article->prixVente;
+
+        if ($article->prixSolde != NULL && $article->prixSolde != 0) {
+            $prix = $article->prixSolde;
+        }
+
+        if ($request->input('status') == "Rendu")
+        {
+            $article->color = "#00ff2a";
+            $article->status = "Rendu";
+            $article->dateStatus = now();
+            $article->save();
+        }else{
+            $vente = new Vente();
+            $vente->quantite = $article->quantite;
+            $vente->prix_unitaire = $prix;
+            $vente->article_id = $article->id;
+            $vente->status = $request->input('status');
+            $vente->utilisateur_id = auth()->user()->id;
+            $vente->save();
+
+            $article->vente_id = $vente->id;
+            $article->quantite = 0;
+            $article->status = 'Vendu';
+            $article->dateStatus = now();
+            $article->save();
+        }
+
+        return response()->json(['message' => 'Article mis à jour avec succès']);
     }
 
 
@@ -309,24 +364,18 @@ class ArticleController extends Controller
             return $vente;
         }
 
-        if ($status === 'En transit') {
-            $vente = new Vente();
-            $vente->quantite = $quantite;
-            $vente->prix_unitaire = $prix;
-            $vente->article_id = $articleId;
-            $vente->status = $status;
-            $vente->utilisateur_id = auth()->user()->id;
-            $vente->save();
-
-            return $vente;
-        }
-
         return null;
     }
 
     public function edit($id)
     {
         $article = Article::findOrFail($id);
+
+        //find vente status if status is vendu
+        if ($article->status == 'Vendu') {
+            $vente = Vente::find($article->vente_id);
+            $article->vente_status = $vente->status;
+        }
 
         return Inertia::render('Article/Edit', [
             'article' => $article,
@@ -464,12 +513,17 @@ class ArticleController extends Controller
         }
         # if status is changed
         if ($request->status != $article->status) {
-            $vente = $this->createVenteIfStatusIsVendu($request->id, $request->status, $request->status_vente, $request->quantite);
+            $vente = $this->createVenteIfStatusIsVendu($request->id, $request->status, $request->vente_status, $request->quantite);
 
             if ($vente) {
                 $request->merge(['vente_id' => $vente->id]);
             }
-        }
+        }elseif ($request->status == 'Vendu') {
+            $vente = Vente::find($article->vente_id);
+
+            $vente->status = $request->vente_status;
+            $vente->save();
+        }        
 
         //check if status changed
         if ($request->status != $article->status) {

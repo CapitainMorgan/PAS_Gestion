@@ -1,16 +1,13 @@
 --------------
 Corr bug
 --------------
-- Erreur lors de la generation d'une fiche de vente
+
 --------------
 Modifications
 --------------
-- Permettre un tri par couleur dans les articles
-- Ajout du status "En transit"
-- Ajout du lien entre un fournisseur et un article "En transit" 
-- Création d'une vente lors de la mise "En transit" avec l'infomation du transit dans status de la vente 
-- Possibilité de mettre "En transit" via la caisse et indiquer le fournisseur 
-- Affichage dans le fournisseur les articles "En transit" "Acheté" 
-- Affichage du solde du client
-- Possibilité de valider la reception du paiment 
-- Extraction des articles en transit 
+- Création de la vente qu'après payé
+- Bouton pour chaque articles
+- bouton "rendre vert"
+- Recherche par date
+- Modification de prix solde dans caisse modifie le prix solde de l'article
+- Modification de status de la vente dans l'article modifie la vente

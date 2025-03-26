@@ -63,7 +63,8 @@ Route::get('/generate-barcode/{id}/{date}', [ArticleController::class, 'generate
 Route::post('/article/barcode/{barcode}', [ArticleController::class, 'getArticleByBarcode'])
     ->middleware(['auth', 'verified'])
     ->name('article.barcode');
-Route::post('/articles/paid', [ArticleController::class, 'changeTransitToPaid'])->middleware(['auth', 'verified'])->name('article.paid');
+Route::post('/articles/paid/transit', [ArticleController::class, 'changeTransitToPaid'])->middleware(['auth', 'verified'])->name('article.paid');
+Route::post('/article/paid/transit', [ArticleController::class, 'changeOneTransitToPaid'])->middleware(['auth', 'verified'])->name('article.paid.transit');
 
 Route::get('/frais.index', [FraisSocieteController::Class, 'index'])->middleware(['auth', 'verified'])->name('frais.index');
 Route::get('/frais.create', [FraisSocieteController::Class, 'create'])->middleware(['auth', 'verified'])->name('frais.create');
