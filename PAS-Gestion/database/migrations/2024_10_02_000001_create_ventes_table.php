@@ -12,7 +12,7 @@ class CreateVentesTable extends Migration
             $table->foreignId('utilisateur_id')->constrained('users');
             $table->id();
             $table->decimal('quantite', 10, 2);
-            $table->foreignId('article_id')->constrained('articles');
+            $table->integer('article_id')->unsigned();
             $table->decimal('prix_unitaire', 10, 2);
             $table->string('status', 50);
             $table->timestamps();

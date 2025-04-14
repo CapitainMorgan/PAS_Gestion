@@ -23,7 +23,7 @@ class CreateArticlesTable extends Migration
             $table->date('dateStatus');            
             $table->string('color', 7)->nullable();
             $table->boolean('isPaid')->default(false);
-            $table->integer('statusMail', 10, 2)->default(0);
+            $table->integer('statusMail')->default(0);
             $table->foreignId('utilisateur_id')->constrained('users');
             $table->foreignId('fournisseur_id')->constrained('fournisseurs');
             $table->foreignId('fournisseur_id_transit')->constrained('fournisseurs')->nullable();

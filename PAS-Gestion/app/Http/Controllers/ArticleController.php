@@ -513,7 +513,13 @@ class ArticleController extends Controller
         }
         # if status is changed
         if ($request->status != $article->status) {
-            $vente = $this->createVenteIfStatusIsVendu($request->id, $request->status, $request->vente_status, $request->quantite);
+            $prix = $article->prixVente;
+
+            if ($article->prixSolde != NULL && $article->prixSolde != 0) {
+                $prix = $article->prixSolde;
+            }
+
+            $vente = $this->createVenteIfStatusIsVendu($request->id, $request->status, $request->vente_status, $prix, $request->quantite);
 
             if ($vente) {
                 $request->merge(['vente_id' => $vente->id]);

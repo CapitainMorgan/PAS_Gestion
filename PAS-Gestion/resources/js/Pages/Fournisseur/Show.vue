@@ -311,7 +311,7 @@ export default {
         const matchesSearch = searchTerms.every(term => articleFields.includes(term));
 
         // Appliquer également le filtre par statut
-        const matchesStatus = article.status.includes(this.status);        
+        const matchesStatus = article.status.includes(this.status);  
 
         return matchesSearch && matchesStatus;
       });
@@ -355,6 +355,17 @@ export default {
     },
     paginatedArticles() {
       const start = (this.currentPage - 1) * this.pageSize;
+      //si le status est "Rendu" trier pas par date puis par couleur
+      if (this.status === 'Rendu') {
+        this.filteredArticles.sort((a, b) => {
+          const dateA = new Date(a.dateDepot);
+          const dateB = new Date(b.dateDepot);
+          return dateB - dateA || b.color.localeCompare(a.color);
+        });
+      } else {
+        this.filteredArticles.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      }
+
       this.searchArticles = this.filteredArticles.slice(start, start + this.pageSize);
     },
     formatIdArticle(article) {
