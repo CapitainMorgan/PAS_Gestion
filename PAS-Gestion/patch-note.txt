@@ -5,9 +5,8 @@ Corr bug
 --------------
 Modifications
 --------------
-- Création de la vente qu'après payé
-- Bouton pour chaque articles
-- bouton "rendre vert"
-- Recherche par date
-- Modification de prix solde dans caisse modifie le prix solde de l'article
-- Modification de status de la vente dans l'article modifie la vente
+- APP_DEBUG=false dans env
+opcache.enable=1
+opcache.enable_cli=1 php.ini
+php artisan route:cache
+php artisan config:cache

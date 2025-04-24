@@ -31,6 +31,6 @@ use Carbon\Carbon;
     Passé ce délai nous serons contraintes de les débarasser. </p>
     <p>Merci d'avance de votre compréhension,</p>
     <p>La Boutique Prêt à Séduire<br>
-    Rue du Liseron 9, 1006 Lausanne-Ouchy Tél: 021 601 32 29</p>
+    Rue du Liseron 9, 1006 Lausanne-Ouchy Tél: 021 601 39 29</p>
 </body>
 </html>
