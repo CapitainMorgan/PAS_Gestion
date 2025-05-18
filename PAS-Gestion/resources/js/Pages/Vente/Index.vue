@@ -86,6 +86,8 @@ import axios from 'axios';
                         <TextInput type="number" v-model="currentVente.quantite" id="quantite" />
                         <InputLabel for="currentVente.prix_unitaire">Prix unitaire</InputLabel>
                         <TextInput type="number" v-model="currentVente.prix_unitaire" id="prix_unitaire" />
+                        <InputLabel for="currentVente.created_at">Date</InputLabel>
+                        <TextInput type="date" v-model="createdAtFormatted" id="created_at" />
                         <InputLabel for="currentVente.status">Status</InputLabel>
                         <select v-model="currentVente.status" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="Cash">Cash</option>
@@ -131,6 +133,14 @@ export default {
         this.isAdmin = this.$page.props.auth.user.role  === 'admin';
     },
     computed: {
+      createdAtFormatted: {
+        get() {
+          return this.currentVente.created_at?.substring(0, 10)
+        },
+        set(value) {
+          this.currentVente.created_at = value + 'T00:00:00.000000Z'
+        }
+      },
       visiblePages() {
         const pages = [];
         const start = Math.max(1, this.currentPage - 1);
@@ -212,7 +222,8 @@ export default {
                 quantite: this.currentVente.quantite,
                 prix_unitaire: this.currentVente.prix_unitaire,
                 utilisateur_id: this.currentVente.utilisateur_id,
-                article_id: this.currentVente.article_id
+                article_id: this.currentVente.article_id,                
+                created_at: this.currentVente.created_at,
             })
                 .then(response => {
                     this.fetchVentes();

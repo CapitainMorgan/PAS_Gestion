@@ -360,7 +360,7 @@ export default {
         this.filteredArticles.sort((a, b) => {
           const dateA = new Date(a.dateDepot);
           const dateB = new Date(b.dateDepot);
-          return dateB - dateA || b.color.localeCompare(a.color);
+          return dateB - dateA || (b.color.localeCompare(a.color));
         });
       } else {
         this.filteredArticles.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));

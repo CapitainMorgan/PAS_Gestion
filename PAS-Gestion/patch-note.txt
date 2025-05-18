@@ -5,8 +5,5 @@ Corr bug
 --------------
 Modifications
 --------------
-- APP_DEBUG=false dans env
-opcache.enable=1
-opcache.enable_cli=1 php.ini
 php artisan route:cache
 php artisan config:cache

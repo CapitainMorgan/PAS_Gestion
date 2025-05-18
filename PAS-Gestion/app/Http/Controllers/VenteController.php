@@ -60,7 +60,14 @@ class VenteController extends Controller
             return response()->json(['error' => 'Vente not found'], 404);
         }
         
-        $vente->update($request->all());
+        // On met à jour tous les autres champs sauf created_at
+        $vente->update($request->except('created_at'));
+
+        // On met à jour created_at manuellement si fourni
+        if ($request->has('created_at')) {
+            $vente->created_at = $request->input('created_at');
+            $vente->save();
+        }
 
         return response()->json($vente);
     }
