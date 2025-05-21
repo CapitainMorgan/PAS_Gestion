@@ -358,8 +358,8 @@ export default {
       //si le status est "Rendu" trier pas par date puis par couleur
       if (this.status === 'Rendu') {
         this.filteredArticles.sort((a, b) => {
-          const dateA = new Date(a.dateDepot);
-          const dateB = new Date(b.dateDepot);
+          const dateA = new Date(a.dateStatus);
+          const dateB = new Date(b.dateStatus);
           return dateB - dateA || (b.color.localeCompare(a.color));
         });
       } else {

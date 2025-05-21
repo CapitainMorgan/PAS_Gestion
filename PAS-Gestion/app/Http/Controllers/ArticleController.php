@@ -505,7 +505,6 @@ class ArticleController extends Controller
     // PUT/PATCH: Mettre à jour un article
     public function update(Request $request, $id)
     {
-
         $article = Article::find($id);
 
         if (!$article) {

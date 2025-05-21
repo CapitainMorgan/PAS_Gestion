@@ -153,8 +153,8 @@ class FournisseurController extends Controller
             return $article;
         });
 
-        //sort article by created_at
-        $articles = $articles->sortByDesc(['created_at','id']);
+        //sort article by created_at and after by dateStatus
+        $articles = $articles->sortByDesc(['created_at','dateStatus', 'id']);
 
         $fournisseur->articles = $articles;        
 
