@@ -92,6 +92,7 @@ import axios from 'axios';
                         <select v-model="currentVente.status" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="Cash">Cash</option>
                             <option value="CB">Carte bancaire</option>
+                            <option value="Cash+CB">Cash + Carte bancaire</option>
                         </select>
 
                       </div>

@@ -134,6 +134,7 @@ import vSelect from 'vue-select';
                     <div v-else>
                       <PrimaryButton class="button" @click="paid('Cash')">Payé Cash</PrimaryButton>
                       <PrimaryButton class="button" @click="paid('CB')">Payé Carte banquaire</PrimaryButton>
+                      <PrimaryButton class="button" @click="paid('Cash+CB')">Payé Cash + Carte banquaire</PrimaryButton>
                       <PrimaryButton class="button" @click="paid('Rendu')">Rendu</PrimaryButton>
                       <h1>Articles en Transit</h1>
                         <table class="table">
@@ -167,6 +168,7 @@ import vSelect from 'vue-select';
                               <td>
                                 <PrimaryButton class="button" style="margin-bottom: 5px;" @click="paidOne('Cash', article)">Payé Cash</PrimaryButton>
                                 <PrimaryButton class="button" style="margin-bottom: 5px;" @click="paidOne('CB', article)">Payé CB</PrimaryButton>
+                                <PrimaryButton class="button" style="margin-bottom: 5px;" @click="paidOne('Cash+CB', article)">Payé Cash + CB</PrimaryButton>
                                 <PrimaryButton class="button" style="margin-bottom: 5px;" @click="paidOne('Rendu', article)">Rendu</PrimaryButton>
                               </td>
                             </tr>

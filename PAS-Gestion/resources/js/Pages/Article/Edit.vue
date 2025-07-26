@@ -111,6 +111,7 @@ import vSelect from 'vue-select';
                         <select v-model="form.vente_status" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="Cash">Cash</option>
                             <option value="CB">Carte bancaire</option>
+                            <option value="Cash+CB">Cash + Carte bancaire</option>
                         </select>
                     </div>
                     <div class="form-group full-width">
