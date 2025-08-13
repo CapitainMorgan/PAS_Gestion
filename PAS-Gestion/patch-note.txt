@@ -5,7 +5,13 @@ Corr bug
 --------------
 Modifications
 --------------
-Cash + CB
+
 php artisan route:cache
 php artisan config:cache
-Archive
+Archive TODO commande sql
+Mail 
+quantité default 1
+sort id 
+Modifier vente
+Chargment page caisse
+Recherche lente

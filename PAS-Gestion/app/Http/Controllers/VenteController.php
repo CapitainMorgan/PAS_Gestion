@@ -59,17 +59,35 @@ class VenteController extends Controller
         if (!$vente) {
             return response()->json(['error' => 'Vente not found'], 404);
         }
-        
-        // On met à jour tous les autres champs sauf created_at
-        $vente->update($request->except('created_at'));
 
-        // On met à jour created_at manuellement si fourni
-        if ($request->has('created_at')) {
-            $vente->created_at = $request->input('created_at');
-            $vente->save();
+        if ($request->status === 'Rendu') {
+            // Si le statut est 'Rendu', on modifie l'article associé
+            $article = Article::find($vente->article_id);
+            if ($article) {
+                $article->status = 'Rendu';
+                $article->dateStatus = now();                
+                $article->color = "#00ff2a"; 
+                $article->save();
+
+                // Suppression de la vente
+                $vente->delete();
+
+                return response()->json(['message' => 'Article status updated to Rendu']);
+            }
+        } else {
+            
+            // On met à jour tous les autres champs sauf created_at
+            $vente->update($request->except('created_at'));
+
+            // On met à jour created_at manuellement si fourni
+            if ($request->has('created_at')) {
+                $vente->created_at = $request->input('created_at');
+                $vente->save();
+            }
+            
+            return response()->json($vente);
         }
 
-        return response()->json($vente);
     }
 
     // DELETE: Supprimer une vente

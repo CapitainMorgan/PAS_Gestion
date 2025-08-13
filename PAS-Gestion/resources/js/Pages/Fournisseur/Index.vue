@@ -144,7 +144,11 @@ import { Head } from '@inertiajs/vue3';
           });
       },
       searchFournisseurs() {
-        this.fetchFournisseur(1);
+        clearTimeout(this.searchTimeout); // reset si l'utilisateur tape encore
+        this.searchTimeout = setTimeout(() => {
+          this.fetchFournisseur(1); // recherche page 1 quand il a fini
+        }, 300); // délai de 500ms après la dernière frappe
+        
       },
       createFournisseur() {
         this.$inertia.visit(route('fournisseur.create'));

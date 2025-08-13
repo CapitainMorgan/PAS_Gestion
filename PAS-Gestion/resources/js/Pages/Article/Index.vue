@@ -43,6 +43,7 @@ import { Head } from '@inertiajs/vue3';
                           <option value="En transit">En transit</option>
                           <option value="Rendu défectueux">Rendu défectueux</option>
                           <option value="Donné">Donné</option>
+                          <option value="Archive">Archivé</option>
                           <option value="">Tout</option>
                       </select>                 
                   </div> 
@@ -190,7 +191,10 @@ import { Head } from '@inertiajs/vue3';
           });
       },      
       searchArticles() {
-        this.fetchArticles(1); // Recharger à la première page après la recherche
+        clearTimeout(this.searchTimeout); // reset si l'utilisateur tape encore
+        this.searchTimeout = setTimeout(() => {
+          this.fetchArticles(1); // recherche page 1 quand il a fini
+        }, 300); // délai de 500ms après la dernière frappe
       },
       createArticle() {
         this.$inertia.visit(route('article.create'));

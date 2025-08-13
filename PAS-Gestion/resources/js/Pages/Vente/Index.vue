@@ -93,6 +93,7 @@ import axios from 'axios';
                             <option value="Cash">Cash</option>
                             <option value="CB">Carte bancaire</option>
                             <option value="Cash+CB">Cash + Carte bancaire</option>
+                            <option value="Rendu">Rendu</option>
                         </select>
 
                       </div>

@@ -53,9 +53,9 @@ class ArticleController extends Controller
             }
         }
         if ($status == 'Rendu') {
-            $articles = $articles->orderBy('dateStatus', 'desc')->orderBy('color', 'desc')->paginate(10); // 10 articles par page
+            $articles = $articles->orderBy('dateStatus', 'desc')->orderBy('color', 'desc')->orderBy('id', 'desc')->paginate(10); // 10 articles par page
         } else {
-            $articles = $articles->orderBy('created_at', 'desc')->paginate(10); // 10 articles par page
+            $articles = $articles->orderBy('created_at', 'desc')->orderBy('id', 'desc')->paginate(10); // 10 articles par page
         }
         return response()->json($articles);
     }
@@ -243,7 +243,16 @@ class ArticleController extends Controller
 
     public function getArticlesByEndDate()
     {
-        $articles = Article::where('dateEcheance', '<', now())->where('statusMail', 0)->where('status', 'En Stock')->with('fournisseur')->orderBy('dateEcheance', 'asc')->get();
+        $articles = Article::where('dateEcheance', '<', now())
+            ->where('statusMail', 0)
+            ->where('status', 'En Stock')
+            ->select('id', 'description', 'created_at', 'dateEcheance', 'fournisseur_id')
+            ->with(['fournisseur' => function ($query) {
+                $query->select('id', 'nom', 'prenom', 'color', 'remarque');
+            }])
+            ->orderBy('dateEcheance', 'asc')
+            ->get();
+
         return Inertia::render('Dashboard', [
             'articles' => $articles,
         ]);

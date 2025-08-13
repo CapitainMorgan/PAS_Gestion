@@ -32,6 +32,7 @@ class ArticleEndReminderMail extends Mailable
     public function build()
     {
         return $this->subject('Rappel : Fin de dépôt pour vos articles')
+                    ->bcc('info@pret-a-seduire.ch')
                     ->view('emails.articles_end_reminder')
                     ->with(['articles' => $this->articles]);
     }

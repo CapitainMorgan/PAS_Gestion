@@ -12,7 +12,7 @@ class CaisseController extends Controller
     public function index()
     {
         
-        $fournisseurs = Fournisseur::all();
+        $fournisseurs = Fournisseur::select('id', 'nom', 'prenom')->get();
 
         return Inertia::render('Caisse/Index', [
             'fournisseurs' => $fournisseurs

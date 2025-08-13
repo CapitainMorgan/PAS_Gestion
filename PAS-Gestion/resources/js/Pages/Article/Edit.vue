@@ -102,6 +102,7 @@ import vSelect from 'vue-select';
                             <option value="Rendu">Rendu</option>
                             <option value="Rendu défectueux">Rendu défectueux</option>
                             <option value="Donné">Donné</option>
+                            <option value="Archive">Archivé</option>
                         </select>                 
                     </div>    
 

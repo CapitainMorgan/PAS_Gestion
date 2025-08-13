@@ -172,7 +172,7 @@ export default {
         prixVente: '',
         prixClient: null,
         prixSolde: null,
-        quantite: null,
+        quantite: 1,
         localisation: '',
         fournisseur_id: '',
         color: '#000000',

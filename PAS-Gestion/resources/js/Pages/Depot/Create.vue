@@ -60,7 +60,7 @@ import vSelect from 'vue-select';
 
                             <div class="form-group">
                                 <InputLabel for="quantite" class="form-label">Quantité</InputLabel>
-                                <TextInput v-model="newArticle.quantite" type="number" class="form-control" placeholder="Quantité" />
+                                <TextInput v-model="newArticle.quantite" type="number" class="form-control" placeholder="Quantité"/>
                             </div>
 
                             <div class="form-group">
@@ -149,7 +149,7 @@ import vSelect from 'vue-select';
         prixVente: '',
         prixClient: null,
         prixSolde: null,
-        quantite: null,
+        quantite: 1,
         color: '#000000',
         localisation: '',
         fournisseur_id: this.fournisseur_id
@@ -175,7 +175,7 @@ import vSelect from 'vue-select';
           prixVente: '',
           prixClient: null,
           prixSolde: null,
-          quantite: null,
+          quantite: 1,
           localisation: '',
           color: '#000000',
           fournisseur_id: this.fournisseur_id,
