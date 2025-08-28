@@ -131,8 +131,8 @@ class FournisseurController extends Controller
     public function show($id)
     {
         $fournisseur = Fournisseur::with(['articles' => function ($query) {
-            $query->orderBy('created_at', 'desc')
-                ->orderBy('dateStatus', 'desc')
+            $query->orderBy('dateStatus', 'desc')
+                ->orderBy('created_at', 'desc')
                 ->orderBy('id', 'desc'); 
         }])->find($id);
 
