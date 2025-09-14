@@ -328,8 +328,7 @@ class ArticleController extends Controller
             $id = $article->id;
 
             if (str_starts_with($id, $article->fournisseur->id) && str_ends_with($id, $article->created_at->format('dmy'))) {
-                $id = str_replace($article->fournisseur->id, "", $id);
-                $id = str_replace($article->created_at->format('dmy'), "", $id);
+                $id = substr($id, strlen($article->fournisseur->id), -strlen($article->created_at->format('dmy'))); 
             }
 
             $code = $article->fournisseur->id . '-' . $id . '-' . $article->created_at->format('dmy');
