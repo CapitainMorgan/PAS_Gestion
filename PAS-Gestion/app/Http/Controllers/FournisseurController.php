@@ -132,7 +132,7 @@ class FournisseurController extends Controller
     {
         $fournisseur = Fournisseur::with(['articles' => function ($query) {
             $query->orderBy('dateStatus', 'desc')
-                ->orderBy('created_at', 'desc')
+                ->orderBy('dateDepot', 'desc')
                 ->orderBy('id', 'desc'); 
         }])->find($id);
 
