@@ -131,7 +131,7 @@ class FournisseurController extends Controller
     public function show($id)
     {
         $fournisseur = Fournisseur::with(['articles' => function ($query) {
-            $query->orderBy('created_at', 'desc')
+            $query->orderBy('dateDepot', 'desc')
                 ->orderBy('dateStatus', 'desc')
                 ->orderBy('id', 'desc'); 
         }])->find($id);
@@ -160,7 +160,7 @@ class FournisseurController extends Controller
 
         $articles_transit = Article::where('fournisseur_id_transit', $fournisseur->id)
             ->where('status', 'En transit')
-            ->orderBy('created_at', 'desc')
+            ->orderBy('dateDepot', 'desc')
             ->get();
 
         $articles_transit->map(function ($article) {
@@ -187,9 +187,12 @@ class FournisseurController extends Controller
             return response()->json(['error' => 'Fournisseur not found'], 404);
         }
 
+        $fournisseurs = Fournisseur::select('id', 'nom', 'prenom')->get();
+
         return Inertia::render('Fournisseur/Show', [
             'fournisseur' => $fournisseur,
             'conditionGenerale' => $conditionGenerale,
+            'fournisseurs' => $fournisseurs,
         ]);
     }
 

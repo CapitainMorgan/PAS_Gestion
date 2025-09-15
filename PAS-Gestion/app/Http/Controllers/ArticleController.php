@@ -156,6 +156,31 @@ class ArticleController extends Controller
         return response()->json(['message' => 'Articles mis à jour avec succès']);
     }    
 
+    public function report(Request $request)
+    {
+        $articles = $request->input('articles');
+        $fournisseur_id = $request->input('fournisseurId');
+        $date = $request->input('date');
+
+        foreach ($articles as $article) {
+
+            $articleItem = Article::findOrFail($article['id']);
+
+            if (!$articleItem) {
+                return response()->json(['error' => 'Article not found'], 404);
+            }            
+            if( $fournisseur_id != null){
+                $articleItem->fournisseur_id = $fournisseur_id;
+            }
+            $articleItem->dateDepot = $date;
+            $articleItem->dateEcheance = date('Y-m-d', strtotime($date. ' + 30 days'));
+            $articleItem->dateStatus = now();
+            $articleItem->save();
+        }
+
+        return response()->json(['message' => 'Articles transférés avec succès']);
+    }
+
     public function changeTransitToPaid(Request $request)
     {
         $fournisseur_id = $request->input('fournisseurId');

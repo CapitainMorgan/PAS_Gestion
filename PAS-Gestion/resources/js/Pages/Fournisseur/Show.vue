@@ -96,7 +96,7 @@ import vSelect from 'vue-select';
                             <th>Date Dépot</th>
                             <th>Date chagement de status</th>
                             <th>Est payé</th>
-
+                            <th>Selection</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -111,7 +111,14 @@ import vSelect from 'vue-select';
                                 <td @click="showArticle(article.id)">{{ article.vente_total }}</td>
                                 <td @click="showArticle(article.id)">{{ formatDate(article.dateDepot) }}</td>
                                 <td @click="showArticle(article.id)">{{ formatDate(article.dateStatus) }}</td>
-                                <td><input type="checkbox" @change="updateIsPaid(article)" v-model="article.isPaid" :modelValue="String(article.isPaid)"></input></td>
+                                <td><input type="checkbox" @change="updateIsPaid(article)" v-model="article.isPaid" :modelValue="String(article.isPaid)"/></td>
+                                <td>
+                                  <input 
+                                    type="checkbox" 
+                                    v-model="selectedArticles" 
+                                    :value="article.id"
+                                  />
+                                </td>
                             </tr>
                         </tbody>
                         </table>
@@ -177,8 +184,20 @@ import vSelect from 'vue-select';
                         </table>
                     </div>
 
-
-                    <TextInput style="margin-right:100%; margin-bottom: 5px;" type="date" v-model="printDate" required />
+                    <div class="form-group full-width" style="margin-bottom: 20px;">
+                            <InputLabel for="fournisseur" class="form-label">Fournisseur</InputLabel>
+                            <v-select
+                            :options="fullNameFournisseurs"
+                            v-model="selectedFournisseur"
+                            :reduce="fournisseur => fournisseur.id"
+                            label="fullName"
+                            placeholder="Sélectionner un fournisseur"
+                            search-placeholder="Rechercher un fournisseur..."
+                            required
+                            />
+                        </div>
+                    <TextInput style="margin-right:10px; margin-bottom: 5px;" type="date" v-model="printDate" required />
+                    <PrimaryButton style="margin-right:60%; margin-bottom: 5px;" class="button" @click="report()">Reporter / Transférer</PrimaryButton>
                     <PrimaryButton style="margin-bottom: 5px;" class="button" @click="print()">Imprimer Code Barre</PrimaryButton>
                     
                     <PrimaryButton class="button" @click="showModalFiche = true; getDepotIdFromFournisseurArticles()">Générer Fiche Client</PrimaryButton>
@@ -243,6 +262,10 @@ export default {
       type: String,
       required: true,
     },
+    fournisseurs: {
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {      
@@ -259,6 +282,12 @@ export default {
       status: 'En Stock',
       printDate: new Date().toISOString().substr(0, 10),
       searchArticles: [],
+      selectedArticles: [],
+      selectedFournisseur: null,
+      fullNameFournisseurs: this.fournisseurs.map(fournisseur => ({
+        ...fournisseur,
+        fullName: `${fournisseur.nom} ${fournisseur.prenom} (${fournisseur.id})`
+      })), 
       selectedTab: 'articles',
     };
   },
@@ -366,7 +395,7 @@ export default {
           return dateB - dateA || (b.color.localeCompare(a.color));
         });
       } else {
-        this.filteredArticles.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        this.filteredArticles.sort((a, b) => new Date(b.dateDepot) - new Date(a.dateDepot));
       }
 
       this.searchArticles = this.filteredArticles.slice(start, start + this.pageSize);
@@ -407,6 +436,44 @@ export default {
       });
       if (response.data.success) {
         useToast().success('Le statut de paiement a été mis à jour.');
+      }
+    },
+    async report() {
+      if (this.selectedArticles.length === 0) {
+        alert('Veuillez sélectionner au moins un article à transférer.');
+        return;
+      }
+      if (confirm(`Êtes-vous sûr de vouloir reporter / transférer ${this.selectedArticles.length} articles ?`)) {
+        try {
+          await axios.post(route('article.report'), {
+            articles: this.selectedArticles.map(id => ({ id })),
+            fournisseurId: this.selectedFournisseur,
+            date: this.printDate,
+          });
+          useToast().success(`${this.selectedArticles.length} articles ont été transférés avec succès.`);
+          // Retirer les articles transférés de la liste actuelle
+          if (this.selectedFournisseur !== null)
+          {
+            this.fournisseur.articles.splice(
+              0,
+              this.fournisseur.articles.length,
+              ...this.fournisseur.articles.filter(article => !this.selectedArticles.includes(article.id))
+            );
+          }else 
+          {
+            // update dateDepot of all selected articles to printDate
+            this.fournisseur.articles.forEach(article => {
+              if (this.selectedArticles.includes(article.id)) {
+                article.dateDepot = this.printDate;
+              }
+            });
+          }
+          this.selectedArticles = []; // Réinitialiser la sélection
+          this.paginatedArticles(); // Mettre à jour la liste affichée
+        } catch (error) {
+          useToast().error('Une erreur est survenue lors du transfert des articles.');
+          console.error(error);
+        }
       }
     },
     deleteFournisseur() {
