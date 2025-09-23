@@ -77,6 +77,13 @@ class FournisseurController extends Controller
 
         $conditionsArray = explode("\n", $conditionGenerale);
 
+         //if created_at is not equal to date_depot add the created_at to the begining of the description of the article
+        foreach ($articles as $article) {
+            if ($article->created_at->format('Y-m-d') != $date_depot) {
+                $article->description = $article->created_at->format('d/m/Y') . ' - ' . $article->description;
+            } 
+        }
+        
         $status = 'depot';
 
         $pdf = PDF::loadView('fiches.fiche_fournisseur', compact('fournisseur', 'articles','conditionsArray', 'status', 'date_depot'));
@@ -99,7 +106,7 @@ class FournisseurController extends Controller
         
         $conditionsArray = explode("\n", $conditionGenerale);
 
-        $status = 'vente';
+        $status = 'vente';       
 
         $pdf = PDF::loadView('fiches.fiche_fournisseur_vente', compact('fournisseur', 'ventes',  'conditionsArray', 'status'))
             ->setPaper('a4', 'portrait')

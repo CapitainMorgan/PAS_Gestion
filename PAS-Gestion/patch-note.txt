@@ -6,8 +6,7 @@ Corr bug
 Modifications
 --------------
 
-Ordre fiche
-Changer status Dashboard
-Changer status fournisseur
+solde 
+date fiche client si reporté
 bug Mail
 bug Impression
