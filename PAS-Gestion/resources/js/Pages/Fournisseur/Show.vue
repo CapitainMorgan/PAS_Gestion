@@ -197,7 +197,17 @@ import vSelect from 'vue-select';
                             />
                         </div>
                     <TextInput style="margin-right:10px; margin-bottom: 5px;" type="date" v-model="printDate" required />
-                    <PrimaryButton style="margin-right:60%; margin-bottom: 5px;" class="button" @click="report()">Reporter / Transférer</PrimaryButton>
+                    <select v-model="statusReport" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <option value="En Stock">En Stock</option>
+                        <option value="Vendu">Vendu</option>
+                        <option value="Rendu">Rendu</option>
+                        <option value="En transit">En transit</option>                            
+                        <option value="Rendu défectueux">Rendu défectueux</option>
+                        <option value="Donné">Donné</option>
+                        <option value="Archive">Archivé</option>
+                        <option value="">Tout</option>
+                    </select> 
+                    <PrimaryButton style="margin-left:10px;margin-right:40%; margin-bottom: 5px;" class="button" @click="report()">Reporter / Transférer</PrimaryButton>
                     <PrimaryButton style="margin-bottom: 5px;" class="button" @click="print()">Imprimer Code Barre</PrimaryButton>
                     
                     <PrimaryButton class="button" @click="showModalFiche = true; getDepotIdFromFournisseurArticles()">Générer Fiche Client</PrimaryButton>
@@ -277,6 +287,7 @@ export default {
       tempConditionGenerale: this.conditionGenerale,
       dateDepot: null,
       ficheChoice: 1,
+      statusReport: 'En Stock',
       isAdmin: false,
       searchTerm: '',
       status: 'En Stock',
@@ -386,6 +397,7 @@ export default {
       }
     },
     paginatedArticles() {
+      this.statusReport = this.status;
       const start = (this.currentPage - 1) * this.pageSize;
       //si le status est "Rendu" trier pas par date puis par couleur
       if (this.status === 'Rendu') {
@@ -449,6 +461,7 @@ export default {
             articles: this.selectedArticles.map(id => ({ id })),
             fournisseurId: this.selectedFournisseur,
             date: this.printDate,
+            status: this.statusReport,
           });
           useToast().success(`${this.selectedArticles.length} articles ont été transférés avec succès.`);
           // Retirer les articles transférés de la liste actuelle

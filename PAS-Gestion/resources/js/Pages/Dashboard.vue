@@ -41,7 +41,17 @@ import { start } from '@popperjs/core';
                                 Mettre à jour les articles sélectionnés
                               </PrimaryButton>
                               <TextInput style="float: right;margin-right: 10px; margin-bottom: 10px;" type="date" v-model="dateEcheance" class="p-2 border rounded" />
-                              
+                              <select style="float: right;margin-right: 10px; margin-bottom: 10px;" v-model="status" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <option disabled value="Select">Selectionner un status</option>
+                                <option value="En Stock">En Stock</option>
+                                <option value="Vendu">Vendu</option>
+                                <option value="Rendu">Rendu</option>
+                                <option value="En transit">En transit</option>                            
+                                <option value="Rendu défectueux">Rendu défectueux</option>
+                                <option value="Donné">Donné</option>
+                                <option value="Archive">Archivé</option>
+                                <option value="">Tout</option>
+                            </select> 
 
                               <table class="w-full text-left border-collapse">
                                     <thead>
@@ -142,6 +152,7 @@ import { start } from '@popperjs/core';
     },
     data() {
       return {
+        status: 'Select',
         searchTerm: '',
         currentPage: 1,
         pageSize: 10,
@@ -263,12 +274,23 @@ import { start } from '@popperjs/core';
           return;
         }
 
+        if (this.dateEcheance === '' && this.status === 'Select') {
+          toast.error('Veuillez sélectionner une date d\'échéance ou un status.');
+          return;
+        }
+
+
         try {          
           for (const articleId of selectedArticleIds) {
             let article = this.groupedArticles[fournisseurId].articles.find((a) => a.id === articleId);
-            article.dateEcheance = this.dateEcheance;
+            if (this.dateEcheance !== '') {              
+              article.dateEcheance = this.dateEcheance;
+            }
+            if (this.status !== 'Select') {
+              article.status = this.status;
+            }
             const response = await axios.put(route('article.updateIsPaid', articleId), {
-              article
+              article,
             });
           }
                     

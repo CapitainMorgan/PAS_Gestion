@@ -6,12 +6,8 @@ Corr bug
 Modifications
 --------------
 
-php artisan route:cache
-php artisan config:cache
-Archive TODO commande sql
-Mail 
-quantité default 1
-sort id 
-Modifier vente
-Chargment page caisse
-Recherche lente
+Ordre fiche
+Changer status Dashboard
+Changer status fournisseur
+bug Mail
+bug Impression

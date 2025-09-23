@@ -161,6 +161,7 @@ class ArticleController extends Controller
         $articles = $request->input('articles');
         $fournisseur_id = $request->input('fournisseurId');
         $date = $request->input('date');
+        $status = $request->input('status');
 
         foreach ($articles as $article) {
 
@@ -175,6 +176,7 @@ class ArticleController extends Controller
             $articleItem->dateDepot = $date;
             $articleItem->dateEcheance = date('Y-m-d', strtotime($date. ' + 30 days'));
             $articleItem->dateStatus = now();
+            $articleItem->status = $status;
             $articleItem->save();
         }
 
