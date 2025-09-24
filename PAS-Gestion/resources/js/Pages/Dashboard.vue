@@ -294,7 +294,9 @@ import { start } from '@popperjs/core';
             });
           }
                     
-
+          this.dateEcheance = '';
+          this.status = 'Select';
+          this.selectedArticles[fournisseurId] = [];
           toast.success('Date d\'échéance mise à jour avec succès.');
           this.$inertia.reload();
         } catch (error) {
