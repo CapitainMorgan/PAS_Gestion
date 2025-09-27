@@ -173,8 +173,10 @@ class ArticleController extends Controller
             if( $fournisseur_id != null){
                 $articleItem->fournisseur_id = $fournisseur_id;
             }
-            $articleItem->dateDepot = $date;
-            $articleItem->dateEcheance = date('Y-m-d', strtotime($date. ' + 30 days'));
+            if( $date != null){                
+                $articleItem->dateDepot = $date;                
+                $articleItem->dateEcheance = date('Y-m-d', strtotime($date. ' + 30 days'));
+            }
             $articleItem->dateStatus = now();
             $articleItem->status = $status;
             $articleItem->save();

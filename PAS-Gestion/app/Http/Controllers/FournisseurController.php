@@ -69,7 +69,8 @@ class FournisseurController extends Controller
     {
         $fournisseur = Fournisseur::findOrFail($id);
         
-        $articles = $fournisseur->articles->where('dateDepot', '==', $date_depot)
+        $articles = $fournisseur->articles->where('dateDepot', '==', $date_depot)        
+            ->whereNotIn('status', ['Rendu', 'Archive'])
             ->sortBy([
                 ['created_at', 'asc'],
                 ['id', 'asc'],

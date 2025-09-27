@@ -50,7 +50,6 @@ import { start } from '@popperjs/core';
                                 <option value="Rendu défectueux">Rendu défectueux</option>
                                 <option value="Donné">Donné</option>
                                 <option value="Archive">Archivé</option>
-                                <option value="">Tout</option>
                             </select> 
 
                               <table class="w-full text-left border-collapse">

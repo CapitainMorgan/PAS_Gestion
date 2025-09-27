@@ -205,7 +205,6 @@ import vSelect from 'vue-select';
                         <option value="Rendu défectueux">Rendu défectueux</option>
                         <option value="Donné">Donné</option>
                         <option value="Archive">Archivé</option>
-                        <option value="">Tout</option>
                     </select> 
                     <PrimaryButton style="margin-left:10px;margin-right:40%; margin-bottom: 5px;" class="button" @click="report()">Reporter / Transférer</PrimaryButton>
                     <PrimaryButton style="margin-bottom: 5px;" class="button" @click="print()">Imprimer Code Barre</PrimaryButton>
