@@ -358,8 +358,13 @@ export default {
         return matchesSearch && matchesStatus;
       });
     },
-    totalPriceTransit(){
-      return this.fournisseur.articles_transit.reduce((acc, article) => acc + Number(article.vente_total), 0);
+    totalPriceTransit() {
+      return this.fournisseur.articles_transit.reduce((acc, article) => {
+        const prix = article.prixSolde && article.prixSolde !== '' 
+          ? Number(article.prixSolde) 
+          : Number(article.prixVente);
+        return acc + prix;
+      }, 0);
     },
     totalPriceArticlesNotPaid(){
       //sum vente_total of all articles that are not paid
