@@ -39,9 +39,9 @@ import vSelect from 'vue-select';
                           <p v-if="fournisseur.rue || fournisseur.ville || fournisseur.npa || fournisseur.pays">{{ fournisseur.rue }}, {{ fournisseur.ville }}, {{ fournisseur.npa }}, {{ fournisseur.pays }}</p>
                           <p v-else>N/A</p>
                         </p>                        
-                        <p><strong>Remarque:</strong> {{ fournisseur.remarque ?? 'N/A' }}</p>
+                        <p :style="{ color: fournisseur.color }"><strong>Remarque:</strong> {{ fournisseur.remarque ?? 'N/A' }}</p>
                         <p><strong>Date de Création:</strong> {{ formatDate(fournisseur.created_at) }}</p>
-                        <p><strong>Solde:</strong> {{ fournisseurSolde }} CHF</p>
+                        <p><strong>Solde:</strong> {{ fournisseurSolde }} CHF ( En Transit {{ totalPriceTransit }} CHF )</p>
                     </div>
                     </div>
                     <div class="tabs">
