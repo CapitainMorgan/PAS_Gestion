@@ -168,12 +168,26 @@ import { start } from '@popperjs/core';
         return Math.ceil(Object.keys(this.groupedArticles).length / this.pageSize);
       },
       paginatedArticles() {
-        const articlesArray = Object.entries(this.groupedArticles).map(([fournisseurId, data]) => ({
+        // Transformer l'objet en tableau
+        const articlesArray = Object.entries(this.groupedArticles).map(([fournisseurId, data]) => {
+          // Trouver la date d’échéance la plus ancienne parmi les articles de ce fournisseur
+          const minEcheance = Math.min(
+            ...data.articles.map(article => new Date(article.dateEcheance).getTime())
+          );
+
+          return {
             fournisseurId,
+            minEcheance,
             ...data
-        }));
+          };
+        });
+
+        // Trier les fournisseurs par date d’échéance la plus ancienne (ordre croissant)
+        const sortedArray = articlesArray.sort((a, b) => a.minEcheance - b.minEcheance);
+
+        // Appliquer la pagination
         const start = (this.currentPage - 1) * this.pageSize;
-        return articlesArray.slice(start, start + this.pageSize);
+        return sortedArray.slice(start, start + this.pageSize);
       },
       visiblePages() {
         const pages = [];
