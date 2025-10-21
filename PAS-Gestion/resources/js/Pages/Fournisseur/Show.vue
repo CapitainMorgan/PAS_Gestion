@@ -363,7 +363,13 @@ export default {
     },
     totalPriceArticlesNotPaid(){
       //sum vente_total of all articles that are not paid
-      return this.fournisseur.articles.reduce((acc, article) => article.isPaid ? acc : acc + Number(article.vente_total), 0);
+      return this.fournisseur.articles.reduce((acc, article) => 
+      {
+        if (!article.isPaid && (article.status === 'Vendu' || (article.status === 'Rendu' && article.color === "#00ff2a"))) {
+          return acc + Number(article.prixClient);
+        }
+        return acc;
+      }, 0);
     },
     fournisseurSolde(){
       return this.totalPriceArticlesNotPaid - this.totalPriceTransit;
